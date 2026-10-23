@@ -1,0 +1,13 @@
+# Claves y entornos locales: nunca se suben
+.env
+.venv/
+venv/
+
+# Archivos que generan los notebooks al ejecutarse
+__pycache__/
+.ipynb_checkpoints/
+planes/
+resultados_*.csv
+
+# Sistema operativo
+.DS_Store

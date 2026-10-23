@@ -1,0 +1,3 @@
+# Laboratorio 2A · librerías (probadas con Python 3.12 y 3.13 el 21-oct-2026)
+unified-planning==1.3.0
+up-fast-downward==1.0.0

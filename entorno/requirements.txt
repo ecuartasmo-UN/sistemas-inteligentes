@@ -1,0 +1,9 @@
+# Entorno del curso Sistemas Inteligentes · librerías de la Sesión 2 (probadas con Python 3.12 y 3.13 el 21-oct-2026)
+# Las sesiones siguientes agregan las suyas en el requirements.txt de cada laboratorio.
+ipykernel==7.4.0
+unified-planning==1.3.0
+up-fast-downward==1.0.0
+anthropic==2.1.0
+openai==3.36.0
+python-dotenv==1.2.4
+matplotlib==3.11.2
