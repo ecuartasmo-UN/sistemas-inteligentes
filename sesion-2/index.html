@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sesión 2 · Sistemas Inteligentes — Agenda</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  body { margin: 0; font-family: var(--font); color: var(--text); background: radial-gradient(1200px 700px at 85% -10%, #12203a 0%, var(--bg) 55%) fixed, var(--bg); }
+  main { max-width: 1080px; margin: 0 auto; padding: 56px 28px 64px; }
+  .kicker { font-size: 15px; }
+  h1 { font-size: 46px; line-height: 1.1; margin: 8px 0 10px; font-weight: 800; letter-spacing: -0.02em; }
+  .sub { font-size: 21px; color: var(--muted); margin: 0 0 34px; }
+  h2 { font-size: 24px; margin: 38px 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 18px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--accent); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; border-bottom: 2px solid var(--accent); }
+  td.t { font-family: var(--mono); color: var(--accent-2); white-space: nowrap; }
+  td.k { font-size: 15px; white-space: nowrap; }
+  tr.ext td { color: var(--muted); }
+  .tag { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .tag.exp { color: var(--accent); border-color: rgba(56,189,248,.45); }
+  .tag.lab { color: var(--ok); border-color: rgba(74,222,128,.45); }
+  .tag.dis { color: var(--violet); border-color: rgba(167,139,250,.45); }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(56,189,248,.45); }
+  a:hover { color: #7dd3fc; }
+  .decks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .deck { display: block; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: linear-gradient(180deg, var(--bg-3), var(--bg-2)); border-bottom: 1px solid var(--line); }
+  .deck:hover { border-color: var(--accent); }
+  .deck .n { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .deck .tt { display: block; font-size: 18px; font-weight: 700; color: var(--text); margin: 6px 0; line-height: 1.25; }
+  .deck .m { font-size: 14px; color: var(--accent-2); }
+  .balance { display: flex; height: 14px; border-radius: 8px; overflow: hidden; margin: 10px 0 6px; border: 1px solid var(--line); }
+  .balance .e { background: rgba(56,189,248,.55); width: 51.1%; }
+  .balance .p { background: rgba(74,222,128,.55); width: 48.9%; }
+  .bl { font-size: 15px; color: var(--muted); }
+  ul.tips { font-size: 17px; line-height: 1.6; color: var(--muted); padding-left: 20px; }
+  ul.tips b { color: var(--text); }
+  kbd { font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; color: var(--text); background: var(--bg-3); }
+  footer { margin-top: 44px; font-size: 14px; color: #8790a6; }
+  @media (max-width: 900px) { .decks { grid-template-columns: 1fr 1fr; } h1 { font-size: 34px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales</div>
+  <h1>Sesión 2 · Unidad 2</h1>
+  <p class="sub">Planificación Automática en IA: planificación clásica, LLMs y planificación, y planes explícitos en agentes (plan.md) · 4 horas</p>
+
+  <h2>Presentaciones</h2>
+  <div class="decks">
+    <a class="deck" href="club_lectura.html"><span class="n">Club de lectura</span><span class="tt">¿Pueden planificar los LLMs?</span><span class="m">20 min · discusión</span></a>
+    <a class="deck" href="bloque1_planificacion_clasica.html"><span class="n">Bloque 1</span><span class="tt">Planificación automática clásica</span><span class="m">30 min</span></a>
+    <a class="deck" href="bloque2_llms_planificacion.html"><span class="n">Bloque 2</span><span class="tt">LLMs y planificación</span><span class="m">20 min</span></a>
+    <a class="deck" href="bloque3_plan_md.html"><span class="n">Bloque 3</span><span class="tt">Planes explícitos en agentes: plan.md</span><span class="m">30 min</span></a>
+    <a class="deck" href="cierre_sesion.html"><span class="n">Cierre</span><span class="tt">Síntesis, proyecto y lo que viene</span><span class="m">15 min</span></a>
+  </div>
+
+  <h2>Agenda de la sesión</h2>
+  <table>
+    <tr><th>Inicio</th><th>Actividad</th><th>Tipo</th><th>Duración</th></tr>
+    <tr><td class="t">0:00</td><td><a href="club_lectura.html">Club de lectura</a> · Kambhampati et al. (2024), LLM-Modulo</td><td class="k"><span class="tag dis">Discusión</span></td><td>20 min</td></tr>
+    <tr><td class="t">0:20</td><td><a href="bloque1_planificacion_clasica.html">Bloque 1 · Planificación automática clásica</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
+    <tr><td class="t">0:50</td><td>Laboratorio 2A · Planificar una operación en PDDL</td><td class="k"><span class="tag lab">Práctica</span></td><td>35 min</td></tr>
+    <tr><td class="t">1:25</td><td><a href="bloque2_llms_planificacion.html">Bloque 2 · LLMs y planificación</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>20 min</td></tr>
+    <tr><td class="t">1:45</td><td>Laboratorio 2B · LLM-Modulo en práctica</td><td class="k"><span class="tag lab">Práctica</span></td><td>35 min</td></tr>
+    <tr class="ext"><td class="t">2:20</td><td>Pausa</td><td class="k">—</td><td>15 min</td></tr>
+    <tr><td class="t">2:35</td><td><a href="bloque3_plan_md.html">Bloque 3 · Planes explícitos en agentes (plan.md)</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
+    <tr><td class="t">3:05</td><td>Laboratorio 2C · Escribir, revisar y ejecutar un plan.md</td><td class="k"><span class="tag lab">Práctica</span></td><td>40 min</td></tr>
+    <tr><td class="t">3:45</td><td><a href="cierre_sesion.html">Cierre de la sesión</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>15 min</td></tr>
+  </table>
+  <div class="balance" aria-hidden="true"><div class="e"></div><div class="p"></div></div>
+  <p class="bl">115 min de exposición y discusión · 110 min de práctica en tres laboratorios. Los laboratorios son notebooks autocontenidos que se publican aparte.</p>
+
+  <h2>Materiales</h2>
+  <ul class="tips">
+    <li><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-2/trabajo_independiente.md">trabajo_independiente.md</a>: tres trabajos prácticos (3 h 30 min), con entrega al inicio de la semana 2.</li>
+    <li><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-2/plantilla_plan.md">plantilla_plan.md</a>: plantilla del plan.md con la lista de chequeo, para el Laboratorio 2C y el proyecto integrador.</li>
+    <li><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-2/ejemplo_pddl/mantenia_dominio.pddl">ejemplo_pddl/</a>: dominio y problema PDDL de MantenIA usados en el Bloque 1, con el plan validado.</li>
+  </ul>
+
+  <h2>Cómo presentar</h2>
+  <ul class="tips">
+    <li><b>Avanzar:</b> <kbd>→</kbd> o <kbd>Espacio</kbd> (revela paso a paso las trazas y diagramas) · <b>Retroceder:</b> <kbd>←</kbd></li>
+    <li><b>Vista del orador:</b> <kbd>S</kbd> abre una ventana con las notas, el minuto previsto de cada diapositiva y la siguiente diapositiva</li>
+    <li><b>Vista general:</b> <kbd>Esc</kbd> · <b>Pantalla completa:</b> <kbd>F</kbd> · <b>Ampliar una zona:</b> <kbd>Alt</kbd> + clic</li>
+    <li>Funciona sin conexión a internet: reveal.js, fuentes e imágenes están en la carpeta <code>assets/</code>.</li>
+  </ul>
+  <footer>Elaboró: Ernesto Cuartas Morales · Sesión 2 de 8 · Créditos de imágenes en cada diapositiva y en README.md</footer>
+</main>
+</body>
+</html>

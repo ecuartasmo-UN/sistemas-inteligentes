@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 2 · LLMs y planificación — Sesión 2 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .lm .rule { font-size: 21px; padding: 6px 10px; margin-bottom: 7px; }
+  .reveal .slides section .fragment.flag { opacity: 1; visibility: inherit; transition: all .25s ease; }
+  .reveal .slides section .fragment.flag.visible { border-color: var(--bad); background: rgba(248,113,113,.14); box-shadow: 0 0 0 2px rgba(248,113,113,.3); }
+  .lm .rule.newstep { border-color: var(--ok); background: rgba(74,222,128,.12); }
+  .lm .stage { min-height: 330px; }
+  .lm .msg { font-size: 22px; line-height: 1.3; margin-bottom: 12px; }
+  .lm .msg .mono { font-size: 19px; }
+  .tr .code { font-size: 24px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="20">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 2 · Unidad 2 · Bloque 2 de 3</div>
+  <h1>LLMs y planificación</h1>
+  <p class="lead muted">Qué muestra la evidencia y cómo usarlos sin perder las garantías</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>20 min</strong></p>
+  <p class="navlinks"><a href="bloque1_planificacion_clasica.html">← Bloque 1</a><a href="index.html">Agenda</a><a href="bloque3_plan_md.html">Bloque 3 →</a></p>
+  <aside class="notes">
+    <p>La ilustración de fondo, de un artículo de divulgación de Quanta Magazine sobre los límites de los LLMs en problemas de varios pasos, anticipa el bloque. Volvemos a la pregunta del club de lectura, ahora con lo que sabemos de planificación clásica. Ruta: cómo se mide si un LLM planifica; qué pasó con los modelos posteriores al artículo; una posición contraria; y dos formas útiles de combinar LLMs con planificadores: generar y verificar, y traducir a PDDL. Prepara el Laboratorio 2B.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · PLANBENCH ============================ -->
+<section data-min="2">
+  <div class="kicker">Evidencia · cómo se mide</div>
+  <h2>PlanBench: cómo saber si un LLM planifica</h2>
+  <figure class="figure" style="margin-bottom:10px">
+    <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Arquitectura de PlanBench: un generador de problemas y un traductor específico del dominio producen casos de prueba; un planificador y un validador de planes evalúan las respuestas de los modelos de lenguaje</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+    <figcaption class="credit">Arquitectura de PlanBench: el planificador y el validador califican al LLM. Valmeekam et al. (2023), NeurIPS 2023, Fig. 1, <a href="https://arxiv.org/abs/2206.10498">arXiv:2206.10498</a>. Derechos reservados; uso educativo.</figcaption>
+  </figure>
+  <div class="cols c64">
+    <ul style="font-size:25px">
+      <li>Dominios de la Competencia Internacional de Planificación: Blocksworld y Logistics</li>
+      <li class="fragment">Fast Downward da la referencia y VAL califica cada plan del LLM</li>
+      <li class="fragment"><strong>Mystery Blocksworld:</strong> el mismo problema con nombres ofuscados</li>
+    </ul>
+    <div class="card fragment" style="padding:12px 16px">
+      <p class="panel-title" style="margin-bottom:6px">Clave de Mystery</p>
+      <p class="mono" style="font-size:19px;margin:0 0 4px">«Attack object a» = tomar A de la mesa</p>
+      <p class="mono" style="font-size:19px;margin:0 0 4px">«a craves b» = A está sobre B</p>
+      <p class="mono" style="font-size:19px;margin:0">«Harmony» = la mano está libre</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>PlanBench (Valmeekam et al., NeurIPS 2023, Datasets and Benchmarks) es el banco de prueba que está detrás del club de lectura. Usa dominios de la competencia internacional de planificación, Blocksworld y Logistics, con unas 26 250 instrucciones en total. Las 600 instancias de Blocksworld tienen de 3 a 5 bloques y planes de 2 a 16 pasos.</p>
+    <p>Fíjense en la arquitectura: el planificador (Fast Downward) y el validador (VAL) son los mismos componentes del Bloque 1, ahora usados para calificar a los LLMs. Cada plan que propone un LLM se revisa automáticamente.</p>
+    <p>Mystery Blocksworld es la prueba clave: las acciones, los predicados y los objetos se renombran con palabras engañosas o aleatorias. La clave de traducción la publicaron los mismos autores: «Attack object a» significa tomar el bloque A de la mesa; «object a craves object b» significa que A está sobre B. Para un planificador clásico ambos problemas son idénticos; si un sistema realmente planifica, el cambio de nombres no debería afectarlo.</p>
+    <p>Los propios autores advierten que buenos resultados en el banco no garantizan planes correctos ni seguros en uso real.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · MODELOS DE RAZONAMIENTO ============================ -->
+<section data-min="2">
+  <div class="kicker">Evidencia · después del artículo</div>
+  <h2>Los modelos de razonamiento: un salto, con límites</h2>
+  <div class="cols c46 mid">
+    <div>
+      <p class="panel-title">o1-preview, septiembre de 2024 · sin ejemplos</p>
+      <p style="font-size:27px;margin-bottom:8px"><span class="big-number" style="font-size:52px">97,8 %</span> Blocksworld</p>
+      <p style="font-size:27px;margin-bottom:8px" class="fragment"><span class="big-number" style="font-size:52px">52,8 %</span> Mystery</p>
+      <p style="font-size:25px" class="fragment">Ningún LLM anterior superó el 5 % en Mystery. Fast Downward: 100 % en 0,27 s.</p>
+    </div>
+    <figure class="figure fragment">
+      <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Gráfica de porcentaje de planes correctos según la longitud del plan en Mystery Blocksworld: Fast Downward se mantiene en 100 %, o1-preview cae de cerca de 85 % a 0 % al alargarse el plan y los LLMs quedan cerca de cero</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+      <figcaption class="credit">Mystery Blocksworld: acierto según la longitud del plan. Valmeekam, Stechly y Kambhampati (2024), Fig. 1, <a href="https://arxiv.org/abs/2409.13373">arXiv:2409.13373</a>. Derechos reservados; uso educativo.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Solo el resultado; cómo funcionan por dentro los modelos de razonamiento se estudia en la Unidad 3. Los mismos autores evaluaron en septiembre de 2024 al primer modelo de razonamiento de OpenAI, o1-preview, sobre las mismas 600 instancias.</p>
+    <p>El salto es real: 97,8 % en Blocksworld y 52,8 % en Mystery, cuando ningún LLM anterior había superado el 5 % en Mystery. Con nombres completamente aleatorios (Randomized Mystery), 37,3 %. Pero Fast Downward resuelve el 100 % en 0,27 segundos por instancia, con garantía de corrección.</p>
+    <p>La gráfica muestra el matiz: en Mystery, el acierto de o1-preview cae a medida que el plan se alarga, y llega a cero en los planes de 14 pasos o más. El planificador clásico se mantiene en 100 % sin importar la longitud.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · TAMAÑO, IMPOSIBLES Y COSTO ============================ -->
+<section data-min="2">
+  <div class="kicker">Evidencia · después del artículo</div>
+  <h2>Problemas más largos, problemas imposibles y costo</h2>
+  <figure class="figure" style="margin-bottom:12px">
+    <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Gráfica de o1-preview en Blocksworld con planes de 20 a 40 pasos: el acierto cae de 60 a 70 % en los planes más cortos a cerca de 0 a 10 % en los más largos; promedio cercano a 24 %</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+    <figcaption class="credit">o1-preview en problemas de 20 a 40 pasos. Valmeekam, Stechly y Kambhampati (2024), Fig. 3, <a href="https://arxiv.org/abs/2409.13373">arXiv:2409.13373</a>. Derechos reservados; uso educativo.</figcaption>
+  </figure>
+  <div class="cols-3">
+    <div class="card fragment"><div class="big-number amber" style="font-size:54px">23,6 %</div><p style="font-size:22px;margin:6px 0 0">de acierto en problemas de 6 a 20 bloques (planes de 20 a 40 pasos)</p></div>
+    <div class="card bad fragment"><div class="big-number" style="font-size:54px;color:var(--bad)">54 %</div><p style="font-size:22px;margin:6px 0 0">de los problemas imposibles recibieron un plan falso; solo 27 % fueron reconocidos</p></div>
+    <div class="card fragment"><div class="big-number" style="font-size:54px">US$42</div><p style="font-size:22px;margin:6px 0 0">por cada 100 problemas con o1-preview; GPT-4o, US$0,65; Fast Downward, casi nada</p></div>
+  </div>
+  <aside class="notes">
+    <p>Tres datos del mismo estudio (arXiv:2409.13373, Tablas 2 a 4 y Fig. 3). Primero, el tamaño: en 110 problemas más grandes, de 6 a 20 bloques y planes óptimos de 20 a 40 pasos, o1-preview acierta solo 23,6 %, sobre todo en los de menos de 28 pasos.</p>
+    <p>Segundo, los problemas imposibles: a 100 instancias se les agregó una meta contradictoria. o1-preview reconoció explícitamente que no había solución en el 27 % de los casos; en el 19 % devolvió un plan vacío; y en el 54 % entregó un plan completo, que por definición es incorrecto. Un sistema que responde con seguridad a un problema imposible es peligroso en una organización.</p>
+    <p>Tercero, el costo: US$42,12 por cada 100 instancias con o1-preview, frente a US$0,65 de GPT-4o; Fast Downward corrió en un computador personal en 0,265 segundos por instancia, prácticamente gratis. Los autores reportan haber gastado más de 1 897 dólares solo en los experimentos con o1.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · POSICIÓN CONTRASTANTE ============================ -->
+<section data-min="2">
+  <div class="kicker">Evidencia · posición contrastante</div>
+  <h2>2026: «Los LLMs de frontera rivalizan con los planificadores»</h2>
+  <div class="cols c64 mid">
+    <div>
+      <svg class="diagram" viewBox="0 0 700 380" role="img" aria-label="Tareas resueltas de 360: Scorpion Maidu 234 en ambas versiones; DeepSeek-R1 157 y 93 ofuscado; GPT-5 205 y 152; Gemini 3.1 Pro 245 y 231">
+        <defs><style>.cl{font-size:19px;fill:#a3adc2}.cv{font-size:19px;font-weight:700}.cn{font-size:19px;fill:#e8ecf4;font-weight:600}</style></defs>
+        <line x1="60" y1="300" x2="690" y2="300" stroke="#2a3550" stroke-width="2"/>
+        <line x1="60" y1="300" x2="690" y2="300" stroke="#2a3550"/>
+        <!-- escala: 1 tarea = 1 px; base y=300 -->
+        <g><rect x="80" y="66" width="56" height="234" rx="4" fill="#4ade80"/><rect x="142" y="66" width="56" height="234" rx="4" fill="#4ade80" opacity=".55"/>
+          <text x="108" y="58" text-anchor="middle" class="cv" fill="#4ade80">234</text><text x="170" y="58" text-anchor="middle" class="cv" fill="#4ade80">234</text>
+          <text x="139" y="326" text-anchor="middle" class="cn">Scorpion Maidu</text><text x="139" y="348" text-anchor="middle" class="cl">planificador</text></g>
+        <g><rect x="240" y="143" width="56" height="157" rx="4" fill="#38bdf8"/><rect x="302" y="207" width="56" height="93" rx="4" fill="#f87171"/>
+          <text x="268" y="135" text-anchor="middle" class="cv" fill="#38bdf8">157</text><text x="330" y="199" text-anchor="middle" class="cv" fill="#f87171">93</text>
+          <text x="299" y="326" text-anchor="middle" class="cn">DeepSeek-R1</text></g>
+        <g><rect x="400" y="95" width="56" height="205" rx="4" fill="#38bdf8"/><rect x="462" y="148" width="56" height="152" rx="4" fill="#f87171"/>
+          <text x="428" y="87" text-anchor="middle" class="cv" fill="#38bdf8">205</text><text x="490" y="140" text-anchor="middle" class="cv" fill="#f87171">152</text>
+          <text x="459" y="326" text-anchor="middle" class="cn">GPT-5</text></g>
+        <g><rect x="560" y="55" width="56" height="245" rx="4" fill="#38bdf8"/><rect x="622" y="69" width="56" height="231" rx="4" fill="#f87171"/>
+          <text x="588" y="47" text-anchor="middle" class="cv" fill="#38bdf8">245</text><text x="650" y="61" text-anchor="middle" class="cv" fill="#f87171">231</text>
+          <text x="619" y="326" text-anchor="middle" class="cn">Gemini 3.1 Pro</text></g>
+        <rect x="80" y="362" width="18" height="18" rx="3" fill="#38bdf8"/><text x="106" y="377" class="cl">nombres originales</text>
+        <rect x="300" y="362" width="18" height="18" rx="3" fill="#f87171"/><text x="326" y="377" class="cl">nombres ofuscados</text>
+      </svg>
+      <p class="credit">Tareas resueltas de 360 (8 dominios de la IPC 2023). Redibujado de Corrêa, Pereira y Seipp (2026), Tablas 1 y 2, <a href="https://arxiv.org/abs/2511.09378">arXiv:2511.09378v2</a>.</p>
+    </div>
+    <ul style="font-size:24px">
+      <li>Un intento por tarea; cada plan se valida con VAL</li>
+      <li class="fragment">Gemini 3.1 Pro supera al mejor planificador: 245 frente a 234</li>
+      <li class="fragment">Con nombres ofuscados todos caen: GPT-5, −26 %</li>
+      <li class="fragment">Los autores: sin garantías, y con mucho más tiempo y energía</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Una posición que contrasta con la del club. Corrêa, Pereira y Seipp (aceptado en Communications of the ACM, 2026; preprint en arXiv) evaluaron modelos de frontera en 360 tareas nuevas de ocho dominios de la competencia de planificación de 2023 (Blocksworld, Rovers, Sokoban, Transport, entre otros), mucho más grandes que las de PlanBench. Cada modelo tuvo un solo intento por tarea y todo plan se validó con VAL.</p>
+    <p>Resultado: Gemini 3.1 Pro resolvió 245 tareas, frente a 234 del mejor planificador clásico (Scorpion Maidu); GPT-5, 205. Con nombres ofuscados todos bajan: Gemini 3.1 Pro a 231, GPT-5 a 152 (−25,9 %) y DeepSeek-R1 de 157 a 93; a los planificadores la ofuscación no los afecta. Los autores concluyen que la pregunta «¿pueden planificar los LLMs?» se está resolviendo.</p>
+    <p>Pero ellos mismos reconocen límites: la planificación con LLMs no garantiza planes válidos ni encontrar un plan cuando existe; consume órdenes de magnitud más tiempo y energía; el modelo reconoció algunos dominios a pesar de la ofuscación, lo que sugiere exposición previa; y la planificación óptima, temporal o numérica sigue abierta. Su propuesta final: combinar la flexibilidad de los LLMs con las garantías de los planificadores.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · CÓMO LEER LA EVIDENCIA ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Evidencia · lectura crítica</div>
+  <h2>Cómo leer esta evidencia</h2>
+  <div class="cols">
+    <div>
+      <div class="card ok" style="margin-bottom:12px"><h4 class="ok">Cambió</h4><p style="font-size:23px;margin:0">Los modelos recientes resuelven muchas más tareas, y algunos compiten con planificadores clásicos</p></div>
+      <div class="card bad fragment"><h4 class="bad">No cambió</h4><p style="font-size:23px;margin:0">No hay garantía de validez; caen con nombres ofuscados y con planes largos; cuestan mucho más; los estudios solo cuentan los planes que pasan VAL</p></div>
+    </div>
+    <figure class="figure fragment">
+      <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Gráfica de acierto según el número de iteraciones con un verificador externo: en Blocksworld difícil, o1-preview sube de cerca de 24 % a 98 %; también mejoran Sokoban, planificación de viajes y coloreo de grafos</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+      <figcaption class="credit">Con un verificador externo que devuelve los errores, o1-preview sube de 23,6 % a 98,2 % en Blocksworld difícil. Valmeekam et al. (2025), TMLR; figura de <a href="https://arxiv.org/abs/2410.02162">arXiv:2410.02162</a>. Derechos reservados; uso educativo.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Las dos posiciones no son del todo comparables: PlanBench usa problemas pequeños en lenguaje natural y modelos de 2024; Corrêa y colegas usan PDDL, problemas mucho más grandes y modelos de 2025 y 2026. Pero coinciden en lo esencial: los modelos dependen del significado de los nombres, no garantizan corrección, son mucho más costosos que un planificador y sus planes deben validarse. De hecho, ambos estudios cuentan como resueltas solo las tareas cuyo plan pasa VAL.</p>
+    <p>La gráfica muestra el camino que propone el club de lectura, ahora con un modelo de razonamiento: con un verificador externo que devuelve los errores (LLM-Modulo, o «LRM-Modulo»), o1-preview sube de 23,6 % a 98,2 % en los problemas difíciles de Blocksworld en 7 iteraciones, y todo plan entregado está garantizado como correcto. El estudio se publicó en TMLR en 2025; la figura es de la versión de arXiv.</p>
+    <p>La pregunta útil para una organización no es «¿planifica el LLM?», sino «¿qué verifica sus planes?».</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · LLM-MODULO EN MANTENIA ============================ -->
+<section data-min="2.5">
+  <div class="kicker violet">LLM-Modulo en MantenIA</div>
+  <h2>El LLM propone, el validador revisa, la crítica vuelve</h2>
+  <div class="cols lm">
+    <div>
+      <div class="stage">
+        <div class="panel first fragment fade-out" data-fragment-index="3">
+          <p class="panel-title">Plan propuesto por el LLM · versión 1</p>
+          <div class="rule"><span class="id">1</span>(desplazarse ana base bodega)</div>
+          <div class="rule"><span class="id">2</span>(retirar-repuesto ana sello bodega)</div>
+          <div class="rule"><span class="id">3</span>(desplazarse ana bodega planta-norte)</div>
+          <div class="rule fragment flag" data-fragment-index="1"><span class="id">4</span>(reparar ana bomba3 sello planta-norte)</div>
+          <div class="rule"><span class="id">5</span>(liberar ana bomba3 planta-norte)</div>
+        </div>
+        <div class="panel fragment" data-fragment-index="3">
+          <p class="panel-title">Plan corregido por el LLM · versión 2</p>
+          <div class="rule"><span class="id">1</span>(desplazarse ana base bodega)</div>
+          <div class="rule"><span class="id">2</span>(retirar-repuesto ana sello bodega)</div>
+          <div class="rule"><span class="id">3</span>(desplazarse ana bodega planta-norte)</div>
+          <div class="rule newstep"><span class="id">4</span>(bloquear ana bomba3 planta-norte)</div>
+          <div class="rule"><span class="id">5</span>(reparar ana bomba3 sello planta-norte)</div>
+          <div class="rule"><span class="id">6</span>(liberar ana bomba3 planta-norte)</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card bad msg fragment" data-fragment-index="1"><strong>Validador ✗</strong> «Preconditions [bloqueado(bomba3)] of 4-th action instance reparar(…) are not satisfied.»</div>
+      <div class="card amber msg fragment" data-fragment-index="2"><strong>Crítica devuelta al LLM:</strong> el paso 4 repara la bomba sin bloquearla; corrige el plan.</div>
+      <div class="card ok msg fragment" data-fragment-index="4"><strong>Validador ✓</strong> plan válido. La garantía la da el validador, no el LLM.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El marco LLM-Modulo del club, aplicado a nuestro caso. Este plan con error no es inventado: es el error típico de omitir una precondición, y el mensaje del validador es el que devuelve el validador de Unified Planning con el dominio de MantenIA (lo ejecutamos al preparar la clase).</p>
+    <p>Paso a paso: el LLM propone un plan de cinco pasos que parece razonable, pero repara la bomba sin bloquearla. El validador, un crítico duro, detecta que la precondición (bloqueado bomba3) no se cumple en el paso 4. Un metacontrolador convierte ese mensaje en una crítica para el LLM. El LLM propone una segunda versión que inserta el bloqueo. El validador la acepta.</p>
+    <p>La lección: aunque el LLM se equivoque, el sistema completo solo entrega planes que pasaron el validador. Eso es lo que medirán en el Laboratorio 2B: validez, número de iteraciones y costo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · CASO REAL 2025: PERSEVERANCE ============================ -->
+<section data-min="1.5">
+  <div class="kicker violet">Caso real · diciembre de 2025</div>
+  <h2>En Marte: la IA propone la ruta y un gemelo digital la verifica</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img class="nobg" src="assets/img/perseverance_ruta_ia.png" alt="Imagen orbital del borde del cráter Jezero con la ruta de Perseverance: en magenta, los puntos de paso planificados con IA; en naranja, la ruta que recorrió el rover" style="max-height:430px">
+      <figcaption class="credit">Ruta planificada con IA (magenta) y ruta recorrida (naranja). NASA/JPL-Caltech/UofA (HiRISE), dominio público, <a href="https://commons.wikimedia.org/wiki/File:Mapping_Perseverance%E2%80%99s_Route_With_AI_(PIA26645).png">Wikimedia Commons</a></figcaption>
+    </figure>
+    <ul style="font-size:25px">
+      <li>Modelos visión-lenguaje (Claude, de Anthropic) generaron los puntos de paso de dos recorridos de Perseverance: 210 m y 246 m</li>
+      <li class="fragment">Antes de enviar los comandos, JPL los probó en el «gemelo digital» del rover: más de 500 000 variables de telemetría</li>
+      <li class="fragment">El patrón del club de lectura, en una misión real: la IA genera; un verificador independiente certifica</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Un caso reciente que conecta todo el bloque. Según NASA y JPL (30 de enero de 2026), los días 8 y 10 de diciembre de 2025 el rover Perseverance hizo los primeros recorridos en otro mundo planificados por inteligencia artificial: 210 y 246 metros sobre el borde del cráter Jezero. La planificación de rutas normalmente la hacen a mano los planificadores humanos de la misión; aquí, modelos visión-lenguaje, los modelos Claude de Anthropic en colaboración con el centro de operaciones de JPL, analizaron las mismas imágenes y datos que usan los humanos y generaron los puntos de paso.</p>
+    <p>Lo importante para este curso es el paso siguiente: antes de enviar los comandos a Marte, el equipo los procesó en el «gemelo digital» de JPL, una réplica virtual del rover, y verificó más de 500 000 variables de telemetría para asegurar que eran compatibles con el software de vuelo. La IA propone; un verificador independiente certifica. Es LLM-Modulo fuera del laboratorio.</p>
+    <p>Lectura crítica: algunas publicaciones de divulgación dijeron que «la IA condujo sola». La fuente primaria describe otra cosa: un plan generado por IA y verificado en simulación antes de ejecutarse. Fuente: <a href="https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-completes-first-ai-planned-drive-on-mars/">NASA (2026)</a>.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · EL LLM COMO TRADUCTOR ============================ -->
+<section data-min="2">
+  <div class="kicker violet">El LLM como traductor</div>
+  <h2>De la orden escrita al problema PDDL</h2>
+  <figure class="figure" style="margin-bottom:12px">
+    <img src="assets/img/tantakoun2025_planificador_formalizador.png" alt="Dos arquitecturas: (a) el LLM como planificador genera directamente la secuencia de acciones; (b) el LLM como formalizador genera la especificación formal y un planificador clásico produce el plan" style="max-height:240px">
+    <figcaption class="credit">(a) El LLM planifica; (b) el LLM formaliza y un planificador clásico resuelve. Tantakoun, Muise y Zhu (2025), Findings of ACL, Fig. 1, <a href="https://aclanthology.org/2025.findings-acl.1291/">ACL Anthology</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></figcaption>
+  </figure>
+  <div class="cols tr">
+    <div class="card" style="padding:12px 16px"><p class="panel-title" style="margin-bottom:6px">Orden de trabajo</p><p style="font-size:22px;margin:0">«La bomba 3 de la Planta Norte tiene fuga en el sello. Ana está certificada. Hay un sello en la bodega. Debe quedar en servicio.»</p></div>
+    <pre class="code fragment" style="font-size:22px">(<span class="kw">:init</span> (<span class="pr">averiado</span> <span class="ob">bomba3</span>)
+       (<span class="pr">certificado</span> <span class="ob">ana bomba3</span>)
+       (<span class="pr">almacenado</span> <span class="ob">sello bodega</span>) …)
+(<span class="kw">:goal</span> (<span class="pr">en-servicio</span> <span class="ob">bomba3</span>))</pre>
+  </div>
+  <aside class="notes">
+    <p>La encuesta de Tantakoun, Muise y Zhu (Findings of ACL 2025) revisa unos 80 trabajos que usan al LLM no como planificador sino como formalizador: el LLM traduce la descripción en lenguaje natural a una especificación formal (el problema, el dominio o ambos) y un planificador clásico calcula el plan. Así se aprovecha lo que el LLM hace bien, entender lenguaje, y lo que el planificador hace bien, buscar con garantías.</p>
+    <p>En MantenIA: el LLM lee la orden de trabajo y produce el estado inicial y la meta en PDDL; Fast Downward hace el resto. Es la segunda estrategia que compararán en el Laboratorio 2B.</p>
+    <p>La misma encuesta advierte el riesgo: los LLMs corrigen bien los errores de sintaxis, pero los errores de significado siguen siendo un reto, y pueden producir PDDL válido que no dice lo que el usuario quería. Lo vemos en la siguiente diapositiva.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · MODELO MAL TRADUCIDO ============================ -->
+<section data-min="1.5">
+  <div class="kicker violet">El LLM como traductor</div>
+  <h2>Un planificador correcto sobre un modelo equivocado</h2>
+  <div class="cols tr">
+    <div>
+      <p class="panel-title">El LLM tradujo «reparar» y omitió una línea</p>
+      <pre class="code"><span class="kw">:precondition</span>
+  (and (<span class="pr">en</span> <span class="vr">?t ?l</span>) (<span class="pr">ubicado</span> <span class="vr">?e ?l</span>)
+       <span class="hl"><span class="cm">; falta (bloqueado ?e)</span></span>
+       (<span class="pr">averiado</span> <span class="vr">?e</span>) (<span class="pr">lleva</span> <span class="vr">?t ?r</span>)
+       …)</pre>
+    </div>
+    <div>
+      <p class="panel-title fragment" data-fragment-index="1">Fast Downward propone</p>
+      <div class="fragment" data-fragment-index="1">
+        <div class="rule" style="font-size:21px"><span class="id">4</span>(reparar ana bomba3 sello planta-norte)</div>
+        <div class="rule" style="font-size:21px"><span class="id">5</span>(bloquear ana bomba3 planta-norte)</div>
+      </div>
+      <p class="fragment ok" data-fragment-index="2" style="font-size:24px;margin:10px 0 4px">✓ válido para el modelo traducido</p>
+      <p class="fragment bad" data-fragment-index="3" style="font-size:24px;margin:0">✗ inválido para el modelo correcto: repara la bomba encendida</p>
+    </div>
+  </div>
+  <p class="fragment" data-fragment-index="4" style="font-size:26px;margin-top:18px">El validador verifica contra el modelo: si el modelo está mal, <em>verifica lo incorrecto</em>. El modelo traducido también se revisa.</p>
+  <aside class="notes">
+    <p>Este resultado también lo comprobamos con el planificador. Si a la acción reparar le falta la precondición de bloqueo, como si el LLM la hubiera omitido al traducir el procedimiento, Fast Downward encuentra un plan que repara la bomba encendida y la bloquea después, solo porque liberar exige el bloqueo. Contra el modelo mal traducido, el validador lo acepta; contra el modelo correcto, falla en el paso 4.</p>
+    <p>Es la advertencia más importante del bloque: un planificador y un validador perfectos no protegen de un modelo equivocado. Cuando el LLM traduce, alguien con conocimiento del dominio debe revisar el modelo, o probarlo contra casos conocidos, antes de confiar en los planes. Los archivos están en ejemplo_pddl.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · SÍNTESIS ============================ -->
+<section data-min="1">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de este bloque</h2>
+  <div class="flow4">
+    <div class="card"><h4>Evidencia</h4><p class="small">mejoran, pero no garantizan planes válidos</p></div>
+    <div class="card violet"><h4 class="violet">Generar y verificar</h4><p class="small">el LLM propone; el validador certifica</p></div>
+    <div class="card accent"><h4>Traducir</h4><p class="small">útil, pero el modelo también se revisa</p></div>
+    <div class="card ok"><h4>Garantía</h4><p class="small">viene del verificador y del modelo, no del LLM</p></div>
+  </div>
+  <aside class="notes">
+    <p>Recapitular antes del trabajo independiente y del laboratorio. Volver a las predicciones del club: ¿qué cambió y qué no?</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · TRABAJO INDEPENDIENTE 2 ============================ -->
+<section data-min="1">
+  <div class="kicker amber">Trabajo independiente 2</div>
+  <h2>Ponga a prueba a un LLM como planificador</h2>
+  <div class="ti-grid">
+    <div>
+      <ol class="small" style="font-size:25px">
+        <li>Pida a un LLM un plan para su problema del TI-1</li>
+        <li>Verifíquelo a mano, paso a paso, contra las precondiciones</li>
+        <li>Cambie los nombres por palabras sin sentido y repita</li>
+        <li>¿Qué verificador pondría a su lado?</li>
+      </ol>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Tiempo</span>65 min</div>
+      <div><span class="label">Entregable</span>PDF de 1–2 páginas</div>
+      <div><span class="label">Entrega</span>inicio de la semana 2</div>
+      <div><span class="label">Apoyo</span>enunciado en <code>trabajo_independiente.md</code></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El paso 3 replica a pequeña escala el experimento de Mystery Blocksworld: misma estructura, nombres sin sentido. Insistir en que lo valioso es el método de verificación, no la nota que saque el LLM.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · ANUNCIO DEL LAB 2B ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 35 min</div>
+  <h1>Laboratorio 2B<br><span class="accent">LLM-Modulo en práctica</span></h1>
+  <p class="lead muted">Sobre las instancias del Laboratorio 2A se comparan tres estrategias: el LLM planifica directamente; el LLM traduce a PDDL y resuelve el planificador; y un ciclo generar-verificar en el que el validador devuelve los errores al LLM. Se miden validez, iteraciones y costo.</p>
+  <p class="muted" style="font-size:24px">Notebook autocontenido en VS Code: toda la explicación está dentro del ejercicio.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="bloque3_plan_md.html">Bloque 3 →</a></p>
+  <aside class="notes">
+    <p>Dar paso al laboratorio (35 min). Después viene la pausa de 15 minutos y el Bloque 3, sobre el plan.md.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del bloque 2</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-compact">
+    <ol class="refs">
+      <li>Valmeekam, K., Marquez, M., Olmo, A., Sreedharan, S. y Kambhampati, S. (2023). PlanBench: An extensible benchmark for evaluating large language models on planning and reasoning about change. <em>NeurIPS 2023, Datasets and Benchmarks</em>, 38975–38987. <a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/7a92bcdede88c7afd108072faf5485c8-Abstract-Datasets_and_Benchmarks.html">NeurIPS</a> · <a href="https://arxiv.org/abs/2206.10498">arXiv</a></li>
+      <li>Valmeekam, K., Stechly, K. y Kambhampati, S. (2024). LLMs still can't plan; can LRMs? A preliminary evaluation of OpenAI's o1 on PlanBench. <a href="https://arxiv.org/abs/2409.13373">arXiv:2409.13373</a></li>
+      <li>Valmeekam, K., Stechly, K., Gundawar, A. y Kambhampati, S. (2025). A systematic evaluation of the planning and scheduling abilities of the reasoning model o1. <em>Transactions on Machine Learning Research</em>. <a href="https://openreview.net/forum?id=FkKBxp0FhR">OpenReview</a> · <a href="https://arxiv.org/abs/2410.02162">arXiv:2410.02162</a></li>
+      <li>Corrêa, A. B., Pereira, A. G. y Seipp, J. (2026). Frontier large language models are becoming competitive with state-of-the-art planners. <em>Communications of the ACM</em>, en prensa. <a href="https://mrlab.ai/papers/correa-et-al-cacm2026.html">Ficha de los autores</a> · <a href="https://arxiv.org/abs/2511.09378">arXiv:2511.09378</a></li>
+      <li>Tantakoun, M., Muise, C. y Zhu, X. (2025). LLMs as planning formalizers: A survey for leveraging large language models to construct automated planning models. <em>Findings of ACL 2025</em>, 25167–25188. <a href="https://aclanthology.org/2025.findings-acl.1291/">ACL Anthology</a></li>
+      <li>Kambhampati, S. et al. (2024). Position: LLMs can't plan, but can help planning in LLM-Modulo frameworks. <em>ICML 2024</em>. <a href="https://proceedings.mlr.press/v235/kambhampati24a.html">PMLR</a></li>
+      <li>Howey, R., Long, D. y Fox, M. (2004). VAL: Automatic plan validation, continuous effects and mixed initiative planning using PDDL. <em>ICTAI 2004</em>, 294–301. <a href="https://strathprints.strath.ac.uk/2550/6/strathprints002550.pdf">Manuscrito</a></li>
+      <li>NASA (2026, 30 de enero). NASA's Perseverance rover completes first AI-planned drive on Mars. <a href="https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-perseverance-rover-completes-first-ai-planned-drive-on-mars/">Nota oficial</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="bloque1_planificacion_clasica.html">← Bloque 1</a><a href="index.html">Volver a la agenda</a><a href="bloque3_plan_md.html">Bloque 3 →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 2 · Bloque 2 · LLMs y planificación</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 3 · Sistemas multiagente — Sesión 1 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 1 · Unidad 1 · Bloque 3 de 3</div>
+  <h1>Sistemas multiagente</h1>
+  <p class="lead muted">Cuando la inteligencia está distribuida</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="bloque2_agentes.html">← Bloque 2</a><a href="index.html">Agenda</a><a href="cierre_sesion.html">Cierre →</a></p>
+  <aside class="notes">
+    <p>Continuación directa del Bloque 2. Ruta: qué es un sistema multiagente y cómo se organiza; cómo se comunican los agentes y el protocolo Contract Net; teoría de juegos y mecanismos para entender cuándo cooperan agentes con intereses propios; y un panorama de cómo reaparecen estos problemas en los sistemas con LLMs.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · MANTENIA CRECE ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>MantenIA crece</h2>
+  <div class="card amber" style="margin-bottom:20px"><p>40 técnicos, 200 órdenes al día, tres ciudades. Algunos técnicos son contratistas con su propia agenda.</p></div>
+  <div class="cols">
+    <div class="card fragment"><h4>Despachador central</h4><p class="ok" style="margin-bottom:6px">+ visión global; óptimo en teoría</p><p class="bad">− cuello de botella, punto único de falla, necesita toda la información</p></div>
+    <div class="card fragment"><h4>Negociación entre agentes</h4><p class="ok" style="margin-bottom:6px">+ escala, robustez, respeta la información privada</p><p class="bad">− sin garantía de óptimo global; más comunicación</p></div>
+  </div>
+  <aside class="notes">
+    <p>El problema del Bloque 2 cambia de escala. Con contratistas externos aparece algo nuevo: agentes con intereses propios que no comparten toda su información.</p>
+    <p>La elección entre centralizar y distribuir es una decisión de diseño organizacional tanto como técnica. Las empresas la enfrentan cada vez que deciden entre planificación central y mercados internos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · QUÉ ES UN SMA ============================ -->
+<section data-min="2">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker">Sistemas multiagente</div>
+      <h2>¿Qué es un sistema multiagente?</h2>
+      <p>Varios agentes autónomos que interactúan en un entorno compartido. Sus rasgos:</p>
+      <ul>
+        <li class="fragment">Cada agente tiene información o capacidades incompletas</li>
+        <li class="fragment">No hay un control global</li>
+        <li class="fragment">Los datos están descentralizados y el cómputo es asíncrono</li>
+      </ul>
+      <p class="muted small">Jennings, Sycara y Wooldridge (1998)</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/robocup_2013.jpg" alt="Robots futbolistas durante la competencia RoboCup 2013" style="max-height:400px">
+      <figcaption class="credit">RoboCup 2013, Eindhoven: el fútbol de robots es un banco de pruebas clásico de los SMA. Foto: Albert van Breemen, <a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Soccer_Playing_Robots_During_RoboCup_2013.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Las cuatro características de Jennings, Sycara y Wooldridge (1998) son la definición operativa de un SMA: nadie lo sabe todo, nadie lo controla todo, la información está repartida y cada agente actúa a su propio ritmo.</p>
+    <p>El fútbol de robots ilustra los retos: cada robot ve solo parte de la cancha, debe decidir rápido y coordinarse sin un director central, frente a un equipo adversario.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · ORGANIZACIÓN SOCIAL ============================ -->
+<section data-min="2">
+  <div class="kicker">Sistemas multiagente</div>
+  <h2>Organización social: cómo se estructuran los agentes</h2>
+  <svg class="diagram" viewBox="0 0 1180 270" role="img" aria-label="Tres paradigmas de organización multiagente">
+    <defs><style>.on{stroke-width:2.5}.ol{stroke:#a3adc2;stroke-width:2.5}.ot{font-size:25px;font-weight:700;fill:#e8ecf4}.os{font-size:20px;fill:#a3adc2}</style></defs>
+    <!-- Jerarquía -->
+    <line class="ol" x1="200" y1="40" x2="130" y2="110"/><line class="ol" x1="200" y1="40" x2="270" y2="110"/>
+    <line class="ol" x1="130" y1="110" x2="95" y2="180"/><line class="ol" x1="130" y1="110" x2="165" y2="180"/>
+    <line class="ol" x1="270" y1="110" x2="235" y2="180"/><line class="ol" x1="270" y1="110" x2="305" y2="180"/>
+    <circle class="on" cx="200" cy="40" r="20" fill="#38bdf8" stroke="#0a0e17"/>
+    <circle class="on" cx="130" cy="110" r="18" fill="#0f2a3a" stroke="#38bdf8"/><circle class="on" cx="270" cy="110" r="18" fill="#0f2a3a" stroke="#38bdf8"/>
+    <circle class="on" cx="95" cy="180" r="15" fill="#172033" stroke="#a3adc2"/><circle class="on" cx="165" cy="180" r="15" fill="#172033" stroke="#a3adc2"/>
+    <circle class="on" cx="235" cy="180" r="15" fill="#172033" stroke="#a3adc2"/><circle class="on" cx="305" cy="180" r="15" fill="#172033" stroke="#a3adc2"/>
+    <text x="200" y="232" text-anchor="middle" class="ot">Jerarquía</text><text x="200" y="260" text-anchor="middle" class="os">supervisores</text>
+    <!-- Equipo -->
+    <g class="fragment">
+      <line class="ol" x1="520" y1="60" x2="660" y2="60"/><line class="ol" x1="520" y1="60" x2="520" y2="170"/><line class="ol" x1="520" y1="60" x2="660" y2="170"/>
+      <line class="ol" x1="660" y1="60" x2="520" y2="170"/><line class="ol" x1="660" y1="60" x2="660" y2="170"/><line class="ol" x1="520" y1="170" x2="660" y2="170"/>
+      <circle class="on" cx="520" cy="60" r="18" fill="#2a2210" stroke="#f5b942"/><circle class="on" cx="660" cy="60" r="18" fill="#2a2210" stroke="#f5b942"/>
+      <circle class="on" cx="520" cy="170" r="18" fill="#2a2210" stroke="#f5b942"/><circle class="on" cx="660" cy="170" r="18" fill="#2a2210" stroke="#f5b942"/>
+      <text x="590" y="232" text-anchor="middle" class="ot">Equipo</text><text x="590" y="260" text-anchor="middle" class="os">cuadrillas</text>
+    </g>
+    <!-- Mercado -->
+    <g class="fragment">
+      <line class="ol" x1="990" y1="110" x2="880" y2="45"/><line class="ol" x1="990" y1="110" x2="1100" y2="45"/>
+      <line class="ol" x1="990" y1="110" x2="880" y2="175"/><line class="ol" x1="990" y1="110" x2="1100" y2="175"/><line class="ol" x1="990" y1="110" x2="990" y2="30"/>
+      <rect x="935" y="88" width="110" height="44" rx="10" fill="#10261a" stroke="#4ade80" stroke-width="2.5"/><text x="990" y="117" text-anchor="middle" font-size="19" font-weight="700" fill="#e8ecf4">mercado</text>
+      <circle class="on" cx="880" cy="45" r="15" fill="#172033" stroke="#a3adc2"/><circle class="on" cx="1100" cy="45" r="15" fill="#172033" stroke="#a3adc2"/>
+      <circle class="on" cx="880" cy="175" r="15" fill="#172033" stroke="#a3adc2"/><circle class="on" cx="1100" cy="175" r="15" fill="#172033" stroke="#a3adc2"/><circle class="on" cx="990" cy="30" r="15" fill="#172033" stroke="#a3adc2"/>
+      <text x="990" y="232" text-anchor="middle" class="ot">Mercado</text><text x="990" y="260" text-anchor="middle" class="os">contratistas</text>
+    </g>
+  </svg>
+  <p class="fragment" style="margin-top:12px">Otros paradigmas: holarquías, coaliciones, federaciones y sociedades. En todos importan los <em>roles</em> y las <em>normas</em>. <span class="muted small">Horling y Lesser (2004)</span></p>
+  <aside class="notes">
+    <p>Horling y Lesser (2004) revisan una decena de paradigmas organizacionales para SMA. Los tres del diagrama cubren el caso MantenIA: supervisores en jerarquía, cuadrillas como equipos y contratistas coordinados por un mercado.</p>
+    <p>Para un público de administración, la conexión es directa: son las mismas estructuras de la teoría organizacional, con los mismos compromisos entre control, flexibilidad y costo de coordinación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · COOPERACIÓN Y COORDINACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Sistemas multiagente</div>
+  <h2>Cooperación, competencia, coordinación y control</h2>
+  <div class="cols">
+    <div class="card"><h4>Cooperación</h4><p>Metas comunes: las cuadrillas de una misma planta</p></div>
+    <div class="card fragment"><h4>Competencia</h4><p>Metas en conflicto: contratistas que compiten por órdenes</p></div>
+    <div class="card accent fragment"><h4>Coordinación</h4><p>«Gestionar las dependencias entre actividades»: dos técnicos necesitan la misma grúa <span class="muted small">(Malone y Crowston, 1994)</span></p></div>
+    <div class="card fragment"><h4>Control</h4><p>Centralizado, jerárquico o distribuido</p></div>
+  </div>
+  <aside class="notes">
+    <p>Cooperar y competir son dos extremos de la relación entre metas. La coordinación es necesaria en ambos casos: hasta los competidores deben coordinarse para no chocar.</p>
+    <p>La definición de Malone y Crowston (1994) es la más útil para gestión: coordinar es gestionar dependencias entre actividades, como recursos compartidos, secuencias del tipo productor–consumidor o tareas que deben ocurrir a la vez.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · COMUNICACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Comunicación</div>
+  <h2>Comunicar es actuar</h2>
+  <div class="cols c46">
+    <ul>
+      <li>Actos de habla: informar, solicitar, prometer, aceptar <span class="muted small">(Austin, 1962; Searle, 1969)</span></li>
+      <li class="fragment" data-fragment-index="1">Lenguajes de comunicación entre agentes: KQML y FIPA-ACL</li>
+      <li class="fragment" data-fragment-index="2">La <em>performativa</em> dice qué tipo de acto es; el contenido, sobre qué</li>
+    </ul>
+    <div class="acl fragment" data-fragment-index="1">(<span class="p">cfp</span><br>&nbsp;<span class="k">:sender</span> despachador<br>&nbsp;<span class="k">:receiver</span> técnicos-zona-norte<br>&nbsp;<span class="k">:content</span> "orden 512: cambiar rodamiento,<br>&nbsp;&nbsp;Planta Norte, antes de las 14:00"<br>&nbsp;<span class="k">:protocol</span> fipa-contract-net<br>&nbsp;<span class="k">:reply-by</span> 10:30)</div>
+  </div>
+  <aside class="notes">
+    <p>Desde la filosofía del lenguaje (Austin, Searle) se sabe que muchas frases son acciones: "prometo", "solicito", "acepto". Los lenguajes de comunicación entre agentes toman esa idea: cada mensaje declara qué tipo de acto realiza, la performativa, separado de su contenido.</p>
+    <p>KQML surgió en un proyecto de DARPA a comienzos de los noventa; FIPA-ACL es el estándar de la Foundation for Intelligent Physical Agents. El mensaje del ejemplo es una convocatoria (cfp, call for proposals), el primer paso del Contract Net.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · CONTRACT NET ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Protocolos de interacción</div>
+  <h2>Contract Net: contratar tareas entre agentes</h2>
+  <div class="cols">
+    <div class="card amber"><h4>Gestor</h4><p>Anuncia la tarea, evalúa las ofertas y adjudica</p></div>
+    <div class="card accent"><h4>Contratistas</h4><p>Evalúan si pueden hacerla y a qué costo, y ofertan</p></div>
+  </div>
+  <ul style="margin-top:22px">
+    <li>Propuesto por Smith (1980) como una licitación: anuncio de la tarea, ofertas y adjudicación</li>
+    <li class="fragment">Cualquier agente puede ser gestor de una tarea y contratista de otra</li>
+    <li class="fragment">FIPA lo estandarizó como protocolo de interacción</li>
+  </ul>
+  <aside class="notes">
+    <p>Reid Smith propuso el Contract Net en 1980 para la resolución distribuida de problemas. La metáfora es la de una licitación: quien tiene una tarea la anuncia, quienes pueden hacerla ofertan y se adjudica a la mejor oferta.</p>
+    <p>Su elegancia está en que los roles son dinámicos: "ningún nodo se designa a priori como gestor o contratista", y un contratista que gana una tarea grande puede convertirse en gestor y subcontratar partes de ella.</p>
+    <p>Detalle para el posgrado: en el protocolo original de Smith no se avisaba a los perdedores, para ahorrar mensajes. La especificación de FIPA (2002) añadió los actos de rechazo y de confirmación, por eso en el diagrama siguiente aparecen reject-proposal e inform.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · CONTRACT NET PASO A PASO ============================ -->
+<section data-min="3.5">
+  <div class="kicker">Protocolos de interacción</div>
+  <h2>Contract Net paso a paso</h2>
+  <svg class="diagram" viewBox="0 0 1180 480" role="img" aria-label="Diagrama de secuencia del protocolo Contract Net">
+    <defs>
+      <marker id="cnw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e8ecf4"/></marker>
+      <marker id="cng" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/></marker>
+      <marker id="cnr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f87171"/></marker>
+      <marker id="cna" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker>
+      <marker id="cnc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+      <style>.hd{font-size:23px;font-weight:700;fill:#e8ecf4}.lf{stroke:#2a3550;stroke-width:2.5;stroke-dasharray:6 6}.ml{font-size:21px;font-weight:600}</style>
+    </defs>
+    <rect x="30" y="8" width="260" height="46" rx="10" fill="#2a2210" stroke="#f5b942" stroke-width="2.5"/><text x="160" y="39" text-anchor="middle" class="hd">Gestor (despachador)</text>
+    <rect x="430" y="8" width="140" height="46" rx="10" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/><text x="500" y="39" text-anchor="middle" class="hd">Ana</text>
+    <rect x="690" y="8" width="140" height="46" rx="10" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/><text x="760" y="39" text-anchor="middle" class="hd">Luis</text>
+    <rect x="950" y="8" width="140" height="46" rx="10" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/><text x="1020" y="39" text-anchor="middle" class="hd">Marta</text>
+    <line class="lf" x1="160" y1="54" x2="160" y2="470"/><line class="lf" x1="500" y1="54" x2="500" y2="470"/><line class="lf" x1="760" y1="54" x2="760" y2="470"/><line class="lf" x1="1020" y1="54" x2="1020" y2="470"/>
+    <g class="fragment" data-fragment-index="1">
+      <path class="msg-line" d="M160,110 L1016,110" stroke="#e8ecf4" stroke-width="3" marker-end="url(#cnw)"/>
+      <polygon points="490,103 502,110 490,117" fill="#e8ecf4"/><polygon points="750,103 762,110 750,117" fill="#e8ecf4"/>
+      <text x="330" y="96" text-anchor="middle" class="ml" fill="#e8ecf4">1 · cfp: orden 512, Planta Norte</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <path class="msg-line" d="M500,170 L164,170" stroke="#4ade80" stroke-width="3" marker-end="url(#cng)"/><text x="330" y="158" text-anchor="middle" class="ml" fill="#4ade80">2 · propose: llega en 40 min</text>
+      <path class="msg-line" d="M760,225 L164,225" stroke="#f87171" stroke-width="3" marker-end="url(#cnr)"/><text x="740" y="213" text-anchor="end" class="ml" fill="#f87171">refuse: sin certificación</text>
+      <path class="msg-line" d="M1020,280 L164,280" stroke="#f5b942" stroke-width="3" marker-end="url(#cna)"/><text x="1000" y="268" text-anchor="end" class="ml" fill="#f5b942">propose: llega en 75 min</text>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <path class="msg-line" d="M160,340 L496,340" stroke="#4ade80" stroke-width="3.5" marker-end="url(#cng)"/><text x="330" y="328" text-anchor="middle" class="ml" fill="#4ade80">3 · accept-proposal</text>
+      <path d="M160,390 L1016,390" stroke="#f87171" stroke-width="3" stroke-dasharray="10 7" marker-end="url(#cnr)"/><text x="760" y="378" text-anchor="middle" class="ml" fill="#f87171">reject-proposal</text>
+    </g>
+    <g class="fragment" data-fragment-index="4">
+      <path class="msg-line" d="M500,445 L164,445" stroke="#38bdf8" stroke-width="3" marker-end="url(#cnc)"/><text x="330" y="433" text-anchor="middle" class="ml" fill="#38bdf8">4 · inform: orden completada</text>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>Paso 1: el gestor envía una convocatoria (cfp) a los técnicos de la zona con la descripción de la tarea y un plazo para responder.</p>
+    <p>Paso 2: cada técnico evalúa localmente, con información que solo él tiene: dónde está, qué certificaciones tiene, cuánto trabajo le queda. Ana y Marta proponen; Luis rechaza.</p>
+    <p>Paso 3: el gestor adjudica a la mejor oferta (accept-proposal) y rechaza las demás (reject-proposal). Paso 4: al terminar, la contratista informa el resultado. Los nombres de los mensajes son los actos comunicativos del protocolo de FIPA.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · CONTRACT NET EN MANTENIA ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>Contract Net en MantenIA: criterios, ventajas y límites</h2>
+  <div class="cols-3">
+    <div class="card"><h4>Criterios</h4><ul><li>Tiempo de llegada</li><li>Costo</li><li>Certificación</li><li>Carga actual</li></ul></div>
+    <div class="card ok fragment"><h4>Ventajas</h4><ul><li>Descentralizado</li><li>Usa la información local</li><li>Robusto ante fallas</li><li>Escala bien</li></ul></div>
+    <div class="card bad fragment"><h4>Límites</h4><ul><li>Muchos mensajes</li><li>Ofertas estratégicas: ¿y si alguien miente?</li><li>Tareas interdependientes</li><li>Sin óptimo global garantizado</li></ul></div>
+  </div>
+  <p class="fragment" style="margin-top:18px">Frente al despachador central: más robustez y escala, a cambio de no garantizar el óptimo global.</p>
+  <aside class="notes">
+    <p>Los criterios de adjudicación los decide la organización; aquí vuelve la lección del Bloque 2 sobre la medida de desempeño.</p>
+    <p>El límite más interesante es el estratégico: si un técnico gana más cuantas más órdenes recibe, tiene incentivos para declarar tiempos de llegada optimistas. El protocolo no lo impide. Para eso existe la teoría de juegos y el diseño de mecanismos, que vemos a continuación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · DILEMA DEL PRISIONERO ============================ -->
+<section data-min="2">
+  <div class="kicker">Teoría de juegos</div>
+  <h2>El dilema del prisionero</h2>
+  <p>Dos empresas de mantenimiento pueden <em>compartir</em> sus datos de fallas de una misma marca de equipos, o <em>guardarlos</em>.</p>
+  <div class="cols c64 mid">
+    <table class="payoff">
+      <tr><th>A \ B</th><th>Comparte</th><th>Guarda</th></tr>
+      <tr><td>Comparte</td><td class="best">3 , 3</td><td>0 , 5</td></tr>
+      <tr><td>Guarda</td><td>5 , 0</td><td class="eq fragment highlight-current-red" data-fragment-index="1">1 , 1</td></tr>
+    </table>
+    <div>
+      <p class="fragment" data-fragment-index="1">Guardar es la mejor respuesta haga lo que haga el otro → <strong>equilibrio de Nash</strong> en (1, 1)</p>
+      <p class="fragment amber" data-fragment-index="2">Ambos estarían mejor compartiendo (3, 3): la racionalidad individual no garantiza la colectiva.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Los números son utilidades: más es mejor. Si B comparte, a A le conviene guardar (5 &gt; 3); si B guarda, a A también (1 &gt; 0). Lo mismo para B. Ambos guardan y obtienen 1, aunque cooperando obtendrían 3.</p>
+    <p>El equilibrio de Nash es un perfil de estrategias en el que nadie gana cambiando solo su decisión. El dilema muestra por qué agentes racionales con intereses propios pueden producir malos resultados colectivos, en empresas, en mercados y en sistemas multiagente.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · JUEGOS REPETIDOS ============================ -->
+<section data-min="2">
+  <div class="kicker">Teoría de juegos</div>
+  <h2>Cuando el juego se repite</h2>
+  <ul>
+    <li>Axelrod organizó torneos del dilema repetido entre estrategias propuestas por expertos (1980)</li>
+    <li class="fragment">Ganó <strong>tit-for-tat</strong> (Anatol Rapoport): coopera primero y luego imita la jugada anterior del otro</li>
+    <li class="fragment">Es amable, castiga la traición, perdona y es fácil de entender</li>
+  </ul>
+  <div class="card violet fragment" style="margin-top:16px"><h4>¿Y los LLMs?</h4><p>Juegan bien cuando conviene el propio interés, pero coordinan peor; GPT-4 no perdonaba una traición <span class="muted small">(Akata et al., 2025)</span></p></div>
+  <aside class="notes">
+    <p>En un solo encuentro, la traición domina. Si el encuentro se repite y el futuro importa, la cooperación puede sostenerse. Los torneos de Robert Axelrod, publicados en 1980 y reunidos en <em>The Evolution of Cooperation</em> (1984), mostraron que una estrategia simple y recíproca superaba a otras mucho más sofisticadas.</p>
+    <p>Matiz: estudios posteriores muestran que la eficacia de tit-for-tat depende del diseño del torneo (Rapoport, Seale y Colman, 2015), así que no es una estrategia universalmente óptima.</p>
+    <p>Akata y colegas (Nature Human Behaviour, 2025) pusieron a LLMs a jugar juegos repetidos de diez rondas: les fue bien en juegos de interés propio como el dilema del prisionero, peor en juegos de coordinación como la batalla de los sexos, y GPT-4 nunca volvía a cooperar después de una sola traición. Pedirle que primero prediga la jugada del otro ("social chain-of-thought") mejoró su coordinación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · SUBASTAS Y VOTACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Diseño de mecanismos</div>
+  <h2>Subastas y votación: reglas para decidir entre muchos</h2>
+  <div class="cols">
+    <div class="card"><h4>Subastas</h4><p>Inglesa, holandesa, de sobre cerrado.</p><p class="fragment" data-fragment-index="1">En la de <strong>segundo precio</strong> (Vickrey, 1961), ofertar el valor verdadero es la mejor estrategia.</p></div>
+    <div class="card"><h4>Votación</h4><p>Mayoría, Borda.</p><p class="fragment" data-fragment-index="2">Las preferencias colectivas pueden ser cíclicas (Condorcet), y ninguna regla cumple a la vez todos los criterios de equidad (Arrow, 1951).</p></div>
+  </div>
+  <p class="fragment amber" data-fragment-index="3" style="margin-top:20px">Diseño de mecanismos: fijar las reglas del juego para que el interés individual produzca buenos resultados colectivos.</p>
+  <aside class="notes">
+    <p>Si en Contract Net los técnicos pueden mentir sobre sus costos, una subasta de segundo precio cambia los incentivos: gana quien oferta el menor costo, pero cobra el segundo menor. Vickrey (1961) mostró que, sin colusión, la estrategia óptima es ofertar el valor verdadero; la literatura posterior la llama estrategia dominante. Matiz: sus aplicaciones prácticas son escasas, porque en la realidad aparecen colusión y otros problemas (Ausubel y Milgrom).</p>
+    <p>La votación agrega preferencias cuando hay que decidir en conjunto, por ejemplo qué inversión priorizar. El teorema de imposibilidad de Arrow (1951) muestra que, con tres o más opciones, ninguna regla satisface a la vez todos los criterios razonables de equidad. Elegir la regla es una decisión de diseño con consecuencias.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · METODOLOGÍAS ============================ -->
+<section data-min="2">
+  <div class="kicker">Ingeniería de SMA</div>
+  <h2>Metodologías de diseño: GAIA y MAS-CommonKADS</h2>
+  <div class="cols">
+    <div class="card"><h4>GAIA</h4><p>Análisis por <em>roles</em> (responsabilidades, permisos, protocolos) e interacciones; luego diseño de agentes y servicios.</p><p class="muted small">Wooldridge, Jennings y Kinny (2000)</p></div>
+    <div class="card fragment"><h4>MAS-CommonKADS</h4><p>Extiende la ingeniería del conocimiento con modelos de agente, tarea, experiencia, coordinación, comunicación, organización y diseño.</p><p class="muted small">Iglesias et al. (1998)</p></div>
+  </div>
+  <p class="fragment" style="margin-top:20px">Su legado sigue vigente: <em>pensar en roles, interacciones y organización</em>, también al diseñar sistemas con agentes LLM.</p>
+  <aside class="notes">
+    <p>Estas metodologías, de finales de los noventa, trataron de hacer del diseño de SMA una disciplina de ingeniería. GAIA ve el sistema como una organización de roles; MAS-CommonKADS, desarrollada en España, extiende CommonKADS, la metodología europea de ingeniería del conocimiento, con modelos para la coordinación y la comunicación.</p>
+    <p>Hoy se usan poco tal cual, pero sus preguntas son las correctas: qué roles hay, qué puede hacer cada uno, qué protocolos siguen y cómo se organiza el conjunto. Son las mismas preguntas que hay que responder antes de asignar roles a varios agentes LLM.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · SMA CON LLMs ============================ -->
+<section data-min="2">
+  <div class="kicker violet">Panorama 2024–2026</div>
+  <h2>SMA con LLMs: nuevas tecnologías, viejos problemas</h2>
+  <p class="small muted" style="margin:-4px 0 12px"><strong>SMA:</strong> sistema multiagente, es decir, varios agentes autónomos que interactúan en un entorno compartido, cada uno con sus propias metas e información.</p>
+  <ul>
+    <li>Agentes = LLMs con roles y herramientas que conversan en lenguaje natural</li>
+    <li class="fragment">Beneficio con costo: +90 % frente a un solo agente en tareas de investigación, con unas 15 veces más tokens que un chat <span class="muted small">(Anthropic, 2025)</span></li>
+    <li class="fragment">Fallan entre el 41 % y el 87 % de las veces: diseño del sistema, desalineación entre agentes y verificación <span class="muted small">(Cemri et al., NeurIPS 2025)</span></li>
+    <li class="fragment">Protocolos como A2A (2025) vuelven al problema de KQML y FIPA-ACL: que agentes de distintos fabricantes se entiendan</li>
+  </ul>
+  <p class="fragment muted small" style="margin-top:14px">Cómo construirlos se estudia en la asignatura <em>Agentes de IA</em>; aquí, los conceptos que los explican.</p>
+  <aside class="notes">
+    <p>Desde 2023 se popularizaron los sistemas en los que varios LLMs, cada uno con un rol, colaboran en una tarea. Anthropic reportó en 2025 que su sistema de investigación multiagente superó en 90,2 % a un solo agente en su evaluación interna, pero con un consumo de tokens unas 15 veces mayor que un chat: solo compensa en tareas de alto valor.</p>
+    <p>Cemri et al. (NeurIPS 2025) analizaron más de 1.600 trazas de siete marcos abiertos y encontraron tasas de falla entre el 41 % y el 86,7 %, agrupadas en tres categorías: problemas de diseño del sistema (roles y especificación), desalineación entre agentes y verificación insuficiente. Sostienen que un buen diseño exige comprensión organizacional, no solo mejores modelos.</p>
+    <p>A2A fue anunciado por Google en abril de 2025 y transferido a la Linux Foundation en junio de 2025. Su especificación no cita a KQML ni a FIPA, pero resuelve el mismo problema: describir capacidades y delegar tareas entre agentes heterogéneos. La Malfa et al. (NeurIPS 2025) advierten que buena parte de la literatura de SMA con LLMs usa el vocabulario de los SMA sin sus principios fundacionales.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · SÍNTESIS ============================ -->
+<section data-min="1">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de este bloque</h2>
+  <ul>
+    <li>Un SMA: agentes autónomos con información local y sin control global</li>
+    <li>Coordinar es gestionar dependencias; comunicar es actuar con protocolos</li>
+    <li>Contract Net: un mercado de tareas entre gestor y contratistas</li>
+    <li>Teoría de juegos y mecanismos: alinear los incentivos individuales con el resultado colectivo</li>
+  </ul>
+  <aside class="notes">
+    <p>Recapitular brevemente antes del trabajo independiente y del laboratorio.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · TRABAJO INDEPENDIENTE 3 ============================ -->
+<section data-min="1">
+  <div class="kicker amber">Trabajo independiente 3</div>
+  <h2>Lectura: ¿cuándo conviene un SMA con LLMs?</h2>
+  <div class="ti-grid">
+    <div>
+      <p class="small" style="font-size:27px">Lea el blog de Anthropic (2025) sobre su sistema multiagente y, como contraste, la figura 1 y la sección 4 de Cemri et al. (2025). Responda en una página:</p>
+      <ol class="small">
+        <li>¿Qué tareas se benefician de repartir el trabajo y cuáles no? ¿Compensa el costo?</li>
+        <li>Tome tres modos de falla de Cemri et al.: ¿qué equivalente tienen en una organización humana y qué mecanismo de coordinación los mitigaría?</li>
+        <li>¿Qué es realmente nuevo y qué es un problema clásico de los SMA?</li>
+      </ol>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Tiempo</span>90 min</div>
+      <div><span class="label">Entregable</span>1 página con las tres respuestas</div>
+      <div><span class="label">Entrega</span>inicio de la semana 2</div>
+      <div><span class="label">Lecturas</span><a href="https://www.anthropic.com/engineering/multi-agent-research-system">Anthropic (2025)</a> · <a href="https://arxiv.org/abs/2503.13657">Cemri et al. (2025)</a></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Distribución sugerida: unos 40 minutos para el blog, 30 para la figura 1 y la sección 4 de Cemri et al. y 20 para escribir. Ambos textos están en inglés y en acceso abierto.</p>
+    <p>Criterios de evaluación: lectura crítica (el blog es una fuente corporativa con una evaluación interna), uso de los conceptos del bloque (roles, protocolos, coordinación, verificación) y una implicación organizacional concreta.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · TRANSICIÓN AL LAB 2 (CLAUDE 101) ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 30 min</div>
+  <h1>Laboratorio<br><span class="accent">Claude 101</span></h1>
+  <p class="lead muted">Curso gratuito de Anthropic para usar Claude en el trabajo diario: conversaciones, proyectos, artefactos, skills, conectores e investigación.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="https://anthropic.skilljar.com/claude-101">Ir al curso: anthropic.skilljar.com/claude-101</a><a href="cierre_sesion.html">Cierre →</a></p>
+  <aside class="notes">
+    <p>Dar paso al laboratorio (30 min): el curso Claude 101 de Anthropic, gratuito y con certificado al final. En 30 minutos alcanzan los primeros módulos; el resto puede completarse como trabajo independiente. Después viene el cierre de la sesión (15 min).</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del bloque 3</div>
+  <h2>Para profundizar</h2>
+  <div class="cols refs-compact refs-tight">
+    <ol class="refs">
+      <li>Smith, R. G. (1980). The Contract Net Protocol. <em>IEEE Transactions on Computers</em>, C-29(12). <a href="https://www.cs.ucf.edu/~lboloni/Teaching/EEL6788_2008/papers/The_Contract_Net_Protocol_Dec-1980.pdf">PDF</a></li>
+      <li>FIPA (2002). <em>Contract Net Interaction Protocol Specification</em> (SC00029H). <a href="https://web.archive.org/web/20241205151554/http://fipa.org/specs/fipa00029/SC00029H.html">Especificación</a></li>
+      <li>Finin, T. et al. (1994). KQML as an agent communication language. <em>CIKM '94</em>. <a href="https://research.cs.umbc.edu/kqml/papers/kqml-acl-html/root2.html">Texto</a></li>
+      <li>Jennings, N., Sycara, K. y Wooldridge, M. (1998). A roadmap of agent research and development. <em>AAMAS Journal</em>, 1(1). <a href="https://publications.ri.cmu.edu/storage/publications/pub_files/pub1/jennings_nicholas_1998_1/jennings_nicholas_1998_1.pdf">PDF</a></li>
+      <li>Malone, T. y Crowston, K. (1994). The interdisciplinary study of coordination. <em>ACM Computing Surveys</em>, 26(1). <a href="https://crowston.syr.edu/sites/default/files/acmcs94.pdf">PDF</a></li>
+      <li>Horling, B. y Lesser, V. (2004). A survey of multi-agent organizational paradigms. <em>The Knowledge Engineering Review</em>, 19(4). <a href="https://mas.cs.umass.edu/Documents/bhorling/horling-paradigms.pdf">PDF</a></li>
+      <li>Axelrod, R. y Hamilton, W. (1981). The evolution of cooperation. <em>Science</em>, 211. <a href="https://websites.umich.edu/~axe/research/Axelrod%20and%20Hamilton%20EC%201981.pdf">PDF</a> · Axelrod (1984), libro, Basic Books.</li>
+      <li>Akata, E. et al. (2025). Playing repeated games with large language models. <em>Nature Human Behaviour</em>, 9. <a href="https://www.nature.com/articles/s41562-025-02172-y">Acceso abierto</a></li>
+    </ol>
+    <ol class="refs" start="9">
+      <li>Vickrey, W. (1961). Counterspeculation, auctions, and competitive sealed tenders. <em>The Journal of Finance</em>, 16(1).</li>
+      <li>Wooldridge, M., Jennings, N. y Kinny, D. (2000). The Gaia methodology for agent-oriented analysis and design. <em>AAMAS Journal</em>, 3(3). <a href="https://www.cs.ox.ac.uk/people/michael.wooldridge/pubs/jaamas2000b.pdf">PDF</a></li>
+      <li>Iglesias, C. A., Garijo, M., González, J. C. y Velasco, J. R. (1998). Analysis and design of multiagent systems using MAS-CommonKADS. <em>Intelligent Agents IV</em>, LNAI 1365. Springer.</li>
+      <li>Shoham, Y. y Leyton-Brown, K. (2009). <em>Multiagent Systems</em>. Cambridge UP. <a href="https://www.masfoundations.org/">masfoundations.org</a></li>
+      <li>Cemri, M. et al. (2025). Why do multi-agent LLM systems fail? <em>NeurIPS 2025</em>. <a href="https://arxiv.org/abs/2503.13657">arXiv</a></li>
+      <li>Anthropic (2025). How we built our multi-agent research system. <a href="https://www.anthropic.com/engineering/multi-agent-research-system">Blog de ingeniería</a></li>
+      <li>La Malfa, E. et al. (2025). Large language models miss the multi-agent mark. <em>NeurIPS 2025</em>. <a href="https://arxiv.org/abs/2505.21298">arXiv</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="bloque2_agentes.html">← Bloque 2</a><a href="index.html">Volver a la agenda</a><a href="cierre_sesion.html">Cierre →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 1 · Bloque 3 · Sistemas multiagente</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

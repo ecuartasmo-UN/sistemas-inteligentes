@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club de lectura · LLM-Modulo — Sesión 2 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="20">
+
+<!-- ============================ 1 · PORTADA Y FICHA ============================ -->
+<section class="title-slide" data-min="1">
+  <div class="kicker">Sesión 2 · Unidad 2 · Club de lectura</div>
+  <h1>¿Pueden planificar los LLMs?</h1>
+  <p class="lead muted" style="font-size:30px">Kambhampati, Valmeekam, Guan, Verma, Stechly, Bhambri, Saldyt y Murthy (2024). <em>Position: LLMs Can't Plan, But Can Help Planning in LLM-Modulo Frameworks.</em> ICML 2024.</p>
+  <p class="meta">Artículo de posición · Arizona State University · <strong>20 min de discusión</strong></p>
+  <p class="navlinks"><a href="index.html">Agenda</a><a href="bloque1_planificacion_clasica.html">Bloque 1 →</a></p>
+  <aside class="notes">
+    <p>El club abre la sesión con una pregunta que la recorre entera: ¿pueden planificar los LLMs? Todos leyeron el artículo antes de llegar. Estas diapositivas son apoyo: la idea es discutir, no exponer.</p>
+    <p>Un artículo de posición defiende una tesis con argumentos y evidencia; no es un experimento nuevo. Conviene leerlo así: qué afirma, con qué lo respalda y qué no alcanza a mostrar.</p>
+    <p>Al final de la sesión volveremos a esta pregunta con lo aprendido en los tres bloques.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LA TESIS ============================ -->
+<section data-min="2">
+  <div class="kicker">La tesis</div>
+  <h2>No planifican solos, pero ayudan a planificar</h2>
+  <div class="cols c46 mid">
+    <div>
+      <p class="quote" style="font-size:27px">Los LLMs no pueden planificar por sí mismos, pero pueden cumplir varios papeles útiles: como <strong>fuentes aproximadas de conocimiento</strong> y <strong>generadores de planes candidatos</strong>, junto con <strong>verificadores externos</strong> basados en modelos.<span class="src">Kambhampati et al. (2024), sección 1. Traducción propia.</span></p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/llm_modulo_fig1_sistema1.jpg" alt="Figura 1 del artículo: a la izquierda, Sistema 1 reflexivo y Sistema 2 deliberativo de la cognición humana; a la derecha, el LLM como un Sistema 1 reflexivo alimentado por la web y por datos de ajuste fino">
+      <figcaption class="credit">Figura 1: el LLM como una enorme memoria externa «no verídica» que actúa como un pseudo Sistema 1. Kambhampati et al. (2024), <a href="https://arxiv.org/abs/2402.01817">arXiv:2402.01817</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Esta es la posición central del artículo. Tiene dos mitades y las dos importan: contra el optimismo excesivo («los LLMs ya planifican») y contra el pesimismo excesivo («solo sirven para traducir formatos»).</p>
+    <p>La figura usa la distinción de Kahneman entre un Sistema 1 rápido y reflexivo y un Sistema 2 lento y deliberativo. Para los autores, un LLM se parece a un Sistema 1 gigante: produce el siguiente token en tiempo casi constante, a partir de lo aprendido de las trazas digitales de la humanidad. No hay allí un proceso deliberativo que garantice un plan correcto.</p>
+    <p>Pregunta para abrir: ¿qué esperaban encontrar antes de leerlo?</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · ARGUMENTO 1 ============================ -->
+<section data-min="2">
+  <div class="kicker">Argumento 1</div>
+  <h2>En modo autónomo no generan planes ejecutables</h2>
+  <svg class="diagram" viewBox="0 0 1180 380" role="img" aria-label="Gráfico de barras: porcentaje de planes correctos en Blocksworld y en Mystery Blocksworld para seis LLMs">
+    <defs><style>.ax{stroke:#2a3550;stroke-width:2}.gl{stroke:#1d2638;stroke-width:1.5}.lb{font-size:21px;fill:#a3adc2}.vl{font-size:21px;font-weight:700}.ml{font-size:21px;fill:#e8ecf4;font-weight:600}</style></defs>
+    <line class="gl" x1="90" y1="40" x2="1170" y2="40"/><line class="gl" x1="90" y1="140" x2="1170" y2="140"/><line class="gl" x1="90" y1="240" x2="1170" y2="240"/>
+    <text x="80" y="47" text-anchor="end" class="lb">60 %</text><text x="80" y="147" text-anchor="end" class="lb">40 %</text><text x="80" y="247" text-anchor="end" class="lb">20 %</text><text x="80" y="347" text-anchor="end" class="lb">0 %</text>
+    <line class="ax" x1="90" y1="340" x2="1170" y2="340"/>
+    <!-- y = 340 - 5*pct -->
+    <g>
+      <rect x="120" y="162.5" width="62" height="177.5" rx="4" fill="#38bdf8"/><text x="151" y="152" text-anchor="middle" class="vl" fill="#38bdf8">35,5</text>
+      <rect x="190" y="338" width="62" height="2" fill="#f87171"/><text x="221" y="328" text-anchor="middle" class="vl" fill="#f87171">0</text>
+      <text x="186" y="370" text-anchor="middle" class="ml">GPT-4o</text>
+    </g>
+    <g>
+      <rect x="300" y="139.5" width="62" height="200.5" rx="4" fill="#38bdf8"/><text x="331" y="129" text-anchor="middle" class="vl" fill="#38bdf8">40,1</text>
+      <rect x="370" y="338" width="62" height="2" fill="#f87171"/><text x="401" y="328" text-anchor="middle" class="vl" fill="#f87171">0,2</text>
+      <text x="366" y="370" text-anchor="middle" class="ml">GPT-4-Turbo</text>
+    </g>
+    <g>
+      <rect x="480" y="43.5" width="62" height="296.5" rx="4" fill="#38bdf8"/><text x="511" y="33" text-anchor="middle" class="vl" fill="#38bdf8">59,3</text>
+      <rect x="550" y="338" width="62" height="2" fill="#f87171"/><text x="581" y="328" text-anchor="middle" class="vl" fill="#f87171">0</text>
+      <text x="546" y="370" text-anchor="middle" class="ml">Claude 3 Opus</text>
+    </g>
+    <g>
+      <rect x="660" y="169.2" width="62" height="170.8" rx="4" fill="#38bdf8"/><text x="691" y="159" text-anchor="middle" class="vl" fill="#38bdf8">34,2</text>
+      <rect x="730" y="338" width="62" height="2" fill="#f87171"/><text x="761" y="328" text-anchor="middle" class="vl" fill="#f87171">0</text>
+      <text x="726" y="370" text-anchor="middle" class="ml">LLaMA 3 70B</text>
+    </g>
+    <g>
+      <rect x="840" y="337.5" width="62" height="2.5" rx="1" fill="#38bdf8"/><text x="871" y="327" text-anchor="middle" class="vl" fill="#38bdf8">0,5</text>
+      <rect x="910" y="338" width="62" height="2" fill="#f87171"/><text x="941" y="300" text-anchor="middle" class="vl" fill="#f87171">0</text>
+      <text x="906" y="370" text-anchor="middle" class="ml">Gemini Pro</text>
+    </g>
+    <g>
+      <rect x="1020" y="167" width="62" height="173" rx="4" fill="#38bdf8"/><text x="1051" y="157" text-anchor="middle" class="vl" fill="#38bdf8">34,6</text>
+      <rect x="1090" y="338" width="62" height="2" fill="#f87171"/><text x="1121" y="328" text-anchor="middle" class="vl" fill="#f87171">0,2</text>
+      <text x="1086" y="370" text-anchor="middle" class="ml">GPT-4</text>
+    </g>
+    <rect x="700" y="8" width="22" height="22" rx="4" fill="#38bdf8"/><text x="730" y="26" class="lb" style="fill:#e8ecf4">Blocksworld</text>
+    <rect x="880" y="8" width="22" height="22" rx="4" fill="#f87171"/><text x="910" y="26" class="lb" style="fill:#e8ecf4">Mystery Blocksworld</text>
+  </svg>
+  <p class="credit">Planes correctos (%) sin ejemplos en la instrucción (zero-shot); 600 instancias por dominio (500 para Gemini Pro en Mystery). Redibujado a partir de la Tabla 1 de Kambhampati et al. (2024); valores redondeados a un decimal.</p>
+  <aside class="notes">
+    <p>Los datos vienen de PlanBench, un banco de prueba con dominios del tipo de la competencia internacional de planificación (IPC). El dominio más conocido es Blocksworld: apilar bloques en un orden dado.</p>
+    <p>El detalle clave es Mystery Blocksworld: el mismo problema con los nombres de acciones y objetos cambiados por palabras sin sentido. Para un planificador clásico es exactamente el mismo problema, porque solo mira la estructura. Para los LLMs del artículo el acierto cae prácticamente a cero. Los autores lo interpretan así: los LLMs hacen más bien «recuperación aproximada» de planes vistos que planificación.</p>
+    <p>El artículo también reporta que, en sus estudios previos, GPT-4 generó en promedio solo cerca del 12 % de planes ejecutables que alcanzan la meta, y que el ajuste fino no cambió mucho ese resultado. En el Bloque 2 veremos qué pasó con los modelos posteriores.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · ARGUMENTO 2 ============================ -->
+<section data-min="2">
+  <div class="kicker">Argumento 2</div>
+  <h2>Tampoco verifican sus propios planes</h2>
+  <div class="cols c64 mid">
+    <ul>
+      <li>La autocrítica no mejora: en coloreo de grafos, GPT-4 no reconoce sus soluciones correctas y a veces las descarta</li>
+      <li class="fragment">Un verificador externo y correcto sí ayuda</li>
+      <li class="fragment">Por eso el artículo saca a las personas del lazo interno: dar pistas una y otra vez produce un <em>efecto Clever Hans</em></li>
+    </ul>
+    <figure class="figure" id="fig-hans">
+      <img src="assets/img/clever_hans.jpg" alt="Fotografía histórica del caballo Clever Hans junto a su dueño, Wilhelm von Osten">
+      <figcaption class="credit" id="credito-hans">Wilhelm von Osten y Clever Hans, el caballo que «contaba» leyendo las señales involuntarias de su público (Berlín, c. 1904–1908). Autor desconocido, dominio público, <a href="https://commons.wikimedia.org/wiki/File:Osten_und_Hans.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Muchos trabajos suponen que verificar es más fácil que generar, así que un LLM podría criticar y corregir sus propios planes. Los autores lo pusieron a prueba (Stechly et al., 2023): en coloreo de grafos, un problema NP-completo clásico, la autocrítica de GPT-4 no mejoró el resultado frente a la línea base, e incluso lo empeoró, porque el modelo no reconocía una coloración correcta y seguía de largo. Con un verificador externo correcto, en cambio, el desempeño sí mejoró. Reportan resultados similares en planificación.</p>
+    <p>Clever Hans fue un caballo que, a comienzos del siglo XX en Berlín, parecía resolver operaciones aritméticas golpeando con la pata. El psicólogo Oskar Pfungst mostró que el caballo leía señales involuntarias de quien preguntaba. El artículo usa la metáfora: si una persona corrige al LLM una y otra vez con sus indicaciones, quien termina planificando es la persona.</p>
+    <p>Corolario del artículo: si no pueden criticarse a sí mismos, tampoco pueden mejorarse solos generando y filtrando sus propios datos sin un verificador externo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · ARGUMENTO 3 ============================ -->
+<section data-min="2">
+  <div class="kicker">Argumento 3</div>
+  <h2>Saber de planes no es producir un plan ejecutable</h2>
+  <div class="cols c46 mid">
+    <ul>
+      <li>Muchas afirmaciones confunden <strong>conocimiento de planificación</strong> con <strong>planes ejecutables</strong></li>
+      <li class="fragment">Conocimiento: acciones, precondiciones, recetas</li>
+      <li class="fragment">Plan: ensamblar ese conocimiento resolviendo las interacciones entre submetas</li>
+      <li class="fragment">Bien usados, los LLMs reemplazan al ingeniero del conocimiento</li>
+    </ul>
+    <figure class="figure">
+      <img src="assets/img/llm_modulo_fig2_ingeniero_conocimiento.png" alt="Figura 2 del artículo: expertos, ingeniero del conocimiento, reglas y base de conocimiento, todos dentro de una nube que representa al LLM">
+      <figcaption class="credit">Figura 2: el LLM como fuente aproximada de conocimiento. Kambhampati et al. (2024), <a href="https://arxiv.org/abs/2402.01817">arXiv:2402.01817</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Para planificar se necesitan dos cosas: el conocimiento del dominio (qué acciones existen, con qué precondiciones y efectos) y la capacidad de ensamblarlo en un plan que funcione, cuidando que una acción no deshaga lo que otra logró. Según los autores, muchos trabajos que dicen que los LLMs planifican en realidad muestran lo primero; o bien trabajan en dominios donde las interacciones se pueden ignorar, o una persona corrige el plan en el lazo.</p>
+    <p>Conexión con la Sesión 1: esta figura es el sistema experto clásico. Los expertos tienen el conocimiento; el ingeniero del conocimiento lo convierte en reglas; el usuario consulta la base. El cuello de botella siempre fue la adquisición del conocimiento. Los autores lo llaman «la revancha de Polanyi»: los LLMs facilitan obtener conocimiento tácito, a cambio de que sea aproximado y haya que verificarlo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · EL MARCO LLM-MODULO ============================ -->
+<section data-min="3">
+  <div class="kicker violet">La propuesta</div>
+  <h2>El marco LLM-Modulo: generar, criticar, corregir</h2>
+  <div class="cols c73">
+    <figure class="figure">
+      <img src="assets/img/llm_modulo_fig3_marco.png" alt="Figura 3 del artículo: el LLM genera un plan en una pizarra; un banco de críticos lo evalúa; un metacontrolador devuelve las críticas al LLM; las soluciones válidas pueden servir de datos para ajustar el LLM" style="max-height:470px">
+      <figcaption class="credit">Figura 3 del artículo. Kambhampati et al. (2024), <a href="https://arxiv.org/abs/2402.01817">arXiv:2402.01817</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></figcaption>
+    </figure>
+    <ul class="small" style="font-size:23px">
+      <li><strong>(2)</strong> El LLM propone un plan candidato</li>
+      <li class="fragment"><strong>(3)</strong> Críticos <em>duros</em> (corrección, p. ej. VAL) y <em>blandos</em> (estilo, preferencias)</li>
+      <li class="fragment"><strong>(4)</strong> Si todos los duros aprueban: solución válida</li>
+      <li class="fragment"><strong>(5)</strong> Si no, el metacontrolador devuelve las críticas al LLM</li>
+      <li class="fragment">La garantía la dan los críticos, no el LLM</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Recorrer la figura por números. (1) El usuario final y el LLM refinan juntos una especificación incompleta. (2) El LLM propone un plan candidato y lo escribe en una «pizarra de planes». (3) Un banco de críticos lo evalúa: los duros revisan corrección (causal, de tiempos, de recursos) con modelos formales, por ejemplo VAL sobre un modelo PDDL; los blandos revisan estilo o preferencias, y pueden ser LLMs. Un reformateador traduce el plan a la representación que entiende cada crítico. (4) Si todos los críticos duros aprueban, el plan es una solución válida. (5) Si no, el metacontrolador reúne las críticas y se las devuelve al LLM («backprompt») para un nuevo intento. (6 y 7) Las soluciones válidas pueden servir como datos para ajustar el propio LLM.</p>
+    <p>Dos ideas para subrayar. Primera: la corrección (soundness) se hereda de los críticos, no del LLM; la completitud depende de que el LLM llegue a proponer buenos candidatos. Segunda: las personas participan una vez por dominio (el experto ayuda a construir los modelos de los críticos) y una vez por problema (el usuario precisa la especificación), pero no en el lazo interno.</p>
+    <p>El nombre se inspira en las teorías «SAT Modulo Theories» de los solvers lógicos, que veremos en la Unidad 3.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · ROLES Y CASOS ============================ -->
+<section data-min="2">
+  <div class="kicker violet">La propuesta</div>
+  <h2>Los papeles del LLM y lo que muestran los casos</h2>
+  <div class="cols c46 mid">
+    <div>
+      <p style="font-size:27px">Proponer candidatos · traducir formatos · ayudar a completar la especificación · ayudar a construir los modelos de los críticos</p>
+      <ul class="small" style="font-size:25px">
+        <li class="fragment">Blocksworld con VAL como crítico: hasta <strong>82 %</strong> en 15 rondas; Logistics, <strong>70 %</strong>; Mystery, cerca de <strong>10 %</strong></li>
+        <li class="fragment">Planificación de viajes: unas <strong>6 veces</strong> las líneas base con 10 rondas</li>
+      </ul>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/llm_modulo_fig5_viajes.png" alt="Figura 5 del artículo: tasa final de aprobación por modelo e iteración; GPT-4-Turbo con LLM-Modulo sube de cerca de 4 % a 20 % en diez iteraciones">
+      <figcaption class="credit">Figura 5: tasa final de aprobación por modelo e iteración en el caso de viajes. Kambhampati et al. (2024), <a href="https://arxiv.org/abs/2402.01817">arXiv:2402.01817</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Los cuatro papeles del LLM según la sección 3.4: proponer planes candidatos; traducir el plan a la representación de cada crítico; ayudar al usuario a completar una especificación incompleta; y ayudar al experto a construir los modelos que usan los críticos.</p>
+    <p>Casos de la sección 4. En Blocksworld, con VAL como verificador que devuelve los errores, el desempeño sube hasta 82 % en 15 rondas, y en Logistics hasta 70 %. En Mystery Blocksworld llega solo a cerca de 10 %: el LLM rara vez propone candidatos plausibles; pero si devuelve un plan, ese plan pasó VAL y es correcto según el modelo.</p>
+    <p>En el banco de prueba de planificación de viajes TravelPlanner, la mejor estrategia del banco con GPT-3.5-Turbo lograba 0,7 %. Con críticos para restricciones duras (como el presupuesto) y de sentido común, el marco mejoró unas seis veces las líneas base con un máximo de diez rondas (Gundawar et al., 2024). La figura muestra a GPT-4-Turbo subiendo de cerca de 4 % a 20 %. Son resultados preliminares de los propios autores: buena pregunta para la discusión.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · DISCUSIÓN ============================ -->
+<section data-min="6">
+  <div class="kicker amber">Discusión</div>
+  <h2>Preguntas para la discusión</h2>
+  <ol style="font-size:29px">
+    <li>¿Qué ejemplo de su organización muestra la diferencia entre <em>saber de planes</em> y <em>producir un plan ejecutable</em>?</li>
+    <li class="fragment">¿Qué críticos duros (normas, sistemas) y blandos (preferencias) ya validan los planes en su organización?</li>
+    <li class="fragment">¿Dónde deben intervenir las personas: una vez por dominio, una vez por problema o en cada paso?</li>
+    <li class="fragment">El artículo es de junio de 2024. ¿Qué parte de su tesis esperarían que cambie con modelos más nuevos, y qué parte no?</li>
+  </ol>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="bloque1_planificacion_clasica.html">Bloque 1 →</a></p>
+  <aside class="notes">
+    <p>Seis minutos para conversar. Sugerencia: unos dos minutos para la pregunta 1 con ejemplos del grupo, uno para la 2, uno para la 3 y dos para la 4.</p>
+    <p>La pregunta 4 se deja abierta a propósito: anotar las predicciones del grupo en el tablero y contrastarlas con la evidencia del Bloque 2.</p>
+    <p>La pregunta 3 anticipa el Bloque 3: en un plan.md, la persona revisa y aprueba el plan antes de que el agente actúe, y no lo corrige paso a paso.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del club de lectura</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-compact">
+    <ol class="refs">
+      <li>Kambhampati, S., Valmeekam, K., Guan, L., Verma, M., Stechly, K., Bhambri, S., Saldyt, L. y Murthy, A. (2024). Position: LLMs can't plan, but can help planning in LLM-Modulo frameworks. <em>ICML 2024</em>, PMLR 235. <a href="https://proceedings.mlr.press/v235/kambhampati24a.html">PMLR</a> · <a href="https://arxiv.org/abs/2402.01817">arXiv (CC BY 4.0)</a></li>
+      <li>Valmeekam, K., Marquez, M., Olmo, A., Sreedharan, S. y Kambhampati, S. (2023). PlanBench: An extensible benchmark for evaluating large language models on planning and reasoning about change. <em>NeurIPS 2023, Datasets and Benchmarks</em>. <a href="https://arxiv.org/abs/2206.10498">arXiv</a></li>
+      <li>Valmeekam, K., Marquez, M., Sreedharan, S. y Kambhampati, S. (2023). On the planning abilities of large language models: A critical investigation. <em>NeurIPS 2023</em>. <a href="https://openreview.net/forum?id=X6dEqXIsEW">OpenReview</a></li>
+      <li>Stechly, K., Marquez, M. y Kambhampati, S. (2023). GPT-4 doesn't know it's wrong: An analysis of iterative prompting for reasoning problems. <em>NeurIPS 2023 Workshop on Foundation Models for Decision Making</em>. <a href="https://arxiv.org/abs/2310.12397">arXiv</a></li>
+      <li>Gundawar, A., Verma, M., Guan, L., Valmeekam, K., Bhambri, S. y Kambhampati, S. (2024). Robust planning with LLM-Modulo framework: Case study in travel planning. <a href="https://arxiv.org/abs/2405.20625">arXiv:2405.20625</a></li>
+      <li>Pfungst, O. (1911). <em>Clever Hans (the horse of Mr. von Osten)</em>. Henry Holt. <a href="https://www.gutenberg.org/ebooks/33936">Project Gutenberg</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="bloque1_planificacion_clasica.html">Bloque 1 →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 2 · Club de lectura · LLM-Modulo</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

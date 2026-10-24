@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 1 · Planificación automática clásica — Sesión 2 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .trace .rule { font-size: 21px; padding: 6px 10px; margin-bottom: 7px; }
+  .trace .stage { min-height: 250px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 2 · Unidad 2 · Bloque 1 de 3</div>
+  <h1>Planificación automática clásica</h1>
+  <p class="lead muted">De una meta a un plan que una máquina puede verificar</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="club_lectura.html">← Club de lectura</a><a href="index.html">Agenda</a><a href="bloque2_llms_planificacion.html">Bloque 2 →</a></p>
+  <aside class="notes">
+    <p>La imagen de fondo resume el bloque: un plan es una ruta trazada sobre el mapa antes de moverse, con los obstáculos a la vista. Ruta del bloque: un caso de MantenIA; cómo se describe un problema de planificación (STRIPS y PDDL); cómo se ejecuta un plan estado por estado; los componentes de un sistema de planificación; tres técnicas en panorama; y casos reales. Todo prepara el Laboratorio 2A, en el que cada pareja formalizará y resolverá este mismo tipo de problema.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · EL CASO ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>Una orden de trabajo que exige planificar</h2>
+  <div class="cols c64 mid">
+    <div>
+      <div class="card amber" style="margin-bottom:16px"><p><strong>OT-512.</strong> La bomba 3 de la Planta Norte tiene una fuga en el sello. Debe volver a servicio hoy.</p></div>
+      <ul class="small" style="font-size:26px">
+        <li class="fragment"><strong>Meta:</strong> bomba 3 en servicio</li>
+        <li class="fragment"><strong>Recursos:</strong> Ana (certificada), Luis (no certificado), un sello en la bodega</li>
+        <li class="fragment"><strong>Reglas:</strong> bloquear y etiquetar antes de intervenir; solo personal certificado</li>
+      </ul>
+      <p class="fragment" style="font-size:27px">Planificar: <em>elegir y ordenar acciones</em> para lograr la meta sin violar las reglas.</p>
+    </div>
+    <figure class="figure" id="fig-mantenimiento">
+      <img src="assets/img/mantenimiento_industrial.jpg" alt="Técnico realizando mantenimiento a una máquina en una planta industrial">
+      <figcaption class="credit" id="cred-mantenimiento">Un supervisor y un mecánico de mantenimiento revisan el esquema de una bomba antes de intervenir. NPS / Jacob W. Frank, dominio público, <a href="https://commons.wikimedia.org/wiki/File:Gary_Raines,_maintence_supervisor,_and_Rick_Sendra,_maintenance_mechanic,_review_pump_schematics_(53086631291).jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Seguimos con MantenIA, la empresa de la Sesión 1. En el Bloque 2 de esa sesión un agente despachador asignaba órdenes; hoy la pregunta es otra: una vez asignada la orden, ¿qué hay que hacer, y en qué orden?</p>
+    <p>El problema parece trivial para una persona con experiencia, pero tiene todos los ingredientes de la planificación: una meta, recursos limitados, acciones con condiciones y reglas que no se negocian. El bloqueo y etiquetado (en inglés, lockout/tagout) es un procedimiento de seguridad real: antes de intervenir un equipo, se desconecta su energía y se asegura con un candado personal.</p>
+    <p>Este mismo caso nos acompaña en los tres bloques: hoy como plan en PDDL; en el Bloque 2, planificado por un LLM; en el Bloque 3, como plan.md.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · PLANIFICAR ES BUSCAR ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Qué es planificar</div>
+  <h2>Planificar es buscar, con estados hechos de hechos</h2>
+  <svg class="diagram" viewBox="0 0 1180 330" role="img" aria-label="Espacio de estados: del estado inicial a la meta por una secuencia de acciones; una rama lleva a un callejón sin salida">
+    <defs>
+      <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+      <marker id="ar3g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/></marker>
+      <style>.sb{fill:#172033;stroke:#38bdf8;stroke-width:2.5}.st{font-family:'JetBrains Mono',monospace;font-size:20px;fill:#e8ecf4}.sh{font-size:23px;font-weight:700;fill:#38bdf8}.al{font-size:20px;fill:#a3adc2}</style>
+    </defs>
+    <rect class="sb" x="10" y="62" width="285" height="166" rx="14"/>
+    <text x="152" y="94" text-anchor="middle" class="sh">Estado inicial</text>
+    <text x="26" y="128" class="st">(en ana base)</text><text x="26" y="155" class="st">(averiado bomba3)</text><text x="26" y="182" class="st">(encendido bomba3)</text><text x="26" y="209" class="st">(almacenado sello …)</text>
+    <path d="M297,145 L392,145" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#ar3)"/><text x="344" y="132" text-anchor="middle" class="al">acción</text>
+    <rect class="sb" x="395" y="95" width="160" height="100" rx="14" style="stroke:#a3adc2"/><text x="475" y="152" text-anchor="middle" class="st">estado 1</text>
+    <path d="M557,145 L687,145" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#ar3)"/><text x="622" y="132" text-anchor="middle" class="al">acción</text>
+    <rect class="sb" x="690" y="95" width="160" height="100" rx="14" style="stroke:#a3adc2"/><text x="770" y="152" text-anchor="middle" class="st">…</text>
+    <path d="M852,145 L922,145" stroke="#4ade80" stroke-width="2.5" marker-end="url(#ar3g)"/>
+    <rect x="925" y="80" width="245" height="130" rx="14" fill="#2a2210" stroke="#f5b942" stroke-width="2.5"/>
+    <text x="1047" y="122" text-anchor="middle" class="sh" style="fill:#f5b942">Meta</text>
+    <text x="1047" y="160" text-anchor="middle" class="st">(en-servicio bomba3)</text>
+    <g class="fragment">
+      <path d="M475,197 L475,262" stroke="#f87171" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#ar3)"/>
+      <rect x="370" y="265" width="210" height="58" rx="12" fill="#2a1416" stroke="#f87171" stroke-width="2.5"/>
+      <text x="475" y="300" text-anchor="middle" class="st" style="fill:#fecaca">callejón sin salida</text>
+    </g>
+  </svg>
+  <p class="fragment" style="font-size:27px;margin-top:6px">Como la búsqueda de la Sesión 1, pero ahora cada estado es un <em>conjunto de hechos</em> y cada acción dice <em>cuándo se puede aplicar y qué cambia</em>.</p>
+  <aside class="notes">
+    <p>En la Sesión 1 vimos la solución de problemas como búsqueda en un espacio de estados, con A* como ejemplo. La planificación automática usa la misma idea, con una diferencia que la hace general: los estados no son nodos opacos sino conjuntos de hechos lógicos, y las acciones se describen de forma declarativa. Así, un mismo planificador sirve para mantenimiento, logística o misiones espaciales, sin programar un algoritmo nuevo para cada caso.</p>
+    <p>El callejón sin salida ilustra por qué el orden importa: por ejemplo, ir a la planta sin pasar por la bodega obliga a devolverse por el repuesto.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · STRIPS Y SHAKEY ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Historia</div>
+  <h2>El origen: STRIPS, para el robot Shakey</h2>
+  <div class="cols c46 mid">
+    <div>
+      <ul>
+        <li>Fikes y Nilsson (1971), SRI International</li>
+        <li class="fragment">Cada acción se describe con <strong>precondiciones</strong> y <strong>efectos</strong>: lo que agrega y lo que elimina</li>
+        <li class="fragment">Lo que la acción no menciona, no cambia</li>
+      </ul>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/shakey_sri.jpg" alt="El robot Shakey del SRI, con sus partes señaladas" style="max-height:440px">
+      <figcaption class="credit">Shakey, el robot del SRI para el que se creó STRIPS. Foto: SRI International, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:SRI_Shakey_with_callouts.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Shakey ya apareció en la Sesión 1 como ejemplo de arquitectura deliberativa. Hoy nos interesa el planificador que lo hacía deliberar: STRIPS, publicado por Richard Fikes y Nils Nilsson en 1971 en la revista Artificial Intelligence.</p>
+    <p>Su aporte perdura: representar el mundo como un conjunto de hechos y cada acción por tres listas: precondiciones, hechos que agrega y hechos que elimina. Lo que la acción no menciona se supone igual; así se esquiva el llamado problema del marco, tener que decir explícitamente todo lo que no cambia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · UNA ACCIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">STRIPS</div>
+  <h2>Una acción: precondiciones y efectos</h2>
+  <div class="cols c64 mid">
+    <div class="card accent">
+      <h4 style="font-family:var(--mono);color:var(--text);font-size:24px">reparar(técnico, equipo, repuesto, lugar)</h4>
+      <p class="panel-title" style="margin:8px 0 4px">Precondiciones</p>
+      <p style="font-size:25px;margin-bottom:6px">el técnico está en el lugar · el equipo está <span class="amber">bloqueado</span> y averiado · el técnico lleva un repuesto compatible · el técnico está <span class="amber">certificado</span></p>
+      <p class="panel-title fragment" data-fragment-index="1" style="margin:12px 0 4px">Efectos</p>
+      <p class="fragment" data-fragment-index="1" style="font-size:25px;margin:0"><span class="ok">agrega:</span> equipo reparado · <span class="bad">elimina:</span> equipo averiado, técnico lleva el repuesto</p>
+    </div>
+    <figure class="figure" id="fig-loto">
+      <img src="assets/img/bloqueo_loto.jpg" alt="Candados y etiquetas de bloqueo aplicados a un equipo industrial">
+      <figcaption class="credit" id="cred-loto">Bloqueo y etiquetado: candados «Danger – Locked out» en tres interruptores. darkday (Flickr), <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Power_Lockout_(13421721974).jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <p class="fragment" data-fragment-index="2" style="font-size:27px;margin-top:14px">Las reglas del negocio y de seguridad se vuelven <em>precondiciones</em>: el plan no puede saltárselas.</p>
+  <aside class="notes">
+    <p>Leer la acción en voz alta como una regla de trabajo: «para reparar, el técnico debe estar en el lugar, el equipo debe estar bloqueado y averiado, y el técnico debe llevar un repuesto compatible y estar certificado». Después del cambio, el equipo queda reparado, deja de estar averiado y el repuesto se consume.</p>
+    <p>Este es el mensaje para un público de gestión: las políticas de la organización (seguridad industrial, certificaciones, aprobaciones) se pueden escribir como precondiciones. Un planificador nunca producirá un plan que las viole, y un validador puede comprobarlo de forma automática.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · PDDL: DOMINIO ============================ -->
+<section data-min="2">
+  <div class="kicker">PDDL</div>
+  <h2>El dominio: qué acciones existen</h2>
+  <pre class="code"><span class="kw">(define (domain</span> mantenia<span class="kw">)</span>
+  <span class="kw">(:requirements</span> :strips :typing<span class="kw">)</span>
+  <span class="kw">(:types</span> tecnico equipo repuesto lugar<span class="kw">)</span>   <span class="cm">; …predicados y otras 4 acciones</span>
+  <span class="kw">(:action</span> reparar
+    <span class="kw">:parameters</span> (<span class="vr">?t</span> - tecnico <span class="vr">?e</span> - equipo <span class="vr">?r</span> - repuesto <span class="vr">?l</span> - lugar)
+    <span class="kw">:precondition</span> (and (<span class="pr">en</span> <span class="vr">?t ?l</span>) (<span class="pr">ubicado</span> <span class="vr">?e ?l</span>) <span class="hl">(<span class="pr">bloqueado</span> <span class="vr">?e</span>)</span>
+                       (<span class="pr">averiado</span> <span class="vr">?e</span>) (<span class="pr">lleva</span> <span class="vr">?t ?r</span>) (<span class="pr">compatible</span> <span class="vr">?r ?e</span>)
+                       <span class="hl">(<span class="pr">certificado</span> <span class="vr">?t ?e</span>)</span>)
+    <span class="kw">:effect</span> (and (<span class="pr">reparado</span> <span class="vr">?e</span>) (<span class="ng">not</span> (<span class="pr">averiado</span> <span class="vr">?e</span>))
+                 (<span class="ng">not</span> (<span class="pr">lleva</span> <span class="vr">?t ?r</span>)))))</pre>
+  <p style="font-size:26px;margin-top:14px">PDDL (McDermott et al., 1998) es el lenguaje estándar de la Competencia Internacional de Planificación. El <strong>dominio</strong> se escribe una vez y sirve para muchos problemas.</p>
+  <aside class="notes">
+    <p>Esta es la misma acción de la diapositiva anterior, escrita en PDDL. No hace falta memorizar la sintaxis: el laboratorio trae el andamiaje. Lo importante es reconocer las tres partes: parámetros, precondiciones y efectos, y que «not» en los efectos significa «elimina este hecho».</p>
+    <p>El dominio completo de MantenIA tiene cinco acciones: desplazarse, retirar repuesto, bloquear, reparar y liberar. Está en la carpeta ejemplo_pddl de la sesión. PDDL se creó en 1998 para la primera competencia internacional de planificación y desde entonces es el estándar común de la disciplina.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · PDDL: PROBLEMA ============================ -->
+<section data-min="2">
+  <div class="kicker">PDDL</div>
+  <h2>El problema: objetos, estado inicial y meta</h2>
+  <pre class="code"><span class="kw">(define (problem</span> bomba-3<span class="kw">)</span>
+  <span class="kw">(:domain</span> mantenia<span class="kw">)</span>
+  <span class="kw">(:objects</span> <span class="ob">ana luis</span> - tecnico   <span class="ob">bomba3</span> - equipo   <span class="ob">sello</span> - repuesto
+            <span class="ob">base bodega planta-norte</span> - lugar<span class="kw">)</span>
+  <span class="kw">(:init</span> (<span class="pr">en</span> <span class="ob">ana base</span>) (<span class="pr">en</span> <span class="ob">luis base</span>)
+         (<span class="pr">ubicado</span> <span class="ob">bomba3 planta-norte</span>) (<span class="pr">encendido</span> <span class="ob">bomba3</span>) (<span class="pr">averiado</span> <span class="ob">bomba3</span>)
+         (<span class="pr">almacenado</span> <span class="ob">sello bodega</span>) (<span class="pr">compatible</span> <span class="ob">sello bomba3</span>)
+         (<span class="pr">certificado</span> <span class="ob">ana bomba3</span>)<span class="kw">)</span>                <span class="cm">; Luis no está certificado</span>
+  <span class="kw">(:goal</span> <span class="hl">(<span class="pr">en-servicio</span> <span class="ob">bomba3</span>)</span><span class="kw">))</span></pre>
+  <p style="font-size:26px;margin-top:14px">El <strong>problema</strong> cambia cada día: otros equipos, otros técnicos, otra meta. El dominio no se toca.</p>
+  <aside class="notes">
+    <p>El problema dice qué objetos hay hoy, qué es cierto al empezar y qué queremos lograr. Fíjense en lo que no dice: no dice cómo lograrlo. Encontrar el cómo es trabajo del planificador.</p>
+    <p>Detalle intencional: Luis está disponible, pero no está certificado para la bomba 3. Ningún plan válido puede ponerlo a bloquear o reparar ese equipo. En el Bloque 2 veremos qué pasa cuando un LLM no respeta esa regla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · TRAZA ============================ -->
+<section data-min="3">
+  <div class="kicker">Ejecución del plan</div>
+  <h2>El plan, estado por estado</h2>
+  <div class="cols trace">
+    <div>
+      <p class="panel-title">Plan de Fast Downward</p>
+      <div class="rule fragment fire" data-fragment-index="1"><span class="id">1</span>(desplazarse ana base bodega)</div>
+      <div class="rule fragment fire" data-fragment-index="2"><span class="id">2</span>(retirar-repuesto ana sello bodega)</div>
+      <div class="rule fragment fire" data-fragment-index="3"><span class="id">3</span>(desplazarse ana bodega planta-norte)</div>
+      <div class="rule fragment fire" data-fragment-index="4"><span class="id">4</span>(bloquear ana bomba3 planta-norte)</div>
+      <div class="rule fragment fire" data-fragment-index="5"><span class="id">5</span>(reparar ana bomba3 sello planta-norte)</div>
+      <div class="rule fragment fire" data-fragment-index="6"><span class="id">6</span>(liberar ana bomba3 planta-norte)</div>
+    </div>
+    <div>
+      <div class="stage">
+        <div class="panel first fragment fade-out" data-fragment-index="1">
+          <p class="panel-title">Estado inicial S0</p>
+          <div class="state"><span class="chip">(en ana base)</span><span class="chip">(en luis base)</span><span class="chip">(almacenado sello bodega)</span><span class="chip">(encendido bomba3)</span><span class="chip">(averiado bomba3)</span></div>
+          <p class="step-note">Meta: <span class="chip goal">(en-servicio bomba3)</span></p>
+        </div>
+        <div class="panel fragment current-visible" data-fragment-index="1">
+          <p class="panel-title">Estado S1 · tras el paso 1</p>
+          <div class="state"><span class="chip del">(en ana base)</span><span class="chip add">(en ana bodega)</span><span class="chip">(en luis base)</span><span class="chip">(almacenado sello bodega)</span><span class="chip">(encendido bomba3)</span><span class="chip">(averiado bomba3)</span></div>
+        </div>
+        <div class="panel fragment current-visible" data-fragment-index="2">
+          <p class="panel-title">Estado S2 · tras el paso 2</p>
+          <div class="state"><span class="chip pre">(en ana bodega)</span><span class="chip">(en luis base)</span><span class="chip add">(lleva ana sello)</span><span class="chip del">(almacenado sello bodega)</span><span class="chip">(encendido bomba3)</span><span class="chip">(averiado bomba3)</span></div>
+        </div>
+        <div class="panel fragment current-visible" data-fragment-index="3">
+          <p class="panel-title">Estado S3 · tras el paso 3</p>
+          <div class="state"><span class="chip del">(en ana bodega)</span><span class="chip add">(en ana planta-norte)</span><span class="chip">(en luis base)</span><span class="chip">(lleva ana sello)</span><span class="chip">(encendido bomba3)</span><span class="chip">(averiado bomba3)</span></div>
+        </div>
+        <div class="panel fragment current-visible" data-fragment-index="4">
+          <p class="panel-title">Estado S4 · tras el paso 4</p>
+          <div class="state"><span class="chip pre">(en ana planta-norte)</span><span class="chip">(en luis base)</span><span class="chip">(lleva ana sello)</span><span class="chip del">(encendido bomba3)</span><span class="chip">(averiado bomba3)</span><span class="chip add">(bloqueado bomba3)</span></div>
+        </div>
+        <div class="panel fragment current-visible" data-fragment-index="5">
+          <p class="panel-title">Estado S5 · tras el paso 5</p>
+          <div class="state"><span class="chip pre">(en ana planta-norte)</span><span class="chip">(en luis base)</span><span class="chip del">(lleva ana sello)</span><span class="chip del">(averiado bomba3)</span><span class="chip pre">(bloqueado bomba3)</span><span class="chip add">(reparado bomba3)</span></div>
+        </div>
+        <div class="panel fragment" data-fragment-index="6">
+          <p class="panel-title">Estado S6 · tras el paso 6</p>
+          <div class="state"><span class="chip pre">(en ana planta-norte)</span><span class="chip">(en luis base)</span><span class="chip add">(encendido bomba3)</span><span class="chip del">(bloqueado bomba3)</span><span class="chip pre">(reparado bomba3)</span><span class="chip goal">(en-servicio bomba3)</span></div>
+          <p class="step-note">✓ La meta se cumple y el validador acepta el plan.</p>
+        </div>
+      </div>
+      <div class="legend-chips"><span class="chip pre">precondición usada</span><span class="chip del">se elimina</span><span class="chip add">se agrega</span><span class="chip goal">meta</span></div>
+      <p class="muted" style="font-size:18px;margin-top:6px">Hechos fijos: (ubicado bomba3 planta-norte) · (compatible sello bomba3) · (certificado ana bomba3)</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Este es el plan que encontró Fast Downward para el problema anterior, y lo aceptó el validador de Unified Planning (lo comprobamos al preparar la clase; los archivos están en ejemplo_pddl). Avanzar paso a paso: en cada uno, las fichas azules son precondiciones que la acción usa, las rojas tachadas son hechos que la acción elimina y las verdes son hechos nuevos.</p>
+    <p>Momentos para detenerse. Paso 4: bloquear apaga el equipo; el hecho «encendido» desaparece y aparece «bloqueado», que es justo la precondición que necesita reparar. Paso 5: el repuesto se consume. Paso 6: liberar quita el bloqueo, enciende el equipo y logra la meta.</p>
+    <p>Nótese que el planificador eligió a Ana y no a Luis sin que nadie se lo dijera: las precondiciones de certificación descartan a Luis.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · COMPONENTES ============================ -->
+<section data-min="2">
+  <div class="kicker">Arquitectura</div>
+  <h2>Los componentes de un sistema de planificación</h2>
+  <svg class="diagram" viewBox="0 0 1180 400" role="img" aria-label="Modelo del dominio y problema entran al planificador; el plan pasa al validador; el plan válido pasa al ejecutor; el monitoreo compara lo esperado con lo observado y, si difieren, se replanifica">
+    <defs>
+      <marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e8ecf4"/></marker>
+      <marker id="ar9r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker>
+      <style>.bx{fill:#172033;stroke-width:2.5}.bt{font-size:25px;font-weight:700;fill:#e8ecf4}.bs{font-size:19px;fill:#a3adc2}.lk{stroke:#e8ecf4;stroke-width:2.5}</style>
+    </defs>
+    <rect class="bx" x="10" y="40" width="230" height="130" rx="14" stroke="#a78bfa"/><text x="125" y="92" text-anchor="middle" class="bt">Modelo</text><text x="125" y="122" text-anchor="middle" class="bs">dominio + problema</text><text x="125" y="148" text-anchor="middle" class="bs">(PDDL)</text>
+    <path class="lk" d="M242,105 L318,105" marker-end="url(#ar9)"/>
+    <g class="fragment" data-fragment-index="1">
+      <rect class="bx" x="320" y="40" width="230" height="130" rx="14" stroke="#38bdf8"/><text x="435" y="92" text-anchor="middle" class="bt">Planificador</text><text x="435" y="122" text-anchor="middle" class="bs">busca un plan</text><text x="435" y="148" text-anchor="middle" class="bs">(p. ej., Fast Downward)</text>
+      <path class="lk" d="M552,105 L628,105" marker-end="url(#ar9)"/>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <rect class="bx" x="630" y="40" width="230" height="130" rx="14" stroke="#4ade80"/><text x="745" y="92" text-anchor="middle" class="bt">Validador</text><text x="745" y="122" text-anchor="middle" class="bs">comprueba el plan</text><text x="745" y="148" text-anchor="middle" class="bs">(p. ej., VAL)</text>
+      <path class="lk" d="M862,105 L938,105" marker-end="url(#ar9)"/>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <rect class="bx" x="940" y="40" width="230" height="130" rx="14" stroke="#f5b942"/><text x="1055" y="92" text-anchor="middle" class="bt">Ejecutor</text><text x="1055" y="122" text-anchor="middle" class="bs">personas, robots</text><text x="1055" y="148" text-anchor="middle" class="bs">o sistemas</text>
+    </g>
+    <g class="fragment" data-fragment-index="4">
+      <path d="M1055,172 L1055,290 L760,290" stroke="#f5b942" stroke-width="2.5" fill="none" marker-end="url(#ar9r)"/>
+      <rect class="bx" x="440" y="245" width="318" height="96" rx="14" stroke="#f5b942"/><text x="599" y="285" text-anchor="middle" class="bt">Monitoreo</text><text x="599" y="318" text-anchor="middle" class="bs">¿lo observado = lo esperado?</text>
+      <path d="M438,293 L380,293 L380,174" stroke="#f5b942" stroke-width="2.5" fill="none" stroke-dasharray="9 6" marker-end="url(#ar9r)"/>
+      <text x="300" y="232" text-anchor="middle" font-size="21" font-weight="700" fill="#f5b942">replanificar</text>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>Cuatro piezas con responsabilidades separadas. El modelo describe el mundo; el planificador busca un plan; el validador comprueba de forma independiente que el plan es aplicable y logra la meta; el ejecutor lo lleva a cabo. Separar al validador del planificador es una buena práctica de ingeniería: quien genera no es quien certifica.</p>
+    <p>VAL, desarrollado por Howey, Long y Fox, es el validador clásico de la comunidad de planificación; en el laboratorio usaremos el validador incluido en Unified Planning, que cumple la misma función.</p>
+    <p>El monitoreo cierra el ciclo: si al ejecutar lo observado no coincide con lo esperado, se replanifica desde el estado real. Esta separación entre generar y verificar es la misma idea que retoma el marco LLM-Modulo del club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · HEURÍSTICA POR RELAJACIÓN ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Técnicas · panorama</div>
+  <h2>¿Cómo busca el planificador? Relajando el problema</h2>
+  <div class="cols">
+    <div class="card">
+      <h4>Mundo real</h4>
+      <p style="font-size:25px">Al desplazarse, Ana <span class="bad">deja</span> la base: los efectos que eliminan hechos obligan a ordenar bien las acciones.</p>
+      <div class="state" style="margin-top:10px"><span class="chip del">(en ana base)</span><span class="chip add">(en ana bodega)</span></div>
+    </div>
+    <div class="card violet fragment">
+      <h4 class="violet">Problema relajado</h4>
+      <p style="font-size:25px">Se <strong>ignoran</strong> los efectos que eliminan: Ana puede «estar» en todas partes. Resolverlo es fácil y su costo <em>estima</em> la distancia a la meta.</p>
+      <div class="state" style="margin-top:10px"><span class="chip">(en ana base)</span><span class="chip add">(en ana bodega)</span><span class="chip add">(en ana planta-norte)</span></div>
+    </div>
+  </div>
+  <p class="fragment" style="font-size:26px;margin-top:16px">Esa estimación guía la búsqueda, como la heurística de A* en la Sesión 1. Es la idea del planificador FF (Hoffmann y Nebel, 2001).</p>
+  <aside class="notes">
+    <p>Solo la idea, sin algoritmos. Un planificador busca entre muchísimas combinaciones de acciones; para no perderse necesita estimar qué tan lejos está de la meta desde cada estado. El truco más influyente es relajar el problema: ignorar los efectos que eliminan hechos. En el mundo relajado nada se pierde, así que es fácil encontrar un plan aproximado; contar sus acciones da una estimación útil, aunque no exacta, de la distancia real.</p>
+    <p>Es el mismo papel que cumplía la heurística en A*: orientar la búsqueda hacia la meta. El planificador FF de Hoffmann y Nebel (2001) popularizó esta heurística; Fast Downward, de Helmert (2006), el planificador del laboratorio, implementa esta y otras heurísticas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · HTN ============================ -->
+<section data-min="2">
+  <div class="kicker">Técnicas · panorama</div>
+  <h2>Planificación jerárquica: descomponer la tarea</h2>
+  <svg class="diagram" viewBox="0 0 1180 360" role="img" aria-label="Árbol HTN: la tarea restablecer la bomba 3 se descompone en preparar, intervenir con seguridad y cerrar; cada una en acciones primitivas">
+    <defs><style>.tn{font-size:23px;font-weight:700;fill:#e8ecf4}.tp{font-family:'JetBrains Mono',monospace;font-size:19px;fill:#e8ecf4}.lnk{stroke:#a3adc2;stroke-width:2.5}</style></defs>
+    <rect x="410" y="10" width="360" height="62" rx="14" fill="#2a2210" stroke="#f5b942" stroke-width="2.5"/><text x="590" y="50" text-anchor="middle" class="tn">Restablecer la bomba 3</text>
+    <g class="fragment" data-fragment-index="1">
+      <line class="lnk" x1="590" y1="72" x2="200" y2="140"/><line class="lnk" x1="590" y1="72" x2="590" y2="140"/><line class="lnk" x1="590" y1="72" x2="980" y2="140"/>
+      <rect x="60" y="140" width="280" height="58" rx="14" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/><text x="200" y="177" text-anchor="middle" class="tn">Preparar</text>
+      <rect x="430" y="140" width="320" height="58" rx="14" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/><text x="590" y="177" text-anchor="middle" class="tn">Intervenir con seguridad</text>
+      <rect x="840" y="140" width="280" height="58" rx="14" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/><text x="980" y="177" text-anchor="middle" class="tn">Cerrar</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <line class="lnk" x1="200" y1="198" x2="110" y2="262"/><line class="lnk" x1="200" y1="198" x2="290" y2="262"/>
+      <line class="lnk" x1="590" y1="198" x2="500" y2="262"/><line class="lnk" x1="590" y1="198" x2="680" y2="262"/>
+      <line class="lnk" x1="980" y1="198" x2="980" y2="262"/>
+      <rect x="20" y="262" width="180" height="76" rx="12" fill="#172033" stroke="#a3adc2" stroke-width="2"/><text x="110" y="295" text-anchor="middle" class="tp">desplazarse</text><text x="110" y="320" text-anchor="middle" class="tp">(a bodega)</text>
+      <rect x="210" y="262" width="170" height="76" rx="12" fill="#172033" stroke="#a3adc2" stroke-width="2"/><text x="295" y="295" text-anchor="middle" class="tp">retirar-</text><text x="295" y="320" text-anchor="middle" class="tp">repuesto</text>
+      <rect x="420" y="262" width="160" height="76" rx="12" fill="#172033" stroke="#a3adc2" stroke-width="2"/><text x="500" y="306" text-anchor="middle" class="tp">bloquear</text>
+      <rect x="600" y="262" width="160" height="76" rx="12" fill="#172033" stroke="#a3adc2" stroke-width="2"/><text x="680" y="306" text-anchor="middle" class="tp">reparar</text>
+      <rect x="900" y="262" width="160" height="76" rx="12" fill="#172033" stroke="#a3adc2" stroke-width="2"/><text x="980" y="306" text-anchor="middle" class="tp">liberar</text>
+    </g>
+  </svg>
+  <p class="fragment" data-fragment-index="3" style="font-size:26px">Los <em>métodos</em> dicen cómo descomponer cada tarea: recetas del oficio en lugar de búsqueda a ciegas (Erol, Hendler y Nau, 1994).</p>
+  <aside class="notes">
+    <p>La planificación jerárquica, o HTN por sus siglas en inglés (Hierarchical Task Networks), no busca entre acciones sueltas: parte de una tarea de alto nivel y la descompone con métodos, que son recetas del tipo «para restablecer un equipo: preparar, intervenir con seguridad y cerrar». Así razona un jefe de mantenimiento, y por eso HTN se usa mucho en aplicaciones reales: permite codificar el conocimiento del oficio y reduce la búsqueda.</p>
+    <p>Por simplicidad, el árbol omite el segundo desplazamiento, de la bodega a la planta. Lo retomaremos en el Bloque 3: la sección de pasos de un plan.md, organizada en fases, es una descomposición jerárquica escrita en lenguaje natural.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · MONITOREO Y REPLANIFICACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Técnicas · panorama</div>
+  <h2>Cuando el mundo no coopera: monitorear y replanificar</h2>
+  <div class="cols">
+    <div class="card">
+      <p class="panel-title">Esperado tras el paso 5</p>
+      <div class="state"><span class="chip">(reparado bomba3)</span><span class="chip">(bloqueado bomba3)</span></div>
+      <p class="panel-title fragment" data-fragment-index="1" style="margin-top:16px">Observado</p>
+      <div class="state fragment" data-fragment-index="1"><span class="chip del">(reparado bomba3)</span><span class="chip add" style="white-space:normal">la prueba muestra fuga: el sello vino defectuoso</span></div>
+    </div>
+    <div>
+      <ul>
+        <li class="fragment" data-fragment-index="2">El ejecutor compara lo observado con lo esperado</li>
+        <li class="fragment" data-fragment-index="3">Si difieren, se <strong>replanifica desde el estado real</strong>: conseguir otro sello y repetir</li>
+        <li class="fragment" data-fragment-index="4">Planificar y actuar se entrelazan <span class="muted small">(Ghallab, Nau y Traverso, 2025)</span></li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La planificación clásica supone un mundo predecible: las acciones hacen exactamente lo que dicen. La realidad no coopera: un repuesto viene defectuoso, un técnico se enferma, un equipo falla de otra manera. Por eso los sistemas reales monitorean la ejecución: después de cada paso comparan el estado observado con el esperado y, si no coinciden, replanifican desde donde están, no desde el principio.</p>
+    <p>El libro de Ghallab, Nau y Traverso (2025) defiende justamente esto: un sistema inteligente no planifica una vez y ejecuta a ciegas; actúa, observa, revisa y vuelve a planificar. Este mismo episodio del sello defectuoso aparece en el Bloque 3, registrado en el plan.md.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · CASO REAL: DEEP SPACE 1 ============================ -->
+<section data-min="2">
+  <div class="kicker violet">Caso real · 1999</div>
+  <h2>Remote Agent toma el mando de Deep Space 1</h2>
+  <div class="cols c64 mid">
+    <ul style="font-size:25px">
+      <li>17–21 de mayo de 1999: «el primer software de IA en comandar una nave espacial» (JPL)</li>
+      <li class="fragment">Recibía <em>objetivos</em>, no comandos: «toma fotos de estos asteroides y mantén el motor encendido el 90 % del tiempo»</li>
+      <li class="fragment">Planificador, ejecutivo y diagnóstico: ante una falla simulada (la cámara no se apagaba), <strong>replanificó a bordo</strong></li>
+      <li class="fragment">Un error nunca visto en tierra detuvo la primera corrida; la segunda completó el 100 % de los objetivos</li>
+    </ul>
+    <figure class="figure">
+      <img class="nobg" src="assets/img/deep_space_1_nasa.jpg" alt="Ilustración de la sonda Deep Space 1 en el espacio, con sus paneles solares desplegados y el motor iónico encendido" style="max-height:430px">
+      <figcaption class="credit">Deep Space 1 (ilustración, PIA04242). NASA/JPL, dominio público, <a href="https://commons.wikimedia.org/wiki/File:PIA04242.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Entre el 17 y el 21 de mayo de 1999, el software Remote Agent, de NASA Ames y JPL, comandó la sonda Deep Space 1. JPL lo anunció así: «Artificial intelligence software is in primary command of a spacecraft for the first time». Ese año fue co-ganador del premio Software of the Year de NASA.</p>
+    <p>Los operadores le daban objetivos en lugar de secuencias de comandos con hora exacta, por ejemplo: «durante la próxima semana toma fotos de estos asteroides y mantén el motor encendido el 90 % del tiempo». Integraba un planificador y programador de actividades, un ejecutivo que llevaba a cabo el plan y Livingstone, un sistema de diagnóstico y recuperación basado en modelos. Si el ejecutivo no podía reparar el plan, pedía uno nuevo al planificador: el ciclo de monitoreo y replanificación de este bloque, en una nave real.</p>
+    <p>Dos detalles para gestores. Primero, una falla simulada (el interruptor de la cámara «atascado» en encendido) obligó a replanificar a bordo considerando la menor energía disponible, y funcionó. Segundo, un error de concurrencia en el ejecutivo, que no había aparecido en miles de pruebas en tierra, detuvo la primera corrida cuando se había cumplido cerca del 70 % de los objetivos; con un escenario nuevo de seis horas se completó el 100 %. Matiz: no fue «sin supervisión humana», como dicen algunas fuentes secundarias: el equipo lo vigiló las 24 horas. Fuentes: informe de validación de JPL (Bernard et al., 2000) y Nayak et al. (1999).</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · CASO REAL: MARTE ============================ -->
+<section data-min="1.5">
+  <div class="kicker violet">Caso real · 2004</div>
+  <h2>Planificar el día de los rovers de Marte</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img class="nobg" src="assets/img/rover_mer_nasa.jpg" alt="Ilustración de un rover de exploración de Marte, Spirit u Opportunity, sobre la superficie marciana" style="max-height:420px">
+      <figcaption class="credit">Rover de exploración de Marte (ilustración, PIA04413). NASA/JPL/Cornell University, Maas Digital LLC; dominio público, <a href="https://commons.wikimedia.org/wiki/File:NASA_Mars_Rover.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+    <ul style="font-size:25px">
+      <li>MAPGEN (NASA Ames y JPL) armaba cada día, desde la Tierra, el plan de actividades de Spirit y Opportunity</li>
+      <li class="fragment">Iniciativa mixta: el planificador propone y vigila las restricciones; una persona decide</li>
+      <li class="fragment"><strong>Lección:</strong> el modo «planificar todo» casi no se usaba: sus planes no se podían explicar en la reunión de aprobación</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>MAPGEN combinó la herramienta de planificación de actividades APGEN, de JPL, con el planificador por restricciones EUROPA, de NASA Ames. Cada sol (un día marciano), el equipo tenía como máximo 19,5 horas para producir los comandos del día siguiente; un plan podía tener de cientos a miles de actividades, y una sola persona, el planificador táctico, era responsable de él. Según estimaciones subjetivas de los científicos y gestores de la misión, el retorno científico aumentó entre 20 y 40 % frente al método manual de Mars Pathfinder (Bresina et al., 2005).</p>
+    <p>La lección más valiosa la reportan los propios desarrolladores: el modo de generar el plan completo de forma automática casi no se usaba, porque los planes resultantes no tenían una estructura intuitiva y el responsable no podía explicarlos en la reunión de aprobación. Lo que más valoraban los usuarios era replanificar, deshacer y hacer cumplir restricciones. Es exactamente la razón de ser del plan.md del Bloque 3: un plan que una persona pueda leer, explicar y aprobar.</p>
+    <p>Hoy la planificación también va a bordo: desde el 5 de octubre de 2023, el rover Perseverance usa un planificador que reajusta su agenda si las actividades terminan antes o después de lo previsto (JPL, Parjan y Gaines, 2024).</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · PROCESOS DE NEGOCIO ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Organizaciones</div>
+  <h2>Componer procesos de negocio con un planificador</h2>
+  <figure class="figure" style="margin-bottom:12px" id="fig-bpmn">
+    <img src="assets/img/bpmn_proceso.png" alt="Diagrama BPMN de un proceso de negocio con tareas, decisiones y flujos" style="max-height:275px">
+    <figcaption class="credit" id="cred-bpmn">Un proceso de negocio en notación BPMN: evento, tarea, decisión y documento. VARGUX, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:BPMN-UnProcesoConFlujoNormal-version2.svg">Wikimedia Commons</a></figcaption>
+  </figure>
+  <div class="cols">
+    <ul style="font-size:24px">
+      <li>Cada servicio o transacción es una <em>acción</em>: lo que necesita son precondiciones; lo que produce, efectos</li>
+      <li class="fragment">La meta es el estado final deseado; el plan es el proceso</li>
+    </ul>
+    <ul style="font-size:24px">
+      <li class="fragment"><strong>SAP:</strong> 404 tipos de objetos de negocio y 2 418 transacciones, traducidos a PDDL (Hoffmann, Weber y Kraft, 2012)</li>
+      <li class="fragment">Matiz: quedó como prototipo de investigación</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>La composición de procesos es planificación: si cada servicio o transacción se describe con lo que necesita (precondiciones) y lo que produce (efectos), un planificador puede encadenarlos para llegar a un estado final deseado. Sirin, Parsia, Wu, Hendler y Nau (2004) lo hicieron con servicios web y el planificador jerárquico SHOP2; en Granada, el grupo de González-Ferrer, Fernández-Olivares y Castillo (2013) tradujo modelos de procesos de negocio a dominios HTN.</p>
+    <p>El caso más ambicioso fue en SAP (Hoffmann, Weber y Kraft, JAIR 2012). El modelo de estados y acciones de su software empresarial, con 404 tipos de objetos de negocio y 2 418 transacciones, se tradujo a una variante de PDDL; un planificador derivado de FF generaba el proceso a partir del cambio de estado que quería el experto de negocio. Matiz honesto, de los mismos autores: no llegó a producto, y el piloto con un cliente se canceló con la crisis financiera de 2008 y 2009.</p>
+    <p>En la industria también hay despliegues: en Xerox, un planificador temporal controló prototipos de impresoras modulares a 220 páginas por minuto (Ruml et al., JAIR 2011).</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · SÍNTESIS ============================ -->
+<section data-min="1">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de este bloque</h2>
+  <div class="flow4">
+    <div class="card"><h4>Modelo</h4><p class="small">hechos, acciones con precondiciones y efectos (PDDL)</p></div>
+    <div class="card accent"><h4>Planificador</h4><p class="small">busca, guiado por heurísticas o por recetas (HTN)</p></div>
+    <div class="card ok"><h4>Validador</h4><p class="small">quien genera no es quien certifica</p></div>
+    <div class="card amber"><h4>Monitoreo</h4><p class="small">si el mundo no coopera, se replanifica</p></div>
+  </div>
+  <p style="font-size:27px;margin-top:22px">Las reglas de la organización se vuelven precondiciones que ningún plan válido puede violar.</p>
+  <aside class="notes">
+    <p>Recapitular en una frase por tarjeta antes del trabajo independiente y del laboratorio.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · TRABAJO INDEPENDIENTE 1 ============================ -->
+<section data-min="1">
+  <div class="kicker amber">Trabajo independiente 1</div>
+  <h2>Su proceso como problema de planificación</h2>
+  <div class="ti-grid">
+    <div>
+      <p class="small" style="font-size:26px">Elija un proceso de su organización y modélelo como un problema de planificación:</p>
+      <ol class="small" style="font-size:25px">
+        <li>3–4 acciones con precondiciones y efectos (en PDDL o en una tabla)</li>
+        <li>El estado inicial y la meta</li>
+        <li>Un plan trazado a mano, estado por estado</li>
+        <li>Una regla de negocio convertida en precondición</li>
+      </ol>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Tiempo</span>70 min</div>
+      <div><span class="label">Entregable</span>PDF de 1–2 páginas</div>
+      <div><span class="label">Entrega</span>inicio de la semana 2</div>
+      <div><span class="label">Apoyo</span><code>ejemplo_pddl/</code> · <a href="https://editor.planning.domains/">editor en línea</a></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El enunciado completo está en trabajo_independiente.md. Sugerir procesos con reglas claras: aprobación de compras, despacho de pedidos, incorporación de un empleado nuevo, cierre contable. El TI-2 usará este mismo problema para poner a prueba a un LLM.</p>
+    <p>Quien quiera, puede comprobar su modelo con un planificador real en editor.planning.domains, sin cuenta ni instalación: el botón se llama «Solver» (los tutoriales viejos mencionan un botón «Solve» que ya no funciona). Advertir que los nombres con tildes o ñ hacen fallar al planificador sin mostrar error.</p>
+  </aside>
+</section>
+
+<!-- ============================ 18 · ANUNCIO DEL LAB 2A ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 35 min</div>
+  <h1>Laboratorio 2A<br><span class="accent">Planificar una operación en PDDL</span></h1>
+  <p class="lead muted">Formalizar en PDDL una orden de mantenimiento de MantenIA, resolverla con Unified Planning y Fast Downward, y validar el plan.</p>
+  <p class="muted" style="font-size:24px">Notebook autocontenido en VS Code: toda la explicación está dentro del ejercicio.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="bloque2_llms_planificacion.html">Bloque 2 →</a></p>
+  <aside class="notes">
+    <p>Dar paso al laboratorio (35 min). Lo que no alcance a terminarse en clase se completa como trabajo independiente. Después viene el Bloque 2: LLMs y planificación.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del bloque 1</div>
+  <h2>Para profundizar</h2>
+  <div class="cols refs-compact refs-tight">
+    <ol class="refs">
+      <li>Fikes, R. E. y Nilsson, N. J. (1971). STRIPS: A new approach to the application of theorem proving to problem solving. <em>Artificial Intelligence</em>, 2(3–4), 189–208. <a href="https://ai.stanford.edu/~nilsson/OnlinePubs-Nils/PublishedPapers/strips.pdf">PDF</a></li>
+      <li>McDermott, D. et al. (1998). <em>PDDL—The Planning Domain Definition Language</em>, v. 1.2. Informe técnico CVC TR-98-003, Yale. <a href="https://www.cs.cmu.edu/~mmv/planning/readings/98aips-PDDL.pdf">PDF</a></li>
+      <li>Erol, K., Hendler, J. y Nau, D. S. (1994). HTN planning: Complexity and expressivity. <em>AAAI-94</em>, 1123–1128. <a href="https://cdn.aaai.org/AAAI/1994/AAAI94-173.pdf">PDF</a></li>
+      <li>Hoffmann, J. y Nebel, B. (2001). The FF planning system. <em>JAIR</em>, 14, 253–302. <a href="https://www.jair.org/index.php/jair/article/view/10276">JAIR</a></li>
+      <li>Helmert, M. (2006). The Fast Downward planning system. <em>JAIR</em>, 26, 191–246. <a href="https://www.jair.org/index.php/jair/article/view/10457">JAIR</a></li>
+      <li>Howey, R., Long, D. y Fox, M. (2004). VAL: Automatic plan validation… <em>ICTAI 2004</em>, 294–301. <a href="https://strathprints.strath.ac.uk/2550/6/strathprints002550.pdf">Manuscrito</a> · <a href="https://github.com/KCL-Planning/VAL">Código</a></li>
+      <li>Ghallab, M., Nau, D. y Traverso, P. (2025). <em>Acting, Planning, and Learning</em>. Cambridge University Press. <a href="https://www.cambridge.org/core/books/acting-planning-and-learning/CA9D7D25137AA950AC91A7D9F378EA0A">Editorial</a></li>
+      <li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em> (4.ª ed.), cap. 11. Pearson. <a href="https://aima.cs.berkeley.edu/contents.html">Contenido</a></li>
+      <li>Micheli, A. et al. (2025). Unified Planning: Modeling, manipulating and solving AI planning problems in Python. <em>SoftwareX</em>, 29, 102012. <a href="https://ai.dmi.unibas.ch/papers/micheli-et-al-softwarex2025.pdf">PDF abierto</a></li>
+    </ol>
+    <ol class="refs" start="10">
+      <li>JPL (1999, 17 de mayo). Computer program assumes spacecraft command. <a href="https://web.archive.org/web/20250202083121/https://www.jpl.nasa.gov/news/computer-program-assumes-spacecraft-command/">Comunicado (archivo)</a></li>
+      <li>Bernard, D. E. et al. (2000). <em>Remote Agent Experiment: DS1 Technology Validation Report</em>. JPL Publication 00-10. <a href="https://pds-smallbodies.astro.umd.edu/holdings/ds1-c-micas-3-rdr-visccd-borrelly-v1.0/document/doc_Apr04/DS1_Integrated_Reports_A.pdf">PDF (NASA PDS)</a></li>
+      <li>Nayak, P. P. et al. (1999). Validating the DS1 Remote Agent Experiment. <em>i-SAIRAS-99</em>. <a href="https://ai.jpl.nasa.gov/public/documents/papers/rax-results-isairas99.pdf">PDF</a></li>
+      <li>Bresina, J. L., Jónsson, A. K., Morris, P. H. y Rajan, K. (2005). Activity planning for the Mars Exploration Rovers. <em>ICAPS 2005</em>. <a href="https://cdn.aaai.org/ICAPS/2005/ICAPS05-005.pdf">PDF</a></li>
+      <li>Parjan, S. y Gaines, D. (2024). «In OBP we trust»: Verification and validation of the M2020 On Board Planner. <em>IEEE Aerospace Conference</em>. <a href="https://ai.jpl.nasa.gov/public/documents/papers/parjan-ieee2024-m2020.pdf">PDF</a></li>
+      <li>Hoffmann, J., Weber, I. y Kraft, F. M. (2012). SAP speaks PDDL. <em>JAIR</em>, 44, 587–632. <a href="https://jair.org/index.php/jair/article/view/10773">JAIR</a></li>
+      <li>Sirin, E., Parsia, B., Wu, D., Hendler, J. y Nau, D. (2004). HTN planning for Web Service composition using SHOP2. <em>Journal of Web Semantics</em>, 1(4), 377–396. <a href="https://doi.org/10.1016/j.websem.2004.06.005">DOI</a></li>
+      <li>Ruml, W., Do, M. B., Zhou, R. y Fromherz, M. P. J. (2011). On-line planning and scheduling: An application to controlling modular printers. <em>JAIR</em>, 40, 415–468. <a href="https://jair.org/index.php/jair/article/view/10693">JAIR</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="club_lectura.html">← Club de lectura</a><a href="index.html">Volver a la agenda</a><a href="bloque2_llms_planificacion.html">Bloque 2 →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 2 · Bloque 1 · Planificación automática clásica</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

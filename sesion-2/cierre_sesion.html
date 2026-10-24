@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cierre de la sesión — Sesión 2 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .tplfile .body { font-size: 24px; line-height: 1.3; }
+  .titab td, .titab th { font-size: 25px; padding: 8px 12px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="15">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 2 · Unidad 2 · Cierre</div>
+  <h1>¿Pueden planificar los LLMs?</h1>
+  <p class="lead muted">Lo que sabemos ahora, el proyecto y lo que viene</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>15 min</strong></p>
+  <p class="navlinks"><a href="bloque3_plan_md.html">← Bloque 3</a><a href="index.html">Agenda</a></p>
+  <aside class="notes">
+    <p>Volvemos a la pregunta del club de lectura, ahora con los tres bloques y los tres laboratorios encima. Después, diez minutos de trabajo real en el plan.md del proyecto.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · MAPA DE LA UNIDAD ============================ -->
+<section data-min="3">
+  <div class="kicker">Síntesis de la unidad</div>
+  <h2>Tres formas de planificar, una misma idea</h2>
+  <svg class="diagram" viewBox="0 0 1180 360" role="img" aria-label="Mapa de la unidad: planificación clásica, LLMs y planificación, y plan.md, unidos por la separación entre generar y verificar">
+    <defs>
+      <marker id="arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e8ecf4"/></marker>
+      <style>.mh{font-size:25px;font-weight:700;fill:#e8ecf4}.mg{font-size:21px;fill:#38bdf8;font-weight:600}.mv{font-size:21px;fill:#4ade80;font-weight:600}.ms{font-size:18px;fill:#a3adc2}</style>
+    </defs>
+    <g>
+      <rect x="10" y="10" width="370" height="230" rx="16" fill="#172033" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="195" y="50" text-anchor="middle" class="mh">Bloque 1 · Clásica</text>
+      <text x="40" y="105" class="mg">Genera: planificador</text><text x="40" y="132" class="ms">sobre un modelo PDDL</text>
+      <text x="40" y="180" class="mv">Verifica: validador</text><text x="40" y="207" class="ms">automático (VAL)</text>
+    </g>
+    <g class="fragment">
+      <rect x="405" y="10" width="370" height="230" rx="16" fill="#172033" stroke="#a78bfa" stroke-width="2.5"/>
+      <text x="590" y="50" text-anchor="middle" class="mh">Bloque 2 · LLMs</text>
+      <text x="435" y="105" class="mg">Genera: el LLM propone</text><text x="435" y="132" class="ms">o traduce a PDDL</text>
+      <text x="435" y="180" class="mv">Verifica: críticos externos</text><text x="435" y="207" class="ms">(LLM-Modulo)</text>
+    </g>
+    <g class="fragment">
+      <rect x="800" y="10" width="370" height="230" rx="16" fill="#172033" stroke="#f5b942" stroke-width="2.5"/>
+      <text x="985" y="50" text-anchor="middle" class="mh">Bloque 3 · plan.md</text>
+      <text x="830" y="105" class="mg">Genera: el agente redacta</text><text x="830" y="132" class="ms">un plan en lenguaje natural</text>
+      <text x="830" y="180" class="mv">Verifica: una persona</text><text x="830" y="207" class="ms">y las pruebas de cada paso</text>
+    </g>
+    <g class="fragment">
+      <rect x="160" y="275" width="860" height="70" rx="35" fill="#10261a" stroke="#4ade80" stroke-width="2.5"/>
+      <text x="590" y="320" text-anchor="middle" class="mh" style="font-size:27px">Quien genera no es quien certifica</text>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>La unidad recorrió tres formas de planificar. En las tres, la garantía no viene de quien propone el plan, sino de quien lo verifica: un validador automático sobre un modelo formal, un banco de críticos externos alrededor de un LLM, o una persona que revisa un plan.md cuyos pasos traen su propia verificación.</p>
+    <p>Respuesta a la pregunta del club, con lo visto hoy: los LLMs no garantizan planes correctos por sí solos, y la evidencia reciente lo matiza pero no lo cambia; son muy útiles para proponer, traducir y redactar, siempre que algo o alguien verifique. Volver a las predicciones que el grupo anotó en el club y comentar cuáles se cumplieron.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · PROYECTO INTEGRADOR ============================ -->
+<section data-min="6.5">
+  <div class="kicker amber">Proyecto integrador</div>
+  <h2>Empiecen hoy el plan.md del proyecto</h2>
+  <div class="cols c46">
+    <div>
+      <ol style="font-size:26px">
+        <li>Copien <code>plantilla_plan.md</code></li>
+        <li class="fragment">Escriban el objetivo verificable del proyecto, el contexto y el alcance</li>
+        <li class="fragment">Propongan los primeros 5 pasos, con su verificación</li>
+        <li class="fragment">Revísenlo con la lista de chequeo</li>
+      </ol>
+      <p class="fragment amber" style="font-size:25px">Primera versión: inicio de la semana 2. Desde entonces, el plan.md es la bitácora del proyecto.</p>
+    </div>
+    <div class="file tplfile">
+      <div class="bar"><i></i><i></i><i></i><span>plantilla_plan.md</span></div>
+      <div class="body"><span class="md-t"># Plan: &lt;nombre del proyecto&gt;</span>
+<span class="md-h">## Objetivo</span>
+<span class="md-h">## Contexto</span>
+<span class="md-h">## Alcance</span>
+<span class="md-h">## Restricciones</span>
+<span class="md-h">## Pasos</span>
+<span class="md-box">- [ ]</span> 1. … → … · Verif.: …
+<span class="md-h">## Criterios de aceptación</span>
+<span class="md-h">## Riesgos y aprobaciones</span>
+<span class="md-h">## Registro de avance</span></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La propuesta del proyecto se entregó al inicio de esta sesión. Ahora, diez minutos para que cada equipo arranque su plan.md con la plantilla, que está en la carpeta de la sesión e incluye la lista de chequeo al final.</p>
+    <p>Recordar el uso en el curso: el plan.md del proyecto se actualiza en el bloque de proyecto de cada sesión y hace de bitácora: se marcan los pasos cumplidos, se registran las desviaciones y se replanifica por escrito. La primera versión se entrega al inicio de la semana 2.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · TRABAJOS INDEPENDIENTES ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Trabajo independiente</div>
+  <h2>Tres trabajos prácticos para la semana 2</h2>
+  <table class="titab compact">
+    <tr><th>Trabajo</th><th>Bloque</th><th>Tiempo</th></tr>
+    <tr><td>TI-1 · Su proceso como problema de planificación</td><td>1</td><td>70 min</td></tr>
+    <tr><td>TI-2 · Ponga a prueba a un LLM como planificador</td><td>2</td><td>65 min</td></tr>
+    <tr><td>TI-3 · El plan.md de una tarea real de su trabajo</td><td>3</td><td>75 min</td></tr>
+  </table>
+  <p style="font-size:26px;margin-top:18px">Entrega: inicio de la semana 2, un PDF por trabajo. Enunciados completos en <code>trabajo_independiente.md</code>.</p>
+  <aside class="notes">
+    <p>En total, unas tres horas y media. El resto del trabajo independiente de la semana se dedica a terminar los tres laboratorios, al plan.md del proyecto y a la lectura de la sesión 3. Los tres trabajos están encadenados: el problema del TI-1 se usa para poner a prueba al LLM en el TI-2.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · LECTURA DE LA SESIÓN 3 ============================ -->
+<section data-min="3">
+  <div class="kicker violet">Próxima sesión · Unidad 3</div>
+  <h2>Lectura: AlphaGeometry, otro sistema que genera y verifica</h2>
+  <figure class="figure" style="margin-bottom:10px">
+    <img src="assets/img/alphageometry_fig1.png" alt="Figura 1 de AlphaGeometry: un motor de deducción simbólica intenta probar el teorema; si no lo logra, un modelo de lenguaje propone un punto auxiliar y el motor vuelve a intentarlo, hasta encontrar la prueba" style="max-height:310px">
+    <figcaption class="credit">El modelo de lenguaje propone construcciones auxiliares (p. ej., «D, punto medio de BC») y el motor simbólico deduce y verifica. Trinh et al. (2024), <em>Nature</em> 625, Fig. 1, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></figcaption>
+  </figure>
+  <div class="cols">
+    <p style="font-size:24px">Trinh, T. H., Wu, Y., Le, Q. V., He, H. y Luong, T. (2024). <em>Solving olympiad geometry without human demonstrations</em>. Nature 625, 476–482. <a href="https://www.nature.com/articles/s41586-023-06747-5">Acceso abierto</a></p>
+    <p class="fragment" style="font-size:24px"><strong>Unidad 3:</strong> cómo razonan los LLMs y cómo se verifica un razonamiento con <em>solvers</em>.</p>
+  </div>
+  <p class="navlinks"><a href="bloque3_plan_md.html">← Bloque 3</a><a href="index.html">Volver a la agenda</a></p>
+  <aside class="notes">
+    <p>La lectura de la sesión 3 cierra el círculo de hoy. El artículo del club de lectura citaba a AlphaGeometry como un ejemplo del ciclo generar-probar-criticar: un modelo de lenguaje propone construcciones geométricas auxiliares y un motor de deducción simbólica intenta completar la prueba; si no lo logra, el modelo propone otra construcción. La figura muestra ese ciclo en un problema sencillo y en uno de la Olimpiada Internacional de Matemáticas de 2015.</p>
+    <p>No hay que explicar ahora cómo funciona por dentro: ese es el tema de la Unidad 3, sobre razonamiento automático con solvers y razonamiento en LLMs. Pedir que la lean con la pregunta de hoy en mente: ¿quién genera y quién verifica? El artículo es de acceso abierto, con licencia CC BY 4.0.</p>
+  </aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 2 · Cierre de la sesión</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

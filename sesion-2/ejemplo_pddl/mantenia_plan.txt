@@ -1,0 +1,7 @@
+; Plan encontrado por Fast Downward (vía Unified Planning 1.3.0) y aceptado por el validador: VALID
+(desplazarse ana base bodega)
+(retirar-repuesto ana sello bodega)
+(desplazarse ana bodega planta-norte)
+(bloquear ana bomba3 planta-norte)
+(reparar ana bomba3 sello planta-norte)
+(liberar ana bomba3 planta-norte)

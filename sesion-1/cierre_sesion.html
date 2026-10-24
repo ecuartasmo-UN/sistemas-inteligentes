@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cierre de la sesión — Sesión 1 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="15">
+
+<!-- ============================ 1 · MAPA DE LA UNIDAD ============================ -->
+<section data-min="3">
+  <div class="kicker">Cierre de la sesión · 15 min</div>
+  <h2>Mapa de la Unidad 1</h2>
+  <svg class="diagram" viewBox="0 0 1180 400" role="img" aria-label="Mapa conceptual de la unidad: del conocimiento al sistema multiagente">
+    <defs>
+      <marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+      <style>.mb{rx:14;stroke-width:2.5}.mt{font-size:24px;font-weight:700;fill:#e8ecf4}.ms{font-size:19px;fill:#a3adc2}</style>
+    </defs>
+    <rect class="mb" x="10" y="140" width="250" height="130" fill="#2a2210" stroke="#f5b942"/>
+    <text x="135" y="190" text-anchor="middle" class="mt">Conocimiento</text><text x="135" y="220" text-anchor="middle" class="ms">reglas, marcos,</text><text x="135" y="244" text-anchor="middle" class="ms">ontologías, casos</text>
+    <g class="fragment" data-fragment-index="1">
+      <path class="msg-line" d="M260,205 L305,205" stroke="#a3adc2" stroke-width="3" marker-end="url(#mp)"/>
+      <rect class="mb" x="305" y="140" width="260" height="130" fill="#0f2a3a" stroke="#38bdf8"/>
+      <text x="435" y="190" text-anchor="middle" class="mt">Sistema experto</text><text x="435" y="220" text-anchor="middle" class="ms">inferencia</text><text x="435" y="244" text-anchor="middle" class="ms">y explicación</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <path class="msg-line" d="M565,205 L610,205" stroke="#a3adc2" stroke-width="3" marker-end="url(#mp)"/>
+      <rect class="mb" x="610" y="140" width="260" height="130" fill="#0f2a3a" stroke="#38bdf8"/>
+      <text x="740" y="190" text-anchor="middle" class="mt">Agente</text><text x="740" y="220" text-anchor="middle" class="ms">percibe, decide, actúa</text><text x="740" y="244" text-anchor="middle" class="ms">PEAS · arquitecturas</text>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <path class="msg-line" d="M870,205 L915,205" stroke="#a3adc2" stroke-width="3" marker-end="url(#mp)"/>
+      <rect class="mb" x="915" y="140" width="255" height="130" fill="#10261a" stroke="#4ade80"/>
+      <text x="1042" y="190" text-anchor="middle" class="mt">Multiagente</text><text x="1042" y="220" text-anchor="middle" class="ms">comunicación y</text><text x="1042" y="244" text-anchor="middle" class="ms">coordinación</text>
+    </g>
+    <g class="fragment" data-fragment-index="4">
+      <rect class="mb" x="255" y="10" width="665" height="70" fill="#172033" stroke="#2a3550"/>
+      <text x="587" y="54" text-anchor="middle" class="mt" style="font-size:22px">Búsqueda y heurísticas: conocimiento que guía la exploración</text>
+      <path d="M435,80 L435,138" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#mp)"/><path d="M740,80 L740,138" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#mp)"/>
+    </g>
+    <g class="fragment" data-fragment-index="5">
+      <rect class="mb" x="305" y="320" width="865" height="70" fill="#1d1733" stroke="#a78bfa"/>
+      <text x="737" y="364" text-anchor="middle" class="mt" style="font-size:22px">LLMs: fuente de conocimiento y nuevos agentes, bajo verificación</text>
+      <path d="M435,320 L435,272" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#mp)"/><path d="M1042,320 L1042,272" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#mp)"/>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>Reconstruir la unidad en cinco pasos: el conocimiento explícito se vuelve ejecutable en un sistema experto; cuando el sistema actúa en un entorno se vuelve un agente; cuando hay muchos agentes con información e intereses propios, un sistema multiagente.</p>
+    <p>Dos hilos transversales: la búsqueda guiada por heurísticas, y los LLMs, que hoy aportan conocimiento y nuevos tipos de agentes pero exigen verificación. Ese segundo hilo recorre todo el curso.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · CONEXIÓN CON EL CURSO ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Cierre de la sesión</div>
+  <h2>Cómo sigue el curso</h2>
+  <table class="compact">
+    <tr><th>Sesión</th><th>Unidad</th><th>Conexión con hoy</th></tr>
+    <tr><td>2</td><td>Planificación automática</td><td>Cómo delibera un agente</td></tr>
+    <tr><td>3</td><td>Restricciones y verificación</td><td>Verificar reglas y lo que propone un LLM</td></tr>
+    <tr><td>4</td><td>Visión por computador</td><td>Los sensores del agente</td></tr>
+    <tr><td>5</td><td>Redes neuronales</td><td>La ola conexionista por dentro</td></tr>
+    <tr><td>6</td><td>Aprendizaje de máquina</td><td>Aprender las reglas de los datos</td></tr>
+    <tr><td>7</td><td>Incertidumbre y decisiones</td><td>Creencias con probabilidad</td></tr>
+    <tr><td>8</td><td>Proyecto y hackatón</td><td>Sistemas híbridos</td></tr>
+  </table>
+  <aside class="notes">
+    <p>Cada unidad profundiza una pieza del mapa. La sesión 2 retoma la arquitectura deliberativa (planificación); la 3, la verificación del patrón híbrido; la 6, la adquisición automática del conocimiento; la 7, el razonamiento con incertidumbre que MYCIN abordó con factores de certeza y que hoy se trata con probabilidad.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · PROYECTO INTEGRADOR ============================ -->
+<section data-min="3.5">
+  <div class="kicker amber">Proyecto integrador</div>
+  <h2>Propósito, entregables y calendario</h2>
+  <p>Resolver un problema de decisión real de su organización con técnicas del curso, con un <em>componente híbrido</em> (LLM + técnica clásica). Equipos de 2 o 3 personas.</p>
+  <table class="compact" style="margin-top:10px">
+    <tr><th>Entregable</th><th>Peso</th><th>Cuándo</th></tr>
+    <tr><td>Propuesta</td><td>5 %</td><td>Sesión 2 (semana 1)</td></tr>
+    <tr><td>Avance</td><td>10 %</td><td>Sesión 5 (semana 3)</td></tr>
+    <tr><td>Pitch</td><td>5 %</td><td>Sesión 8 (semana 4)</td></tr>
+    <tr><td>Informe final y prototipo</td><td>15 %</td><td>Hasta 2 semanas después de la sesión 8</td></tr>
+  </table>
+  <aside class="notes">
+    <p>El proyecto vale el 35 % de la nota. En cada sesión, los equipos aplican la técnica del día a su caso y lo registran en una bitácora, de modo que el proyecto avanza todo el tiempo y no solo al final.</p>
+    <p>El componente híbrido es obligatorio: el proyecto debe combinar un LLM con al menos una técnica clásica del curso, con un mecanismo de verificación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · PRIMEROS PASOS ============================ -->
+<section data-min="3">
+  <div class="kicker amber">Proyecto integrador</div>
+  <h2>Primeros pasos, antes de la sesión 2</h2>
+  <ol>
+    <li>Conformar el equipo (2 o 3 personas)</li>
+    <li class="fragment">Elegir el caso: una decisión real, con datos o conocimiento accesibles y alguien en la organización que lo valide</li>
+    <li class="fragment">Describirlo con PEAS en la bitácora del proyecto</li>
+    <li class="fragment">Redactar la propuesta: problema, organización, decisión a apoyar, datos disponibles y técnicas candidatas</li>
+  </ol>
+  <aside class="notes">
+    <p>Explicar los criterios para elegir un buen caso: que la decisión sea real y recurrente, que haya datos o conocimiento experto accesible y que exista en la organización alguien dispuesto a validar los resultados.</p>
+    <p>El trabajo independiente 2 (PEAS) es insumo directo de la propuesta. Como la sesión 2 puede ser al día siguiente, conviene conformar los equipos hoy mismo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · TRABAJOS Y LECTURA ============================ -->
+<section data-min="3">
+  <div class="kicker">Cierre de la sesión</div>
+  <h2>Trabajo independiente de esta sesión</h2>
+  <table class="compact">
+    <tr><th></th><th>Trabajo</th><th>Tiempo</th></tr>
+    <tr><td>TI-1</td><td>Su propio sistema experto en papel</td><td>75 min</td></tr>
+    <tr><td>TI-2</td><td>Un agente para su organización</td><td>60 min</td></tr>
+    <tr><td>TI-3</td><td>Lectura: ¿cuándo conviene un SMA con LLMs?</td><td>90 min</td></tr>
+    <tr><td>Lab</td><td>Curso <a href="https://anthropic.skilljar.com/claude-101">Claude 101</a> terminado</td><td>según avance</td></tr>
+  </table>
+  <p style="margin-top:16px">Entrega: <strong>inicio de la semana 2</strong>.</p>
+  <p>Lectura de la sesión 2: Kambhampati et al. (2024), <a href="https://proceedings.mlr.press/v235/kambhampati24a.html"><em>LLMs Can't Plan, But Can Help Planning in LLM-Modulo Frameworks</em></a>, ICML 2024.</p>
+  <p class="navlinks"><a href="bloque3_sistemas_multiagente.html">← Bloque 3</a><a href="index.html">Volver a la agenda</a></p>
+  <aside class="notes">
+    <p>Los tres trabajos suman unas 3 h 45 min. El resto del trabajo independiente de la sesión se dedica a terminar el curso Claude 101, avanzar el proyecto y preparar la lectura de la sesión 2, que conecta directamente con el patrón híbrido de hoy.</p>
+    <p>Recordar que los enunciados completos están en el documento de trabajo independiente.</p>
+  </aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 1 · Cierre de la sesión</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

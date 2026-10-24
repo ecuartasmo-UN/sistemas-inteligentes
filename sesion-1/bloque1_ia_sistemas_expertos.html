@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 1 · IA y sistemas expertos — Sesión 1 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="60">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 1 · Unidad 1 · Bloque 1 de 3</div>
+  <h1>Inteligencia artificial y sistemas expertos</h1>
+  <p class="lead muted">Del conocimiento explícito al razonamiento automático</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>60 min</strong></p>
+  <p class="navlinks"><a href="index.html">← Agenda de la sesión</a><a href="bloque2_agentes.html">Bloque 2 →</a></p>
+  <aside class="notes">
+    <p>Retomar desde la charla inicial («Quiero ser parte del mundo del AI: ¿cómo lo logro? y ¿cómo sobrevivo a él?») y la discusión tipo seminario. Este bloque tiene cuatro partes: qué es la IA y sus tres olas (unos 15 min), resolver problemas con búsqueda (8 min), sistemas expertos (unos 25 min) y su lugar en la era de los LLMs (9 min). Cierra con el trabajo independiente y la pausa.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · OBJETIVOS Y CASO ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Hoja de ruta</div>
+  <h2>Qué vamos a lograr en este bloque</h2>
+  <div class="cols c64">
+    <ol>
+      <li>Situar los sistemas expertos en la historia de la IA</li>
+      <li>Formular un problema como búsqueda</li>
+      <li>Explicar la arquitectura de un sistema experto</li>
+      <li>Trazar a mano el encadenamiento hacia adelante y hacia atrás</li>
+      <li>Argumentar el papel de las reglas en la era de los LLMs</li>
+    </ol>
+    <div class="card amber">
+      <h4>Caso hilo · MantenIA</h4>
+      <p>Empresa ficticia de mantenimiento industrial en el Eje Cafetero: 12 técnicos y 300 equipos bajo contrato.</p>
+      <p class="muted">El diagnóstico de las fallas complejas depende de dos técnicos senior.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Presentar los cinco objetivos y el caso hilo. MantenIA es ficticia, pero el problema es real en muchas empresas de la región: el conocimiento crítico vive en la cabeza de pocas personas. El caso volverá en los tres bloques: aquí con un sistema experto de diagnóstico, en el Bloque 2 con un agente despachador y en el Bloque 3 con técnicos que negocian órdenes de trabajo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · CUATRO DEFINICIONES ============================ -->
+<section data-min="2">
+  <div class="kicker">¿Qué es la IA?</div>
+  <h2>Cuatro maneras de definir la inteligencia artificial</h2>
+  <div class="defgrid">
+    <div></div><div class="axis">Como los humanos</div><div class="axis">Racionalmente</div>
+    <div class="axis side">Pensar</div>
+    <div class="card fragment" data-fragment-index="1"><h4>Modelado cognitivo</h4><p>Reproducir cómo pensamos (ciencia cognitiva)</p></div>
+    <div class="card fragment" data-fragment-index="2"><h4>Leyes del pensamiento</h4><p>Razonar con lógica formal</p></div>
+    <div class="axis side">Actuar</div>
+    <div class="card fragment" data-fragment-index="3"><h4>Prueba de Turing</h4><p>Comportarse de forma indistinguible de un humano (1950)</p></div>
+    <div class="card accent fragment" data-fragment-index="4"><h4>Agente racional</h4><p>Hacer lo correcto según una medida de desempeño · <strong>enfoque de este curso</strong></p></div>
+  </div>
+  <p class="credit">Fuente: Russell y Norvig (2021), <em>Artificial Intelligence: A Modern Approach</em>, 4.ª ed., cap. 1.</p>
+  <aside class="notes">
+    <p>Las definiciones se ordenan en dos ejes: pensar frente a actuar, e imitar al humano frente a ser racional. Revelar las cuatro celdas en orden.</p>
+    <p>El curso adopta el agente racional porque es medible y no exige copiar la mente humana: un sistema es inteligente si actúa bien según una medida de desempeño explícita. Esa idea volverá formalizada en el Bloque 2.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · DARTMOUTH ============================ -->
+<section data-min="1.5">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker">Historia</div>
+      <h2>1956: Dartmouth le da nombre al campo</h2>
+      <div class="quote">«…todo aspecto del aprendizaje o cualquier otro rasgo de la inteligencia puede, en principio, describirse con tanta precisión que una máquina pueda simularlo».
+        <span class="src">McCarthy, Minsky, Rochester y Shannon (1955), propuesta del proyecto de verano en Dartmouth</span></div>
+      <p class="small muted" style="margin-top:18px">La propuesta acuñó el término <em>inteligencia artificial</em> y fijó una agenda: lenguaje, redes neuronales, abstracción, automejora y creatividad.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/dartmouth_propuesta_1955.jpg" alt="Portada de la propuesta de 1955 para el proyecto de verano de Dartmouth sobre inteligencia artificial" style="max-height:440px">
+      <figcaption class="credit">Portada de la propuesta (31 de agosto de 1955). Dominio público. <a href="https://commons.wikimedia.org/wiki/File:A_Proposal_for_the_Dartmouth_Summer_Research_Project_on_Artificial_Intelligence,_by_John_McCarthy_et_al,_1955.pdf">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>La conjetura de la propuesta es la apuesta fundacional del campo: si la inteligencia se puede describir con precisión, se puede programar. La propuesta es de 1955; el taller se hizo en el verano de 1956.</p>
+    <p>Los temas de la agenda siguen abiertos setenta años después. Conviene subrayar que los fundadores combinaban tanto enfoques simbólicos como redes neuronales: las "olas" que veremos no fueron excluyentes.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · LÍNEA DE TIEMPO ============================ -->
+<section data-min="2">
+  <div class="kicker">Historia</div>
+  <h2>Primaveras e inviernos de la IA</h2>
+  <svg class="diagram" viewBox="0 0 1200 440" role="img" aria-label="Línea de tiempo de la IA de 1943 a 2024">
+    <defs>
+      <style>
+        .yr{font-size:20px;font-weight:700}
+        .ev{font-size:19px;fill:#e8ecf4}
+        .ld{stroke-width:1.5;stroke-dasharray:3 4}
+        .dot{stroke:#0a0e17;stroke-width:3}
+      </style>
+    </defs>
+    <line x1="30" y1="220" x2="1175" y2="220" stroke="#a3adc2" stroke-width="3"/>
+    <polygon points="1175,212 1190,220 1175,228" fill="#a3adc2"/>
+    <!-- Era 1 -->
+    <g class="fragment" data-fragment-index="1">
+      <line class="ld" x1="79" y1="220" x2="79" y2="92" stroke="#38bdf8"/><circle class="dot" cx="79" cy="220" r="9" fill="#38bdf8"/>
+      <text x="85" y="65" class="yr" fill="#38bdf8">1943</text><text x="85" y="87" class="ev">Neurona artificial</text>
+      <line class="ld" x1="170" y1="220" x2="170" y2="248" stroke="#e8ecf4"/><circle class="dot" cx="170" cy="220" r="9" fill="#e8ecf4"/>
+      <text x="176" y="262" class="yr" fill="#e8ecf4">1950</text><text x="176" y="284" class="ev">Prueba de Turing</text>
+      <line class="ld" x1="248" y1="220" x2="248" y2="192" stroke="#f5b942"/><circle class="dot" cx="248" cy="220" r="9" fill="#f5b942"/>
+      <text x="254" y="165" class="yr" fill="#f5b942">1956</text><text x="254" y="187" class="ev">Dartmouth</text>
+      <line class="ld" x1="274" y1="220" x2="274" y2="298" stroke="#38bdf8"/><circle class="dot" cx="274" cy="220" r="9" fill="#38bdf8"/>
+      <text x="280" y="312" class="yr" fill="#38bdf8">1958</text><text x="280" y="334" class="ev">Perceptrón</text>
+      <line class="ld" x1="366" y1="220" x2="366" y2="142" stroke="#f5b942"/><circle class="dot" cx="366" cy="220" r="9" fill="#f5b942"/>
+      <text x="372" y="115" class="yr" fill="#f5b942">1965</text><text x="372" y="137" class="ev">DENDRAL</text>
+    </g>
+    <!-- Invierno 1 y sistemas expertos -->
+    <g class="fragment" data-fragment-index="2">
+      <rect x="483" y="30" width="78" height="370" fill="rgba(163,173,194,0.13)" rx="6"/>
+      <text x="522" y="428" text-anchor="middle" font-size="17" fill="#a3adc2">1.er invierno</text>
+      <line class="ld" x1="561" y1="220" x2="561" y2="248" stroke="#f5b942"/><circle class="dot" cx="561" cy="220" r="9" fill="#f5b942"/>
+      <text x="567" y="262" class="yr" fill="#f5b942">1980</text><text x="567" y="284" class="ev">XCON en DEC</text>
+    </g>
+    <!-- Retropropagación e invierno 2 -->
+    <g class="fragment" data-fragment-index="3">
+      <line class="ld" x1="639" y1="220" x2="639" y2="192" stroke="#38bdf8"/><circle class="dot" cx="639" cy="220" r="9" fill="#38bdf8"/>
+      <text x="633" y="165" class="yr" fill="#38bdf8" text-anchor="end">1986</text><text x="633" y="187" class="ev" text-anchor="end">Retropropagación</text>
+      <rect x="652" y="30" width="78" height="370" fill="rgba(163,173,194,0.13)" rx="6"/>
+      <text x="691" y="428" text-anchor="middle" font-size="17" fill="#a3adc2">2.º invierno</text>
+    </g>
+    <!-- Era 3 -->
+    <g class="fragment" data-fragment-index="4">
+      <line class="ld" x1="782" y1="220" x2="782" y2="298" stroke="#f5b942"/><circle class="dot" cx="782" cy="220" r="9" fill="#f5b942"/>
+      <text x="788" y="312" class="yr" fill="#f5b942">1997</text><text x="788" y="334" class="ev">Deep Blue</text>
+      <line class="ld" x1="977" y1="220" x2="977" y2="142" stroke="#38bdf8"/><circle class="dot" cx="977" cy="220" r="9" fill="#38bdf8"/>
+      <text x="971" y="115" class="yr" fill="#38bdf8" text-anchor="end">2012</text><text x="971" y="137" class="ev" text-anchor="end">Aprendizaje profundo</text>
+      <line class="ld" x1="1030" y1="220" x2="1030" y2="248" stroke="#a78bfa"/><circle class="dot" cx="1030" cy="220" r="9" fill="#a78bfa"/>
+      <text x="1024" y="262" class="yr" fill="#a78bfa" text-anchor="end">2016</text><text x="1024" y="284" class="ev" text-anchor="end">AlphaGo</text>
+    </g>
+    <!-- Era 4 -->
+    <g class="fragment" data-fragment-index="5">
+      <line class="ld" x1="1043" y1="220" x2="1043" y2="92" stroke="#38bdf8"/><circle class="dot" cx="1043" cy="220" r="9" fill="#38bdf8"/>
+      <text x="1037" y="65" class="yr" fill="#38bdf8" text-anchor="end">2017</text><text x="1037" y="87" class="ev" text-anchor="end">Transformer</text>
+      <line class="ld" x1="1108" y1="220" x2="1108" y2="348" stroke="#38bdf8"/><circle class="dot" cx="1108" cy="220" r="9" fill="#38bdf8"/>
+      <text x="1102" y="362" class="yr" fill="#38bdf8" text-anchor="end">2022</text><text x="1102" y="384" class="ev" text-anchor="end">ChatGPT</text>
+      <line class="ld" x1="1134" y1="220" x2="1134" y2="192" stroke="#a78bfa"/><circle class="dot" cx="1134" cy="220" r="9" fill="#a78bfa"/>
+      <text x="1128" y="165" class="yr" fill="#a78bfa" text-anchor="end">2024</text><text x="1128" y="187" class="ev" text-anchor="end">Modelos de razonamiento</text>
+    </g>
+  </svg>
+  <p class="legend"><span class="pill amber">Simbólica</span><span class="pill">Conexionista</span><span class="pill violet">Neurosimbólica</span><span class="muted small">Inviernos: caída de expectativas y de financiación</span></p>
+  <aside class="notes">
+    <p>Recorrer la línea por épocas (cinco pasos). 1943: neurona artificial de McCulloch y Pitts. 1950: Turing propone su prueba. 1956: Dartmouth. 1958: perceptrón de Rosenblatt. 1965: DENDRAL, primer sistema experto.</p>
+    <p>Los inviernos (mediados de los 70 y finales de los 80) llegaron cuando las promesas superaron los resultados. El segundo coincidió con el agotamiento del mercado de sistemas expertos. Después: Deep Blue (1997), aprendizaje profundo (2012), AlphaGo (2016), transformer (2017), ChatGPT (2022) y modelos de razonamiento (2024).</p>
+    <p>Mensaje para el posgrado: la historia de la IA es cíclica, y las expectativas desmedidas son un riesgo de gestión que conviene reconocer hoy.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · OLA SIMBÓLICA ============================ -->
+<section data-min="2">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker amber">Primera ola</div>
+      <h2>IA simbólica: razonar con conocimiento explícito</h2>
+      <ul>
+        <li><strong>DENDRAL</strong> (1965): inferir estructuras moleculares a partir de datos de espectrometría</li>
+        <li><strong>MYCIN</strong> (década de 1970): diagnosticar infecciones y recomendar antibióticos</li>
+        <li><strong>Deep Blue</strong> (1997): búsqueda masiva que vence a Kasparov</li>
+      </ul>
+      <div class="card"><p><span class="ok">Fortaleza:</span> explicable y verificable. <span class="bad">Límite:</span> frágil fuera de su dominio; capturar el conocimiento es costoso.</p></div>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/deep_blue_chm.jpg" alt="Gabinete de Deep Blue expuesto en el Computer History Museum" style="max-height:470px">
+      <figcaption class="credit">Deep Blue en el Computer History Museum. Foto: Anton Chiang, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>, <a href="https://commons.wikimedia.org/wiki/File:IBM_Deep_Blue_at_Computer_History_Museum_(9361685537).jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>La IA simbólica representa el conocimiento con símbolos y reglas que un humano puede leer, y razona manipulándolos. DENDRAL y MYCIN, ambos de Stanford, mostraron que el conocimiento especializado de un dominio estrecho rendía más que los métodos generales.</p>
+    <p>Deep Blue no aprendía como una red neuronal: combinaba búsqueda en árboles de juego con una función de evaluación diseñada por expertos y 480 chips especializados. En el match de 1997, que ganó 3,5–2,5, promedió 126 millones de posiciones por segundo, con un máximo sostenido de 330 millones (Campbell, Hoane y Hsu, 2002); IBM suele redondear a 200 millones. Su límite es el de toda la ola: no sale de su dominio.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · OLA CONEXIONISTA ============================ -->
+<section data-min="2">
+  <div class="kicker">Segunda ola</div>
+  <h2>IA conexionista: aprender patrones de los datos</h2>
+  <div class="flow4">
+    <div class="card fragment" data-fragment-index="1"><div class="big-number" style="font-size:44px">1958</div><p>Perceptrón</p></div>
+    <div class="card fragment" data-fragment-index="1"><div class="big-number" style="font-size:44px">1986</div><p>Retropropagación</p></div>
+    <div class="card fragment" data-fragment-index="2"><div class="big-number" style="font-size:44px">2012</div><p>Aprendizaje profundo</p></div>
+    <div class="card fragment" data-fragment-index="2"><div class="big-number" style="font-size:44px">2022</div><p>Modelos de lenguaje masivos</p></div>
+  </div>
+  <div class="cols fragment" data-fragment-index="3" style="margin-top:22px">
+    <div class="card ok"><h4>Fortalezas</h4><p>Percepción, lenguaje y escala: aprenden de ejemplos sin reglas escritas a mano</p></div>
+    <div class="card bad"><h4>Límites</h4><p>Opacidad, alucinaciones y dependencia de datos y cómputo</p></div>
+  </div>
+  <aside class="notes">
+    <p>El conocimiento ya no se escribe: se aprende ajustando millones de parámetros a partir de ejemplos. La retropropagación (Rumelhart, Hinton y Williams, 1986) permitió entrenar redes de varias capas; desde 2012 la combinación de datos, GPU y redes profundas transformó la visión y el lenguaje.</p>
+    <p>Sus límites son simétricos a los de la ola simbólica: lo que gana en flexibilidad lo pierde en explicabilidad y verificación. La Unidad 5 abre esta caja.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · OLA NEUROSIMBÓLICA ============================ -->
+<section data-min="1.5">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker violet">Tercera ola</div>
+      <h2>Neurosimbólica: aprender y razonar a la vez</h2>
+      <ul>
+        <li><strong>AlphaGo</strong> vence 4–1 a Lee Sedol (2016)</li>
+        <li class="fragment">Redes neuronales: la <em>intuición</em>, qué jugadas mirar y quién va ganando</li>
+        <li class="fragment">Búsqueda en árbol Monte Carlo: el <em>razonamiento</em>, explorar consecuencias</li>
+        <li class="fragment">Lectura de esta sesión: Garcez y Lamb (2023), <em>Neurosymbolic AI: The 3rd Wave</em></li>
+      </ul>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/alphago_lee_sedol_partida1.png" alt="Tablero de la primera partida entre Lee Sedol (negras) y AlphaGo (blancas)" style="max-height:440px">
+      <figcaption class="credit">Partida 1, Lee Sedol (negras) vs AlphaGo (blancas), marzo de 2016. Diagrama: Wesalius, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Lee_Sedol_(B)_vs_AlphaGo_(W)_-_Game_1.svg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>AlphaGo es el ejemplo canónico de sistema híbrido: dos redes neuronales, una que propone jugadas y otra que evalúa posiciones, guían una búsqueda en árbol Monte Carlo, que es razonamiento simbólico. El artículo de Silver et al. (Nature, enero de 2016) describe el sistema y su victoria 5–0 sobre el campeón europeo Fan Hui; el 4–1 contra Lee Sedol ocurrió en Seúl en marzo de 2016.</p>
+    <p>Conectar con la lectura de la sesión: Garcez y Lamb sostienen que la siguiente etapa de la IA combina el aprendizaje robusto de las redes con el razonamiento y la explicabilidad de los símbolos. Ese es el hilo de todo el curso y de la Unidad 8.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · EL MOVIMIENTO 37 ============================ -->
+<section data-min="1.5">
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/alphago_movimiento37_partida2.png" alt="Diagrama de las primeras 99 jugadas de la partida 2 entre AlphaGo (negras) y Lee Sedol (blancas), con el movimiento 37 marcado en rojo" style="max-height:480px">
+      <figcaption class="credit">Partida 2, 10 de marzo de 2016: AlphaGo (negras) vs Lee Sedol (blancas), primeras 99 jugadas; el 37 está en P10. Registro de la partida: <a href="https://en.wikipedia.org/wiki/AlphaGo_versus_Lee_Sedol">Wikipedia</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+    <div>
+      <div class="kicker violet">Tercera ola · Seúl, 2016</div>
+      <h2>El movimiento 37</h2>
+      <ul>
+        <li>Un golpe de hombro en la quinta línea, contra la intuición de los profesionales</li>
+        <li class="fragment">Según los datos de AlphaGo, un humano la habría jugado con probabilidad de <strong>1 en 10.000</strong></li>
+        <li class="fragment">Los comentaristas creyeron que era un error; Lee Sedol salió de la sala y tardó casi 15 minutos en responder</li>
+        <li class="fragment">En la partida 4, su jugada 78, también de 1 en 10.000, le dio su única victoria</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Este es el momento más citado del match. Con su jugada 37 (piedra negra en P10), AlphaGo hizo un golpe de hombro en la quinta línea, una zona que la sabiduría convencional del go considera demasiado alta. Los comentaristas de Wired dijeron "es una jugada muy extraña" y "pensé que era un error". Lee Sedol salió de la sala y tardó casi quince minutos en responder, y Fan Hui, que había perdido 5–0 con AlphaGo, repetía "So beautiful" (Metz, Wired, 16 de marzo de 2016). AlphaGo ganó la partida.</p>
+    <p>Por qué importa para el curso: según DeepMind, la jugada tenía una probabilidad de 1 en 10.000 de ser jugada por un humano (Hassabis, blog de Google, 16 de marzo de 2016). La red de políticas, aprendida de partidas humanas, la consideraba improbable, pero la búsqueda guiada por la red de valor la encontró fuerte. Aprendizaje y búsqueda juntos produjeron una jugada fuera de la intuición humana: es el argumento de la ola neurosimbólica.</p>
+    <p>Contrapunto humano: en la partida 4, la jugada 78 de Lee Sedol, también de 1 en 10.000 según DeepMind y apodada "el toque de Dios", sorprendió a AlphaGo y le dio a Lee su única victoria del match.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · ÁREAS Y MAPA DEL CURSO ============================ -->
+<section data-min="1">
+  <div class="kicker">Áreas de la IA</div>
+  <h2>Áreas de investigación y el mapa de este curso</h2>
+  <div class="tiles">
+    <div class="card"><h4>Conocimiento y razonamiento</h4><span class="pill amber">U1</span><span class="pill amber">U3</span></div>
+    <div class="card"><h4>Planificación</h4><span class="pill amber">U2</span></div>
+    <div class="card"><h4>Percepción y visión</h4><span class="pill">U4</span></div>
+    <div class="card"><h4>Aprendizaje profundo</h4><span class="pill">U5</span></div>
+    <div class="card"><h4>Aprendizaje de máquina</h4><span class="pill">U6</span></div>
+    <div class="card"><h4>Incertidumbre y decisión</h4><span class="pill amber">U7</span></div>
+    <div class="card"><h4>Sistemas multiagente</h4><span class="pill amber">U1</span></div>
+    <div class="card violet"><h4>Sistemas híbridos</h4><span class="pill violet">U8</span></div>
+  </div>
+  <p class="muted" style="margin-top:18px">Aplicaciones: salud, finanzas, manufactura, logística, educación y sector público</p>
+  <aside class="notes">
+    <p>Cada área responde a una capacidad del agente inteligente: representar y razonar, planificar, percibir, aprender, decidir con incertidumbre e interactuar con otros. Las etiquetas muestran en qué unidad del curso se trata cada una.</p>
+    <p>El lenguaje natural se estudia en la electiva de PLN. La Unidad 8 integra todo en sistemas híbridos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · FORMULAR UN PROBLEMA ============================ -->
+<section data-min="2">
+  <div class="kicker">Resolver problemas con IA</div>
+  <h2>Primero, formular el problema</h2>
+  <div class="card amber" style="margin-bottom:18px"><p><strong>MantenIA:</strong> una técnica debe visitar 4 plantas hoy y volver a la base.</p></div>
+  <table class="compact">
+    <tr><td>Estado</td><td>Dónde está la técnica y qué plantas le faltan</td></tr>
+    <tr class="fragment"><td>Acciones</td><td>Desplazarse a una planta pendiente</td></tr>
+    <tr class="fragment"><td>Meta</td><td>Todas visitadas y de regreso en la base</td></tr>
+    <tr class="fragment"><td>Costo</td><td>Tiempo total de desplazamiento</td></tr>
+  </table>
+  <p class="fragment" style="margin-top:20px">Formular bien es la mitad de la solución: <em>decide qué se optimiza y qué se ignora</em>.</p>
+  <aside class="notes">
+    <p>Un problema de búsqueda se define con cuatro elementos: estados, acciones, prueba de meta y costo. Recorrerlos con el caso.</p>
+    <p>Matiz de posgrado: la formulación es una decisión de modelado con consecuencias. Si el costo es solo tiempo, se ignoran el combustible, la prioridad del cliente o la fatiga de la técnica. En una organización, eso es una decisión de gestión, no solo técnica.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · EXPLOSIÓN COMBINATORIA ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Resolver problemas con IA</div>
+  <h2>El espacio de estados crece de forma explosiva</h2>
+  <div class="cols mid">
+    <table>
+      <tr><th>Plantas</th><th>Órdenes de visita posibles</th></tr>
+      <tr><td>4</td><td>24</td></tr>
+      <tr class="fragment"><td>10</td><td>3.628.800</td></tr>
+      <tr class="fragment"><td>20</td><td>≈ 2,4 × 10<sup>18</sup></td></tr>
+    </table>
+    <div class="card fragment">
+      <p>Con 20 plantas, revisar mil millones de rutas por segundo tomaría unos <span class="big-number amber" style="font-size:48px">77 años</span></p>
+      <p class="muted">No se puede enumerar: hay que buscar con inteligencia.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El número de órdenes de visita es n! (factorial). 10! = 3.628.800; 20! ≈ 2,43 × 10<sup>18</sup>. A 10<sup>9</sup> rutas por segundo, son unos 2,4 × 10<sup>9</sup> segundos, es decir, unos 77 años.</p>
+    <p>Este crecimiento combinatorio es el problema central de la IA clásica. La respuesta es la búsqueda informada: explorar primero lo prometedor.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · A* ============================ -->
+<section data-min="2">
+  <div class="kicker">Resolver problemas con IA</div>
+  <h2>Búsqueda heurística: la intuición de A*</h2>
+  <div class="cols c64">
+    <svg class="diagram" viewBox="0 0 760 450" role="img" aria-label="Grafo de rutas con la búsqueda A*">
+      <defs><style>.nd{stroke-width:3}.nl{font-size:26px;font-weight:700;fill:#0a0e17}.hv{font-size:21px;fill:#a3adc2}.cost{font-size:22px;font-weight:700;fill:#f5b942}.fv{font-size:22px;font-weight:700;fill:#38bdf8}</style></defs>
+      <line x1="80" y1="220" x2="330" y2="100" stroke="#2a3550" stroke-width="5"/>
+      <line x1="80" y1="220" x2="330" y2="360" stroke="#2a3550" stroke-width="5"/>
+      <line x1="330" y1="100" x2="330" y2="360" stroke="#2a3550" stroke-width="5"/>
+      <line x1="330" y1="100" x2="660" y2="200" stroke="#2a3550" stroke-width="5"/>
+      <line x1="330" y1="360" x2="560" y2="360" stroke="#2a3550" stroke-width="5"/>
+      <line x1="560" y1="360" x2="660" y2="200" stroke="#2a3550" stroke-width="5"/>
+      <g class="fragment" data-fragment-index="4">
+        <line x1="80" y1="220" x2="330" y2="360" stroke="#f5b942" stroke-width="8"/>
+        <line x1="330" y1="360" x2="560" y2="360" stroke="#f5b942" stroke-width="8"/>
+        <line x1="560" y1="360" x2="660" y2="200" stroke="#f5b942" stroke-width="8"/>
+      </g>
+      <text x="190" y="145" class="cost">4</text><text x="190" y="314" class="cost">2</text><text x="343" y="238" class="cost">3</text>
+      <text x="500" y="133" class="cost">5</text><text x="445" y="393" class="cost">3</text><text x="628" y="294" class="cost">2</text>
+      <circle class="nd" cx="80" cy="220" r="38" fill="#e8ecf4" stroke="#38bdf8"/><text x="80" y="229" text-anchor="middle" class="nl">Base</text>
+      <circle class="nd" cx="330" cy="100" r="34" fill="#e8ecf4" stroke="#2a3550"/><text x="330" y="109" text-anchor="middle" class="nl">A</text>
+      <circle class="nd" cx="330" cy="360" r="34" fill="#e8ecf4" stroke="#2a3550"/><text x="330" y="369" text-anchor="middle" class="nl">B</text>
+      <circle class="nd" cx="560" cy="360" r="34" fill="#e8ecf4" stroke="#2a3550"/><text x="560" y="369" text-anchor="middle" class="nl">C</text>
+      <circle class="nd" cx="660" cy="200" r="36" fill="#4ade80" stroke="#4ade80"/><text x="660" y="209" text-anchor="middle" class="nl">D</text>
+      <text x="80" y="287" text-anchor="middle" class="hv">h = 7</text>
+      <text x="284" y="96" text-anchor="end" class="hv">h = 4</text>
+      <text x="284" y="370" text-anchor="end" class="hv">h = 5</text>
+      <text x="602" y="410" class="hv">h = 2</text>
+      <text x="704" y="207" class="hv">h = 0</text>
+      <g class="fragment" data-fragment-index="1"><text x="330" y="46" text-anchor="middle" class="fv">f = 4 + 4 = 8</text><text x="330" y="430" text-anchor="middle" class="fv">f = 2 + 5 = 7</text></g>
+      <g class="fragment" data-fragment-index="2"><text x="560" y="442" text-anchor="middle" class="fv">f = 5 + 2 = 7</text></g>
+      <g class="fragment" data-fragment-index="3"><text x="660" y="150" text-anchor="middle" class="fv">f = 7 + 0 = 7</text></g>
+    </svg>
+    <div>
+      <p class="lead"><span class="mono accent">f(n) = g(n) + h(n)</span></p>
+      <p class="small"><strong>g</strong>: costo real desde la base · <strong>h</strong>: estimación optimista hasta la meta</p>
+      <ol class="small">
+        <li class="fragment" data-fragment-index="1">Expandir Base: A (f = 8), B (f = 7)</li>
+        <li class="fragment" data-fragment-index="2">Expandir B, la de menor f: C (f = 7)</li>
+        <li class="fragment" data-fragment-index="3">Expandir C: D (f = 7)</li>
+        <li class="fragment" data-fragment-index="4">Ruta óptima Base → B → C → D, costo 7. <span class="amber">A nunca se expandió.</span></li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>A* siempre expande el nodo con menor f = g + h: lo que ya costó llegar más una estimación de lo que falta. Recorrer los cuatro pasos.</p>
+    <p>El punto clave del último paso: la ruta por A cuesta 9, y la heurística evitó explorarla. Con una heurística admisible, que nunca sobrestima, A* garantiza la ruta óptima. En grafos reales, eso significa explorar una fracción mínima del espacio de estados.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · HEURÍSTICAS = CONOCIMIENTO ============================ -->
+<section data-min="1">
+  <div class="kicker">Resolver problemas con IA</div>
+  <h2>Una heurística es conocimiento del dominio convertido en estimación</h2>
+  <ul>
+    <li><strong>Admisible</strong>: nunca sobrestima el costo real; así A* garantiza la ruta óptima</li>
+    <li>Mejor heurística, menos estados explorados</li>
+    <li>Ejemplos: la distancia en línea recta; el "olfato" del despachador experimentado</li>
+  </ul>
+  <div class="card accent fragment" style="margin-top:22px"><p><strong>Puente:</strong> ¿y si el conocimiento del experto no es una estimación sino un conjunto de reglas para decidir? → <em>sistemas expertos</em></p></div>
+  <aside class="notes">
+    <p>La heurística es el primer lugar donde el conocimiento humano entra en un algoritmo de IA: no cambia qué es una solución, cambia cuánto cuesta encontrarla.</p>
+    <p>Transición: cuando el conocimiento del experto es más que una estimación, cuando son criterios de decisión completos, necesitamos representarlo y razonar con él. Eso es un sistema experto.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · EL PROBLEMA DE MANTENIA ============================ -->
+<section data-min="1">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>El conocimiento vive en la cabeza de dos personas</h2>
+  <p class="lead" style="margin-top:30px">Dos técnicos senior diagnostican la mayoría de las fallas complejas.<br>Uno se jubila el próximo año.</p>
+  <p class="lead amber fragment" style="margin-top:36px">¿Cómo capturar ese conocimiento para que otros, y una máquina, puedan usarlo?</p>
+  <aside class="notes">
+    <p>Este es el problema de negocio que dio origen a los sistemas expertos: conocimiento escaso, caro y que se pierde cuando la persona se va. En gestión se habla de riesgo de pérdida del conocimiento crítico.</p>
+    <p>La pregunta organiza el resto del bloque: cómo representar ese conocimiento, cómo razonar con él y cómo explicarlo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · QUÉ ES UN SE ============================ -->
+<section data-min="2">
+  <div class="kicker">Sistemas expertos</div>
+  <h2>Sistema experto: conocimiento experto, explícito y ejecutable</h2>
+  <p>Programa que resuelve problemas de un dominio acotado razonando con conocimiento experto representado de forma explícita.</p>
+  <div class="cols-3" style="font-size:24px; line-height:1.32">
+    <div class="card fragment"><h4 style="font-size:26px">MYCIN · Stanford, década de 1970</h4><p>Infecciones y antibióticos con unas 450–500 reglas. En una evaluación ciega (JAMA, 1979) logró 65 % de aceptabilidad, frente a 42,5–62,5 % de los especialistas.</p></div>
+    <div class="card fragment"><h4 style="font-size:26px">XCON (R1) · DEC, desde 1980</h4><p>Configuraba pedidos de computadores VAX: de 772 reglas (1980) a más de 10.000 (1988). Primer sistema experto en uso diario en la industria.</p></div>
+    <div class="card amber fragment"><h4 style="font-size:26px">Hoy · PANDA, aprendizaje profundo (2023)</h4><p>Detecta cáncer de páncreas en tomografías sin contraste. Supera en 34,1 % la sensibilidad media de los radiólogos y, en 20.530 pacientes reales, logró 92,9 % de sensibilidad. Sin reglas explícitas: aprendió de 3.208 casos.</p></div>
+  </div>
+  <aside class="notes">
+    <p>La definición tiene tres partes: dominio acotado, conocimiento de expertos y representación explícita, es decir, inspeccionable y editable.</p>
+    <p>MYCIN fue el prototipo académico más influyente: en la evaluación ciega de Yu et al. (JAMA, 1979), ocho evaluadores calificaron sus recomendaciones para diez casos de meningitis como aceptables en el 65 % de las valoraciones, frente a 42,5–62,5 % de los cinco especialistas, y nunca dejó sin cubrir un patógeno tratable. Pese a eso, nunca se usó en la clínica: su base de conocimiento se archivó en 1978 y los computadores necesarios eran demasiado costosos (Buchanan y Shortliffe, 1984, cap. 36).</p>
+    <p>XCON fue el caso comercial: configuraba los pedidos de computadores VAX de Digital Equipment Corporation, había configurado más de 80.000 pedidos a finales de 1983 y DEC estimaba un retorno neto de más de 40 millones de dólares al año para su familia de sistemas de configuración (Barker y O'Connor, 1989). Ojo con la cifra de "95–98 % de precisión" que circula en internet: no tiene fuente primaria.</p>
+    <p>Feigenbaum (1977) resumió la lección de esta época: "en el conocimiento está el poder"; lo decisivo era la base de conocimiento, no el motor de inferencia.</p>
+    <p>La tercera tarjeta es el contraste actual. PANDA (Cao et al., <em>Nature Medicine</em>, 2023) es un modelo de aprendizaje profundo que detecta cáncer de páncreas en tomografías sin contraste, algo que se consideraba casi imposible. Se entrenó con 3.208 pacientes de un centro. En una validación con 6.239 pacientes de 10 centros superó a los radiólogos en promedio en 34,1 % de sensibilidad y 6,3 % de especificidad, y en 20.530 pacientes consecutivos de uso real logró 92,9 % de sensibilidad y 99,9 % de especificidad. Dos matices: la comparación es con el radiólogo promedio en una tarea poco habitual, y varios autores trabajan en Alibaba, que patentó el método.</p>
+    <p>La lección para el bloque: como MYCIN, iguala o supera a especialistas en un dominio acotado, pero su conocimiento no es explícito ni puede explicar su respuesta con reglas. En la práctica clínica actual la IA suele trabajar con los radiólogos, no en su lugar: en el ensayo aleatorizado MASAI (<em>The Lancet</em>, 2026; 105.934 mujeres), la lectura de mamografías con apoyo de IA tuvo 80,5 % de sensibilidad frente a 73,8 % de la doble lectura sin IA, con la misma especificidad (98,5 %).</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · ARQUITECTURA ============================ -->
+<section data-min="2">
+  <div class="kicker">Sistemas expertos</div>
+  <h2>Arquitectura de un sistema experto</h2>
+  <svg class="diagram" viewBox="0 0 1200 470" role="img" aria-label="Arquitectura de un sistema experto">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+      <style>.bx{rx:12;stroke-width:2.5}.bt{font-size:24px;font-weight:700;fill:#e8ecf4}.bs{font-size:19px;fill:#a3adc2}.ar{stroke:#a3adc2;stroke-width:2.5;fill:none}</style>
+    </defs>
+    <!-- núcleo -->
+    <g>
+      <rect class="bx" x="560" y="180" width="270" height="115" fill="#0f2a3a" stroke="#38bdf8"/>
+      <text x="695" y="230" text-anchor="middle" class="bt">Motor de inferencia</text>
+      <text x="695" y="260" text-anchor="middle" class="bs">encadena reglas</text>
+      <rect class="bx" x="900" y="20" width="280" height="115" fill="#2a2210" stroke="#f5b942"/>
+      <text x="1040" y="70" text-anchor="middle" class="bt">Base de conocimiento</text>
+      <text x="1040" y="100" text-anchor="middle" class="bs">reglas, marcos, ontologías</text>
+      <rect class="bx" x="900" y="190" width="280" height="115" fill="#10261a" stroke="#4ade80"/>
+      <text x="1040" y="240" text-anchor="middle" class="bt">Memoria de trabajo</text>
+      <text x="1040" y="270" text-anchor="middle" class="bs">hechos del caso</text>
+      <path class="ar" d="M830,205 L900,110" marker-end="url(#arr)" marker-start="url(#arr)"/>
+      <path class="ar" d="M830,245 L900,245" marker-end="url(#arr)" marker-start="url(#arr)"/>
+    </g>
+    <g class="fragment" data-fragment-index="1">
+      <rect class="bx" x="20" y="200" width="170" height="80" fill="#172033" stroke="#2a3550"/>
+      <text x="105" y="248" text-anchor="middle" class="bt">Usuario</text>
+      <rect class="bx" x="260" y="200" width="220" height="80" fill="#172033" stroke="#2a3550"/>
+      <text x="370" y="248" text-anchor="middle" class="bt">Interfaz</text>
+      <path class="ar" d="M190,240 L260,240" marker-end="url(#arr)" marker-start="url(#arr)"/>
+      <path class="ar" d="M480,240 L560,240" marker-end="url(#arr)" marker-start="url(#arr)"/>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <rect class="bx" x="560" y="370" width="270" height="80" fill="#1d1733" stroke="#a78bfa"/>
+      <text x="695" y="418" text-anchor="middle" class="bt">Módulo de explicación</text>
+      <path class="ar" d="M695,295 L695,370" marker-end="url(#arr)"/>
+      <path class="ar" d="M560,410 L370,410 L370,280" marker-end="url(#arr)"/>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <rect class="bx" x="205" y="20" width="300" height="95" fill="#172033" stroke="#2a3550"/>
+      <text x="355" y="60" text-anchor="middle" class="bt">Experto</text>
+      <text x="355" y="90" text-anchor="middle" class="bs">e ingeniero del conocimiento</text>
+      <rect class="bx" x="560" y="20" width="270" height="95" fill="#172033" stroke="#2a3550"/>
+      <text x="695" y="60" text-anchor="middle" class="bt">Adquisición</text>
+      <text x="695" y="90" text-anchor="middle" class="bs">del conocimiento</text>
+      <path class="ar" d="M505,67 L560,67" marker-end="url(#arr)"/>
+      <path class="ar" d="M830,67 L900,67" marker-end="url(#arr)"/>
+    </g>
+  </svg>
+  <p class="fragment" data-fragment-index="4" style="margin-top:4px"><em>Idea central:</em> separar el conocimiento (qué se sabe) del control (cómo se razona).</p>
+  <aside class="notes">
+    <p>Empezar por el núcleo: la base de conocimiento guarda lo que sabe el experto; la memoria de trabajo, los hechos del caso actual; el motor de inferencia los combina.</p>
+    <p>Luego la interfaz, el módulo de explicación, que responde "¿cómo?" y "¿por qué?", y la adquisición del conocimiento, donde un ingeniero del conocimiento traduce lo que sabe el experto.</p>
+    <p>La idea de diseño clave: el mismo motor sirve para otro dominio si se cambia la base de conocimiento. De ahí nacieron los "shells" de sistemas expertos, como EMYCIN, derivado de MYCIN.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · REGLAS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Representación del conocimiento · 1</div>
+  <h2>Reglas SI–ENTONCES</h2>
+  <div class="rule" style="font-size:28px;margin:10px 0 24px"><span class="kw">SI</span> vibración = alta <span class="kw">Y</span> temperatura del rodamiento &gt; 80 °C<br><span class="kw">ENTONCES</span> rodamiento desgastado</div>
+  <ul>
+    <li>Antecedente (condiciones) → consecuente (conclusión o acción)</li>
+    <li class="fragment">Cada regla es una pieza de conocimiento independiente: se agrega o retira sin reescribir el programa</li>
+    <li class="fragment">El experto puede leerlas y validarlas</li>
+    <li class="fragment"><span class="bad">Límite:</span> mantenerlas cuesta; en DEC cambiaba cada año cerca del 40 % de las reglas de configuración</li>
+  </ul>
+  <aside class="notes">
+    <p>Las reglas de producción vienen de la psicología cognitiva de Newell y Simon. Su ventaja organizacional es la modularidad: el conocimiento se audita regla por regla.</p>
+    <p>El límite apareció en la práctica: XCON pasó de 772 reglas en 1980 a más de 10.000 en 1988, y en los sistemas de configuración de DEC cerca del 40 % de las reglas cambiaba cada año (Barker y O'Connor, 1989). Las interacciones entre reglas son la fuente de errores.</p>
+  </aside>
+</section>
+
+<!-- ============================ 18 · MARCOS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Representación del conocimiento · 2</div>
+  <h2>Marcos y herencia</h2>
+  <div class="cols c46">
+    <div class="rule" style="line-height:1.45">
+      <span class="id">Equipo rotativo</span><br>&nbsp;&nbsp;plan: lubricar cada 3 meses<br>
+      <span class="id">Bomba centrífuga</span> <span class="kw">es-un</span> Equipo rotativo<br>&nbsp;&nbsp;velocidad: 3.600 rpm <span class="muted">(defecto)</span><br>
+      <span class="id">Bomba B-12</span> <span class="kw">es-una</span> Bomba centrífuga<br>&nbsp;&nbsp;ubicación: Planta Norte<br>&nbsp;&nbsp;velocidad: 1.800 rpm <span class="amber">← excepción</span>
+    </div>
+    <ul>
+      <li>Un marco agrupa lo que se sabe de un tipo de objeto en <em>ranuras</em></li>
+      <li class="fragment">Herencia: B-12 hereda el plan de lubricación sin repetirlo</li>
+      <li class="fragment">Valores por defecto y excepciones</li>
+      <li class="fragment">Minsky (1974): antecedente de la orientación a objetos y de las ontologías</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Los marcos organizan el conocimiento por objetos y no por reglas sueltas. La herencia evita repetir: todo lo que vale para un equipo rotativo vale para una bomba centrífuga, salvo excepciones explícitas.</p>
+    <p>Rigor: los valores por defecto hacen el razonamiento no monótono. Una conclusión, como la velocidad de 3.600 rpm, puede revocarse con información más específica. Las ontologías formales modernas restringen esto para ganar garantías de inferencia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 19 · ONTOLOGÍAS Y GRAFOS ============================ -->
+<section data-min="2">
+  <div class="kicker">Representación del conocimiento · 3</div>
+  <h2>De la web semántica a los grafos de conocimiento</h2>
+  <div class="cols c64">
+    <svg class="diagram" viewBox="0 0 680 430" role="img" aria-label="Grafo de conocimiento de MantenIA">
+      <defs>
+        <marker id="kgarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+        <marker id="kgarr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker>
+        <style>.kn{stroke-width:2.5;rx:24}.kt{font-size:23px;font-weight:700;fill:#e8ecf4}.ke{font-size:20px;fill:#a3adc2;font-style:italic}</style>
+      </defs>
+      <rect class="kn" x="20" y="20" width="170" height="56" fill="#172033" stroke="#2a3550"/><text x="105" y="56" text-anchor="middle" class="kt">Ana</text>
+      <rect class="kn" x="380" y="20" width="240" height="56" fill="#2a2210" stroke="#f5b942"/><text x="500" y="56" text-anchor="middle" class="kt">Equipo rotativo</text>
+      <rect class="kn" x="400" y="182" width="200" height="56" fill="#0f2a3a" stroke="#38bdf8"/><text x="500" y="218" text-anchor="middle" class="kt">Bomba B-12</text>
+      <rect class="kn" x="20" y="352" width="250" height="56" fill="#172033" stroke="#2a3550"/><text x="145" y="388" text-anchor="middle" class="kt">Rodamiento 6205</text>
+      <rect class="kn" x="420" y="352" width="210" height="56" fill="#172033" stroke="#2a3550"/><text x="525" y="388" text-anchor="middle" class="kt">Planta Norte</text>
+      <path d="M190,48 L376,48" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#kgarr)"/><text x="283" y="36" text-anchor="middle" class="ke">certificada_en</text>
+      <path d="M500,182 L500,80" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#kgarr)"/><text x="512" y="138" class="ke">es_un</text>
+      <path d="M210,352 L412,240" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#kgarr)"/><text x="292" y="282" text-anchor="end" class="ke">parte_de</text>
+      <path d="M508,238 L522,348" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#kgarr)"/><text x="532" y="302" class="ke">instalada_en</text>
+      <g class="fragment"><path d="M150,76 L396,198" stroke="#f5b942" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#kgarr2)"/><text x="252" y="172" text-anchor="end" fill="#f5b942" font-size="21" font-weight="700">inferido: puede_atender</text></g>
+    </svg>
+    <div>
+      <ul class="small" style="font-size:26px">
+        <li>Hechos como tripletas sujeto–predicado–objeto (RDF)</li>
+        <li>La ontología define clases y relaciones (OWL); un razonador deduce hechos nuevos</li>
+        <li>Hoy integran datos de la empresa y dan contexto verificable a los LLMs</li>
+      </ul>
+      <figure class="figure" style="margin-top:6px">
+        <img src="assets/img/web_semantica_capas.png" alt="Pila de capas de la web semántica del W3C" style="max-height:190px;width:auto">
+        <figcaption class="credit">Pila de la web semántica (W3C). Dominio público, <a href="https://commons.wikimedia.org/wiki/File:Semantic_Web_Stack.png">Wikimedia Commons</a></figcaption>
+      </figure>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La web semántica (Berners-Lee, Hendler y Lassila, 2001) propuso publicar datos con significado para que las máquinas razonaran con ellos: RDF para las tripletas, OWL para las ontologías. El 16 de mayo de 2012 Google lanzó su Knowledge Graph con el lema "cosas, no cadenas de texto", con más de 500 millones de objetos y 3.500 millones de hechos.</p>
+    <p>Mostrar la inferencia: si Ana está certificada en equipos rotativos y la B-12 es un equipo rotativo, el razonador deduce que Ana puede atenderla, aunque nadie lo escribió. Hoy los grafos de conocimiento empresariales se usan para dar a los LLMs hechos verificables.</p>
+  </aside>
+</section>
+
+<!-- ============================ 20 · ENCADENAMIENTO HACIA ADELANTE ============================ -->
+<section data-min="4">
+  <div class="kicker">Motor de inferencia</div>
+  <h2>Encadenamiento hacia adelante, paso a paso</h2>
+  <div class="cols c64">
+    <div>
+      <div class="panel-title">Base de reglas</div>
+      <div class="rule fragment fire" data-fragment-index="1"><span class="id">R1</span><span class="kw">SI</span> vibración = alta <span class="kw">Y</span> ruido = metálico<br><span class="kw">ENTONCES</span> falla_mecánica</div>
+      <div class="rule fragment fire" data-fragment-index="2"><span class="id">R2</span><span class="kw">SI</span> falla_mecánica <span class="kw">Y</span> temp_rodamiento &gt; 80 °C<br><span class="kw">ENTONCES</span> rodamiento_desgastado</div>
+      <div class="rule fragment fire" data-fragment-index="3"><span class="id">R3</span><span class="kw">SI</span> rodamiento_desgastado<br><span class="kw">ENTONCES</span> cambiar_rodamiento, prioridad = alta</div>
+      <div class="rule"><span class="id">R4</span><span class="kw">SI</span> falla_mecánica <span class="kw">Y</span> desalineación_visible<br><span class="kw">ENTONCES</span> desalineación</div>
+    </div>
+    <div>
+      <div class="panel-title">Memoria de trabajo</div>
+      <div class="fact initial">vibración = alta</div>
+      <div class="fact initial">ruido = metálico</div>
+      <div class="fact initial">temp_rodamiento = 92 °C</div>
+      <div class="fact fragment" data-fragment-index="1">+ falla_mecánica</div>
+      <div class="fact fragment" data-fragment-index="2">+ rodamiento_desgastado</div>
+      <div class="fact fragment" data-fragment-index="3">+ cambiar_rodamiento, prioridad alta</div>
+    </div>
+  </div>
+  <div class="overlay-steps step-note">
+    <div class="fragment current-visible" data-fragment-index="1">Ciclo 1 · R1 se cumple con los hechos iniciales → agrega falla_mecánica</div>
+    <div class="fragment current-visible" data-fragment-index="2">Ciclo 2 · El hecho nuevo activa R2 → agrega rodamiento_desgastado</div>
+    <div class="fragment current-visible" data-fragment-index="3">Ciclo 3 · R3 se cumple → agrega la acción. R4 nunca se activa: falta desalineación_visible</div>
+    <div class="fragment" data-fragment-index="4">No quedan reglas por disparar: el motor se detiene. <strong>De los datos a la conclusión.</strong></div>
+  </div>
+  <aside class="notes">
+    <p>El motor repite el ciclo reconocer–actuar: (1) compara las condiciones de cada regla con la memoria de trabajo; (2) si varias se cumplen, elige una según una estrategia de resolución de conflictos, por ejemplo prioridad, especificidad o recencia; (3) la ejecuta y agrega sus conclusiones; (4) repite hasta que ninguna regla nueva se cumpla.</p>
+    <p>Recorrer los tres ciclos. Insistir en el ciclo 2: la conclusión de R1 se convierte en premisa de R2. Así se encadena el conocimiento.</p>
+    <p>R4 muestra algo importante: una regla con premisas que no se cumplen nunca se dispara. Además, el resultado depende solo de las reglas y los hechos, sin aleatoriedad: con los mismos datos, la misma conclusión.</p>
+  </aside>
+</section>
+
+<!-- ============================ 21 · ENCADENAMIENTO HACIA ATRÁS ============================ -->
+<section data-min="3.5">
+  <div class="kicker">Motor de inferencia</div>
+  <h2>Encadenamiento hacia atrás: ¿es el rodamiento?</h2>
+  <svg class="diagram" viewBox="0 0 1200 470" role="img" aria-label="Árbol de metas del encadenamiento hacia atrás">
+    <defs>
+      <style>.gn{rx:12;stroke-width:2.5}.gt{font-size:23px;font-weight:600;fill:#e8ecf4;font-family:'JetBrains Mono',monospace}.rl{font-size:21px;font-weight:700;fill:#f5b942}.ck{font-size:30px;font-weight:800;fill:#4ade80}.ln{stroke:#a3adc2;stroke-width:2.5}</style>
+    </defs>
+    <rect class="gn" x="380" y="10" width="440" height="56" fill="#0f2a3a" stroke="#38bdf8"/><text x="600" y="47" text-anchor="middle" class="gt">¿rodamiento_desgastado?</text>
+    <g class="fragment" data-fragment-index="1">
+      <line class="ln" x1="600" y1="66" x2="330" y2="150"/><line class="ln" x1="600" y1="66" x2="870" y2="150"/>
+      <text x="600" y="120" text-anchor="middle" class="rl">por R2</text>
+      <rect class="gn" x="180" y="150" width="300" height="52" fill="#172033" stroke="#2a3550"/><text x="330" y="184" text-anchor="middle" class="gt">¿falla_mecánica?</text>
+      <rect class="gn" x="680" y="150" width="380" height="52" fill="#172033" stroke="#2a3550"/><text x="870" y="184" text-anchor="middle" class="gt">¿temp_rodamiento &gt; 80?</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <line class="ln" x1="330" y1="202" x2="170" y2="285"/><line class="ln" x1="330" y1="202" x2="490" y2="285"/>
+      <text x="330" y="256" text-anchor="middle" class="rl">por R1</text>
+      <rect class="gn" x="30" y="285" width="280" height="52" fill="#172033" stroke="#2a3550"/><text x="170" y="319" text-anchor="middle" class="gt">¿vibración = alta?</text>
+      <rect class="gn" x="350" y="285" width="280" height="52" fill="#172033" stroke="#2a3550"/><text x="490" y="319" text-anchor="middle" class="gt">¿ruido = metálico?</text>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <line class="ln" x1="170" y1="337" x2="170" y2="395"/><line class="ln" x1="490" y1="337" x2="490" y2="395"/>
+      <rect class="gn" x="50" y="395" width="240" height="52" fill="#10261a" stroke="#4ade80"/><text x="170" y="429" text-anchor="middle" class="gt">técnico: sí ✓</text>
+      <rect class="gn" x="370" y="395" width="240" height="52" fill="#10261a" stroke="#4ade80"/><text x="490" y="429" text-anchor="middle" class="gt">técnico: sí ✓</text>
+      <text x="492" y="190" class="ck">✓</text>
+    </g>
+    <g class="fragment" data-fragment-index="4">
+      <line class="ln" x1="870" y1="202" x2="870" y2="285"/>
+      <rect class="gn" x="730" y="285" width="280" height="52" fill="#10261a" stroke="#4ade80"/><text x="870" y="319" text-anchor="middle" class="gt">sensor: 92 °C ✓</text>
+      <text x="1072" y="190" class="ck">✓</text>
+    </g>
+    <g class="fragment" data-fragment-index="5">
+      <text x="832" y="49" class="ck">✓</text>
+      <text x="1180" y="420" text-anchor="end" font-size="23" font-weight="700" fill="#f5b942">Meta probada → R3: cambiar rodamiento</text>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>Ahora el motor parte de una hipótesis y busca la evidencia que la sostiene. Paso 1: ¿qué regla concluye rodamiento_desgastado? R2, que exige dos submetas. Paso 2: ¿qué regla concluye falla_mecánica? R1, con dos submetas más.</p>
+    <p>Pasos 3 y 4: las submetas de las hojas no las concluye ninguna regla; entonces el sistema las pregunta al técnico o las lee de un sensor. Paso 5: la evidencia sube por el árbol y la meta queda probada.</p>
+    <p>Ventaja clave: solo pregunta lo que necesita para la hipótesis en curso. MYCIN razonaba así, y por eso podía conducir una entrevista clínica ordenada.</p>
+  </aside>
+</section>
+
+<!-- ============================ 22 · ADELANTE O ATRÁS ============================ -->
+<section data-min="1">
+  <div class="kicker">Motor de inferencia</div>
+  <h2>¿Hacia adelante o hacia atrás?</h2>
+  <table>
+    <tr><th></th><th>Hacia adelante</th><th>Hacia atrás</th></tr>
+    <tr><td>Parte de</td><td>Los hechos</td><td>Una hipótesis</td></tr>
+    <tr><td>Conviene si</td><td>Llegan datos y hay que reaccionar</td><td>Hay pocas hipótesis y los datos son costosos</td></tr>
+    <tr><td>Usos típicos</td><td>Monitoreo, configuración</td><td>Diagnóstico, consulta</td></tr>
+    <tr><td>Ejemplo clásico</td><td>XCON</td><td>MYCIN</td></tr>
+  </table>
+  <aside class="notes">
+    <p>La elección depende de la forma del problema: muchos datos y conclusiones abiertas favorecen ir hacia adelante; pocas hipótesis y datos caros de obtener favorecen ir hacia atrás.</p>
+    <p>XCON partía del pedido del cliente y derivaba la configuración (hacia adelante). MYCIN partía de los posibles organismos y pedía solo los análisis necesarios (hacia atrás). Muchos sistemas combinan ambas estrategias.</p>
+  </aside>
+</section>
+
+<!-- ============================ 23 · EXPLICACIÓN ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Sistemas expertos</div>
+  <h2>El módulo de explicación: su gran ventaja</h2>
+  <div class="cols">
+    <div class="card accent"><h4>«¿Cómo llegaste a esa conclusión?»</h4><p class="mono" style="font-size:24px">R1: vibración alta y ruido metálico → falla mecánica<br>R2: + 92 °C → rodamiento desgastado<br>R3 → cambiar rodamiento</p></div>
+    <div class="card violet fragment"><h4>«¿Por qué me preguntas eso?»</h4><p>Porque intento probar R2 y necesito saber la temperatura del rodamiento.</p></div>
+  </div>
+  <p class="fragment" style="margin-top:22px">La traza permite <em>auditar, corregir y confiar</em>: clave cuando una decisión debe justificarse ante un cliente, un auditor o un regulador.</p>
+  <aside class="notes">
+    <p>"¿Cómo?" devuelve la cadena de reglas que produjo la conclusión. "¿Por qué?" revela la meta que el sistema persigue en ese momento del razonamiento.</p>
+    <p>Esta explicación es fiel por construcción: es exactamente el cómputo que se ejecutó. Más adelante veremos que las explicaciones de un LLM no tienen esa garantía. En organizaciones reguladas, como la banca, los seguros o el sector público, esta diferencia es decisiva.</p>
+    <p>Caso para discutir: en España, el sistema BOSCO decide quién recibe el bono social eléctrico verificando requisitos normativos. En septiembre de 2025, el Tribunal Supremo (STS 1119/2025) ordenó dar acceso a su código fuente: las administraciones deben poder explicar cómo deciden sus algoritmos. La fundación Civio había documentado en 2019 errores que negaban la ayuda a personas que cumplían los requisitos. Que la lógica sea explicable no garantiza que sea correcta, pero permite auditarla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 24 · ADQUISICIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Sistemas expertos</div>
+  <h2>Adquisición del conocimiento: el cuello de botella</h2>
+  <div class="quote">«Podemos saber más de lo que podemos decir».<span class="src">Michael Polanyi (1966), <em>The Tacit Dimension</em></span></div>
+  <ul style="margin-top:22px">
+    <li>Técnicas: entrevistas, observación, análisis de casos y protocolos de "pensar en voz alta"</li>
+    <li class="fragment">Dificultades: conocimiento tácito, expertos que se contradicen, reglas que envejecen</li>
+    <li class="fragment">Rutas actuales: aprender reglas de datos (Unidad 6) y extraerlas con LLMs</li>
+  </ul>
+  <aside class="notes">
+    <p>Feigenbaum (1977) lo dijo así: la adquisición del conocimiento del dominio era "el problema cuello de botella" en la construcción de agentes inteligentes aplicados. Desde entonces se habla del cuello de botella de la adquisición del conocimiento: construir la base de conocimiento resultó más difícil que construir el motor de inferencia.</p>
+    <p>La cita de Polanyi explica por qué: buena parte de la pericia es tácita. El técnico senior "siente" que un rodamiento falla antes de poder explicar por qué.</p>
+    <p>Hoy hay dos rutas complementarias. La primera es aprender reglas de los datos, por ejemplo con árboles de decisión (Unidad 6). La segunda es usar LLMs para extraer reglas candidatas de manuales y procedimientos, que el experto luego valida.</p>
+  </aside>
+</section>
+
+<!-- ============================ 25 · RBC: EJEMPLO ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Razonamiento basado en casos</div>
+  <h2>Recordar en vez de deducir</h2>
+  <div class="card amber" style="margin-bottom:22px"><p><strong>Ana no aplica reglas:</strong> recuerda que en 2023 una bomba de la Planta Norte vibraba igual, y el problema era la base del motor.</p></div>
+  <ul>
+    <li>Base de casos = historial de órdenes de trabajo: síntomas, diagnóstico, solución, resultado</li>
+    <li class="fragment">Ante una falla nueva: buscar el caso más parecido y adaptar su solución</li>
+    <li class="fragment">Útil cuando la experiencia abunda pero formalizarla en reglas es difícil</li>
+  </ul>
+  <aside class="notes">
+    <p>Muchos expertos razonan por analogía con casos anteriores, no con reglas generales. El razonamiento basado en casos (RBC) automatiza esa forma de pensar.</p>
+    <p>En las empresas, la base de casos casi siempre existe: tiquetes de soporte, órdenes de trabajo, expedientes. El reto es estructurarla, porque cada caso debe registrar los síntomas, la solución y si funcionó.</p>
+  </aside>
+</section>
+
+<!-- ============================ 26 · CICLO 4R ============================ -->
+<section data-min="2">
+  <div class="kicker">Razonamiento basado en casos</div>
+  <h2>El ciclo de las 4R</h2>
+  <div class="cols c46 mid">
+    <svg class="diagram" viewBox="0 0 560 440" role="img" aria-label="Ciclo del razonamiento basado en casos">
+      <defs>
+        <marker id="cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+        <style>.cn{stroke-width:2.5;rx:14}.ct{font-size:24px;font-weight:700;fill:#e8ecf4}</style>
+      </defs>
+      <circle cx="280" cy="220" r="78" fill="#2a2210" stroke="#f5b942" stroke-width="2.5"/>
+      <text x="280" y="214" text-anchor="middle" class="ct">Base de</text><text x="280" y="242" text-anchor="middle" class="ct">casos</text>
+      <g class="fragment" data-fragment-index="1"><rect class="cn" x="190" y="10" width="180" height="56" fill="#0f2a3a" stroke="#38bdf8"/><text x="280" y="46" text-anchor="middle" class="ct">1 · Recuperar</text>
+        <path d="M370,48 Q500,60 488,190" fill="none" stroke="#38bdf8" stroke-width="3" marker-end="url(#cyc)"/></g>
+      <g class="fragment" data-fragment-index="2"><rect class="cn" x="380" y="192" width="175" height="56" fill="#0f2a3a" stroke="#38bdf8"/><text x="467" y="228" text-anchor="middle" class="ct">2 · Reutilizar</text>
+        <path d="M480,250 Q490,380 372,392" fill="none" stroke="#38bdf8" stroke-width="3" marker-end="url(#cyc)"/></g>
+      <g class="fragment" data-fragment-index="3"><rect class="cn" x="200" y="370" width="170" height="56" fill="#0f2a3a" stroke="#38bdf8"/><text x="285" y="406" text-anchor="middle" class="ct">3 · Revisar</text>
+        <path d="M200,398 Q70,390 78,252" fill="none" stroke="#38bdf8" stroke-width="3" marker-end="url(#cyc)"/></g>
+      <g class="fragment" data-fragment-index="4"><rect class="cn" x="5" y="192" width="160" height="56" fill="#0f2a3a" stroke="#38bdf8"/><text x="85" y="228" text-anchor="middle" class="ct">4 · Retener</text>
+        <path d="M86,192 Q80,60 188,40" fill="none" stroke="#38bdf8" stroke-width="3" marker-end="url(#cyc)"/></g>
+    </svg>
+    <ol>
+      <li class="fragment" data-fragment-index="1"><strong>Recuperar</strong> el caso más parecido</li>
+      <li class="fragment" data-fragment-index="2"><strong>Reutilizar</strong> su solución, adaptándola</li>
+      <li class="fragment" data-fragment-index="3"><strong>Revisar</strong>: probarla y corregirla</li>
+      <li class="fragment" data-fragment-index="4"><strong>Retener</strong> el nuevo caso: el sistema aprende</li>
+      <li class="fragment muted small" data-fragment-index="5" style="list-style:none;margin-left:-1em;margin-top:14px">Aamodt y Plaza (1994). La decisión de diseño clave: cómo medir la similitud.</li>
+    </ol>
+  </div>
+  <aside class="notes">
+    <p>El ciclo de Aamodt y Plaza (1994) es el modelo de referencia del RBC. Recuperar exige una medida de similitud: qué atributos pesan más, por ejemplo el tipo de equipo frente a la antigüedad.</p>
+    <p>Reutilizar casi nunca es copiar: hay que adaptar la solución. Revisar es comprobar en la realidad. Retener hace que el sistema mejore con el uso, algo que un sistema de reglas no hace por sí solo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 27 · REGLAS O CASOS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Sistemas expertos</div>
+  <h2>¿Reglas o casos?</h2>
+  <table>
+    <tr><th></th><th>Reglas</th><th>Casos</th></tr>
+    <tr><td>Conocimiento</td><td>Explícito, estable y general</td><td>Experiencia concreta acumulada</td></tr>
+    <tr><td>Se mejora</td><td>Editando reglas</td><td>Guardando casos nuevos</td></tr>
+    <tr><td>Explica con</td><td>La traza de reglas</td><td>«Se parece al caso X»</td></tr>
+    <tr><td>Ejemplos</td><td>Normativa, configuración</td><td>Soporte técnico, jurisprudencia</td></tr>
+  </table>
+  <aside class="notes">
+    <p>No compiten: se complementan. Las reglas sirven cuando el conocimiento está codificado o puede codificarse, como una normativa o un catálogo de productos. Los casos sirven cuando la pericia es sobre todo experiencia, como el soporte técnico o el derecho basado en precedentes.</p>
+    <p>Muchos sistemas reales son híbridos: reglas para lo estable, casos para lo excepcional.</p>
+  </aside>
+</section>
+
+<!-- ============================ 28 · SE HOY: DMN ============================ -->
+<section data-min="2">
+  <div class="kicker">Los sistemas expertos hoy</div>
+  <h2>No murieron: se volvieron infraestructura</h2>
+  <div class="cols c64">
+    <div>
+      <div class="panel-title">Tabla de decisión DMN · Prioridad de la orden <span class="pill" style="margin-left:8px">política U: única</span></div>
+      <table class="compact">
+        <tr><th>Criticidad</th><th>Tipo de falla</th><th>Prioridad</th></tr>
+        <tr><td>A</td><td>cualquiera</td><td class="bad">P1 · &lt; 4 h</td></tr>
+        <tr><td>B</td><td>eléctrica</td><td class="bad">P1 · &lt; 4 h</td></tr>
+        <tr><td>B</td><td>mecánica</td><td class="amber">P2 · &lt; 24 h</td></tr>
+        <tr><td>C</td><td>cualquiera</td><td>P3 · &lt; 72 h</td></tr>
+      </table>
+    </div>
+    <ul class="small" style="font-size:27px">
+      <li>DMN: estándar de OMG, legible por el negocio y ejecutable por un motor</li>
+      <li class="fragment">OMS: la lógica de sus guías clínicas digitales se escribe en tablas basadas en DMN</li>
+      <li class="fragment">Israel: reglas en un motor de decisiones definieron el estado de vacunación de más de 9 millones de personas</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Los sistemas expertos dejaron de llamarse así, pero sus ideas son infraestructura cotidiana: motores de reglas de negocio y tablas de decisión que deciden créditos, primas de seguros, elegibilidad para subsidios o prioridades de atención.</p>
+    <p>DMN (Decision Model and Notation) es el estándar de OMG; la versión vigente es la 1.6, publicada en septiembre de 2026. La tabla usa la política de acierto U ("única"), que es la predeterminada: las reglas no pueden solaparse, de modo que para cada combinación de entradas se cumple exactamente una fila, y eso se puede verificar automáticamente.</p>
+    <p>Ejemplos verificados: las SMART Guidelines de la OMS escriben su lógica de soporte a decisiones en tablas basadas en DMN. El Ministerio de Salud de Israel usó IBM ODM para el estado de vacunación COVID-19 de más de 9 millones de personas, con cambios de reglas en unos 30 minutos (caso de estudio del proveedor, 2023). Ejemplo local: Colsubsidio automatizó la aprobación de cupos de crédito rotativo con un motor de decisiones y redujo la activación de 40 a 8 minutos (Valora Analitik, agosto de 2025; cifras de la empresa).</p>
+    <p>Matiz regulatorio para el posgrado: el considerando 12 del Reglamento Europeo de IA excluye de la definición de sistema de IA la automatización con reglas definidas solo por personas, pero incluye los enfoques basados en lógica y conocimiento que infieren a partir de conocimiento codificado. Un sistema experto con motor de inferencia sí cuenta como IA.</p>
+  </aside>
+</section>
+
+<!-- ============================ 29 · LLMs COMO FUENTE ============================ -->
+<section data-min="2">
+  <div class="kicker">Los sistemas expertos hoy</div>
+  <h2>Los LLMs como fuente de conocimiento</h2>
+  <div class="cols">
+    <div class="card ok"><h4>Lo que aportan</h4>
+      <ul class="small" style="font-size:26px"><li>Conocimiento general amplio, en lenguaje natural</li><li>Extraen reglas candidatas de manuales y normas</li><li>Aceleran la entrevista con el experto</li></ul></div>
+    <div class="card bad fragment"><h4>Los riesgos</h4>
+      <ul class="small" style="font-size:26px"><li>Alucinaciones: afirmaciones plausibles pero falsas</li><li>Respuestas distintas ante la misma pregunta</li><li>Explicaciones que no siempre reflejan cómo se produjo la respuesta</li></ul></div>
+  </div>
+  <p class="fragment muted small" style="margin-top:16px">Evidencia: Turpin et al. (NeurIPS 2023), explicaciones no fieles; Dahl et al. (2024), alucinaciones en consultas jurídicas.</p>
+  <aside class="notes">
+    <p>Un LLM contiene una cantidad enorme de conocimiento general, implícito en sus parámetros, y puede ayudar justo en el cuello de botella del que hablamos: proponer reglas a partir de documentos o conversar con el experto.</p>
+    <p>Pero hereda los límites de la ola conexionista. Puede inventar hechos, cambiar de respuesta y dar explicaciones que suenan bien sin corresponder a su proceso real. Turpin et al. (NeurIPS 2023) mostraron que las explicaciones paso a paso pueden ocultar sistemáticamente la verdadera razón de una respuesta. En un dominio normativo, Dahl et al. (Journal of Legal Analysis, 2024) midieron tasas de alucinación de entre el 69 % y el 88 % en consultas jurídicas con modelos de 2023, y los modelos no sabían cuándo alucinaban. Por eso, en un dominio con consecuencias, su salida debe verificarse.</p>
+  </aside>
+</section>
+
+<!-- ============================ 30 · SE VS LLM ============================ -->
+<section data-min="2">
+  <div class="kicker">Los sistemas expertos hoy</div>
+  <h2>Sistema experto frente a LLM</h2>
+  <table class="compact">
+    <tr><th>Dimensión</th><th>Sistema experto</th><th>LLM</th></tr>
+    <tr><td>Conocimiento</td><td>Explícito y acotado</td><td>Implícito y amplio</td></tr>
+    <tr><td>Explicación</td><td>Traza exacta</td><td>Plausible, no garantizada</td></tr>
+    <tr><td>Consistencia</td><td>Determinista</td><td>Puede variar</td></tr>
+    <tr><td>Fuera del dominio</td><td>Falla de forma visible</td><td>Responde igual, con riesgo</td></tr>
+    <tr><td>Verificación</td><td>Formal y auditable</td><td>Estadística y difícil</td></tr>
+  </table>
+  <p class="fragment" style="margin-top:16px">No compiten: <em>se complementan</em>.</p>
+  <aside class="notes">
+    <p>Repasar fila por fila. La fila "fuera del dominio" es la más importante para la gestión del riesgo: un sistema de reglas que no tiene una regla aplicable no responde, y el error es visible. Un LLM responde con la misma fluidez tanto si sabe como si no.</p>
+    <p>La conclusión prepara la siguiente diapositiva: las fortalezas de uno son las debilidades del otro.</p>
+  </aside>
+</section>
+
+<!-- ============================ 31 · PATRÓN HÍBRIDO ============================ -->
+<section data-min="2">
+  <div class="kicker violet">Sistemas híbridos</div>
+  <h2>El patrón híbrido: el LLM propone, el motor verifica</h2>
+  <svg class="diagram" viewBox="0 0 1200 360" role="img" aria-label="Patrón híbrido LLM más motor de reglas">
+    <defs>
+      <marker id="hy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+      <marker id="hyb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f87171"/></marker>
+      <style>.hb{rx:14;stroke-width:2.5}.ht{font-size:24px;font-weight:700;fill:#e8ecf4}.hs{font-size:19px;fill:#a3adc2}</style>
+    </defs>
+    <rect class="hb" x="10" y="80" width="200" height="130" fill="#172033" stroke="#2a3550"/>
+    <text x="110" y="135" text-anchor="middle" class="ht">Documentos</text><text x="110" y="165" text-anchor="middle" class="hs">normas, manuales,</text><text x="110" y="188" text-anchor="middle" class="hs">expertos</text>
+    <g class="fragment" data-fragment-index="1">
+      <path class="msg-line" d="M210,145 L255,145" stroke="#a3adc2" stroke-width="3" marker-end="url(#hy)"/>
+      <rect class="hb" x="255" y="80" width="210" height="130" fill="#1d1733" stroke="#a78bfa"/>
+      <text x="360" y="135" text-anchor="middle" class="ht">LLM</text><text x="360" y="165" text-anchor="middle" class="hs">propone reglas o</text><text x="360" y="188" text-anchor="middle" class="hs">traduce la consulta</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <path class="msg-line" d="M465,145 L510,145" stroke="#a3adc2" stroke-width="3" marker-end="url(#hy)"/>
+      <rect class="hb" x="510" y="80" width="210" height="130" fill="#0f2a3a" stroke="#38bdf8"/>
+      <text x="615" y="135" text-anchor="middle" class="ht">Motor de reglas</text><text x="615" y="165" text-anchor="middle" class="hs">verifica</text><text x="615" y="188" text-anchor="middle" class="hs">y decide</text>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <path class="msg-line" d="M720,145 L765,145" stroke="#a3adc2" stroke-width="3" marker-end="url(#hy)"/>
+      <rect class="hb" x="765" y="80" width="200" height="130" fill="#10261a" stroke="#4ade80"/>
+      <text x="865" y="135" text-anchor="middle" class="ht">Decisión</text><text x="865" y="165" text-anchor="middle" class="hs">con traza</text><text x="865" y="188" text-anchor="middle" class="hs">explicable</text>
+      <path class="msg-line" d="M965,145 L1000,145" stroke="#a3adc2" stroke-width="3" marker-end="url(#hy)"/>
+      <rect class="hb" x="1000" y="80" width="190" height="130" fill="#2a2210" stroke="#f5b942"/>
+      <text x="1095" y="135" text-anchor="middle" class="ht">Persona</text><text x="1095" y="165" text-anchor="middle" class="hs">revisa y</text><text x="1095" y="188" text-anchor="middle" class="hs">aprueba</text>
+    </g>
+    <g class="fragment" data-fragment-index="4">
+      <path d="M615,210 L615,290 L360,290 L360,212" fill="none" stroke="#f87171" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#hyb)"/>
+      <text x="488" y="330" text-anchor="middle" font-size="21" fill="#f87171" font-weight="700">contraejemplo o regla inconsistente → corregir</text>
+    </g>
+  </svg>
+  <p class="fragment small" data-fragment-index="5" style="font-size:27px"><strong>En la industria:</strong> Automated Reasoning checks (AWS, 2025) verifica respuestas de un LLM contra políticas escritas en lógica formal: casi no aprueba nada falso, a costa de abstenerse con frecuencia.</p>
+  <p class="fragment muted small" data-fragment-index="6">Lo practicarán en el trabajo independiente 1 y lo formalizaremos en la Unidad 3 (verificación con solvers).</p>
+  <aside class="notes">
+    <p>El patrón combina lo mejor de las dos olas. El LLM trabaja donde es fuerte: leer lenguaje natural, proponer y traducir. El motor de reglas trabaja donde es fuerte: aplicar la política de forma consistente, verificable y con traza. La persona responsable cierra el ciclo.</p>
+    <p>El lazo rojo es esencial: si el motor encuentra una regla inconsistente o un contraejemplo, la propuesta vuelve al LLM para corregirse. Es una versión organizacional del patrón generar-verificar del que se habla hoy en la IA neurosimbólica.</p>
+    <p>Ejemplos reales del patrón: Automated Reasoning checks de Amazon Bedrock (disponibilidad general en agosto de 2025) traduce una política a lógica formal y verifica las respuestas del LLM. El artículo técnico de sus autores (An et al., 2025) reporta más de 99 % de <em>soundness</em>, es decir, casi ningún falso aprobado, pero un recall cercano al 17 %: el sistema prefiere abstenerse antes que aprobar algo dudoso. Además, la traducción a lógica la hace un LLM, así que la política debe revisarse. IBM Decision Intelligence genera reglas editables a partir de una descripción en lenguaje natural, y Camunda documenta agentes que clasifican la entrada mientras una tabla DMN decide. Un estudio de Georgetown (2025) con políticas de SNAP y Medicaid concluye que los LLMs ayudan a traducir normas a código, pero siempre con revisión humana.</p>
+  </aside>
+</section>
+
+<!-- ============================ 32 · SÍNTESIS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de este bloque</h2>
+  <ul>
+    <li>La IA avanza en olas: simbólica, conexionista y neurosimbólica</li>
+    <li>Resolver problemas = formular bien + buscar con conocimiento (heurísticas)</li>
+    <li>Un sistema experto separa el conocimiento del razonamiento</li>
+    <li>Hacia adelante desde los datos; hacia atrás desde la hipótesis; siempre con traza</li>
+    <li>Hoy: reglas y DMN como infraestructura, y LLMs que proponen bajo verificación</li>
+  </ul>
+  <aside class="notes">
+    <p>Recapitular en un minuto y medio. Si el tiempo apremia, priorizar las dos últimas ideas porque son las que usa el trabajo independiente 1.</p>
+  </aside>
+</section>
+
+<!-- ============================ 33 · TRABAJO INDEPENDIENTE 1 ============================ -->
+<section data-min="1">
+  <div class="kicker amber">Trabajo independiente 1</div>
+  <h2>Su propio sistema experto en papel</h2>
+  <div class="ti-grid">
+    <div>
+      <p>Elija una decisión recurrente de su organización (aprobar, clasificar, diagnosticar o priorizar). Escriba de 6 a 8 reglas y un caso con sus hechos. Trace a mano el encadenamiento hacia adelante y hacia atrás.</p>
+      <p>Cierre con la pregunta «¿por qué?» que le haría un auditor y la respuesta que daría su traza.</p>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Tiempo</span>75 min</div>
+      <div><span class="label">Entregable</span>PDF de 1–2 páginas</div>
+      <div><span class="label">Entrega</span>inicio de la semana 2</div>
+      <div><span class="label">Apoyo</span><a href="https://artint.info/3e/html/ArtInt3e.Ch5.S3.html">Poole y Mackworth, sec. 5.3</a></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Criterios de evaluación: reglas bien formadas y sin contradicciones, trazas correctas en ambas direcciones y una explicación clara para un auditor. El enunciado completo está en trabajo_independiente.md.</p>
+    <p>Este trabajo prepara la propuesta del proyecto integrador: muchas decisiones de los casos de los estudiantes pueden modelarse con reglas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 34 · TRANSICIÓN A LA PAUSA ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 15 min</div>
+  <h1>Pausa<br><span class="accent">Después: Bloque 2 · IA distribuida y agentes</span></h1>
+  <p class="lead muted">Del sistema experto, que responde consultas, al agente, que actúa en un entorno.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="bloque2_agentes.html">Ir al Bloque 2 →</a></p>
+  <aside class="notes">
+    <p>Pausa de 15 minutos. Al regresar comienza el Bloque 2.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del bloque 1</div>
+  <h2>Para profundizar</h2>
+  <div class="cols refs-compact refs-tight" style="font-size:18px">
+    <ol class="refs" style="font-size:18px">
+      <li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em> (4.ª ed.). Pearson. <a href="https://aima.cs.berkeley.edu/">aima.cs.berkeley.edu</a></li>
+      <li>Poole, D. y Mackworth, A. (2023). <em>Artificial Intelligence: Foundations of Computational Agents</em> (3.ª ed.). Cambridge UP. <a href="https://artint.info/3e/html/ArtInt3e.html">Texto abierto</a></li>
+      <li>Hopgood, A. (2021). <em>Intelligent Systems for Engineers and Scientists</em> (4.ª ed.). CRC Press.</li>
+      <li>Garcez, A. d'A. y Lamb, L. (2023). Neurosymbolic AI: the 3rd wave. <em>Artificial Intelligence Review</em>, 56. <a href="https://arxiv.org/abs/2012.05876">arXiv</a></li>
+      <li>McCarthy, J., Minsky, M., Rochester, N. y Shannon, C. (1955). <em>A Proposal for the Dartmouth Summer Research Project on AI</em>. <a href="https://www-formal.stanford.edu/jmc/history/dartmouth/dartmouth.html">Texto</a></li>
+      <li>Campbell, M., Hoane, A. y Hsu, F. (2002). Deep Blue. <em>Artificial Intelligence</em>, 134. <a href="https://doi.org/10.1016/S0004-3702(01)00129-1">DOI</a></li>
+      <li>Silver, D. et al. (2016). Mastering the game of Go with deep neural networks and tree search. <em>Nature</em>, 529. <a href="https://storage.googleapis.com/deepmind-media/alphago/AlphaGoNaturePaper.pdf">PDF</a></li>
+      <li>Hassabis, D. (2016). What we learned in Seoul with AlphaGo. <a href="https://blog.google/innovation-and-ai/products/what-we-learned-in-seoul-with-alphago/">Blog de Google</a> · Metz, C. (2016). In two moves, AlphaGo and Lee Sedol redefined the future. <a href="https://www.wired.com/2016/03/two-moves-alphago-lee-sedol-redefined-future/">Wired</a></li>
+      <li>Buchanan, B. y Shortliffe, E. (eds.) (1984). <em>Rule-Based Expert Systems: The MYCIN Experiments</em>. Addison-Wesley. <a href="https://www.shortliffe.net/Buchanan-Shortliffe-1984/MYCIN%20Book.htm">Libro abierto</a></li>
+    </ol>
+    <ol class="refs" start="10" style="font-size:18px">
+      <li>Feigenbaum, E. (1977). The art of artificial intelligence. <em>IJCAI-77</em>. <a href="https://www.ijcai.org/Proceedings/77-2/Papers/092.pdf">PDF</a></li>
+      <li>McDermott, J. (1982). R1: a rule-based configurer of computer systems. <em>Artificial Intelligence</em>, 19(1). <a href="https://doi.org/10.1016/0004-3702(82)90021-2">DOI</a></li>
+      <li>Barker, V. y O'Connor, D. (1989). Expert systems for configuration at Digital: XCON and beyond. <em>Communications of the ACM</em>, 32(3). <a href="http://web.archive.org/web/20240817023422/https://dl.acm.org/doi/pdf/10.1145/62065.62067">PDF</a></li>
+      <li>Cao, K. et al. (2023). Large-scale pancreatic cancer detection via non-contrast CT and deep learning. <em>Nature Medicine</em>, 29. <a href="https://doi.org/10.1038/s41591-023-02640-w">DOI</a></li>
+      <li>Minsky, M. (1974). <em>A Framework for Representing Knowledge</em>. MIT AI Memo 306. <a href="https://dspace.mit.edu/handle/1721.1/6089">DSpace</a></li>
+      <li>Aamodt, A. y Plaza, E. (1994). Case-based reasoning. <em>AI Communications</em>, 7(1). <a href="https://www.cs.auckland.ac.nz/~ian/CBR/AICom.pdf">PDF</a></li>
+      <li>Hogan, A. et al. (2021). Knowledge graphs. <em>ACM Computing Surveys</em>, 54(4). <a href="https://arxiv.org/abs/2003.02320">arXiv</a></li>
+      <li>OMG (2026). <em>Decision Model and Notation (DMN) 1.6</em>. <a href="https://www.omg.org/spec/DMN/">omg.org</a> · OMS: tablas DMN en sus guías. <a href="https://smart.who.int/dak-srv/v1.0.0/decision-logic.html">smart.who.int</a></li>
+      <li>Polanyi, M. (1966). <em>The Tacit Dimension</em>. University of Chicago Press.</li>
+      <li>Turpin, M. et al. (2023). Language models don't always say what they think. <em>NeurIPS 2023</em>. <a href="https://arxiv.org/abs/2305.04388">arXiv</a></li>
+      <li>An, C. et al. (2025). A neurosymbolic approach to natural language formalization and verification. <a href="https://arxiv.org/abs/2511.09008">arXiv</a></li>
+    </ol>
+  </div>
+  <p class="navlinks" style="margin-top:10px"><a href="index.html">← Volver a la agenda</a><a href="bloque2_agentes.html">Bloque 2 →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 1 · Bloque 1 · IA y sistemas expertos</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

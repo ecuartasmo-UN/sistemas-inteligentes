@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 2 · IA distribuida y agentes — Sesión 1 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 1 · Unidad 1 · Bloque 2 de 3</div>
+  <h1>IA distribuida y agentes</h1>
+  <p class="lead muted">Del sistema que responde al sistema que actúa</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="bloque1_ia_sistemas_expertos.html">← Bloque 1</a><a href="index.html">Agenda</a><a href="bloque3_sistemas_multiagente.html">Bloque 3 →</a></p>
+  <aside class="notes">
+    <p>Regreso de la pausa. Este bloque pasa del sistema experto, que responde consultas, al agente, que actúa en un entorno. Tiene tres partes: qué es un agente racional y cómo especificarlo (PEAS), los tipos de entorno y las arquitecturas internas. Cierra con la idea de IA distribuida, que abre el Bloque 3.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · DEL SE AL AGENTE ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Agentes</div>
+  <h2>Del sistema experto al agente</h2>
+  <div class="cols">
+    <div class="card"><h4>Sistema experto</h4><p>Espera una consulta, razona y entrega una recomendación. No actúa por sí mismo: una persona decide si la aplica.</p></div>
+    <div class="card accent fragment"><h4>Agente</h4><p>Percibe de forma continua, decide y actúa. Sus acciones cambian el entorno, y el entorno cambia por sí solo.</p></div>
+  </div>
+  <p class="fragment" style="margin-top:24px"><strong>MantenIA:</strong> el sistema experto diagnostica la falla; el <em>agente despachador</em> decide quién va, cuándo, y reprograma si algo cambia.</p>
+  <aside class="notes">
+    <p>La diferencia esencial es el lazo con el entorno. Un sistema experto es un consultor; un agente es un actor. El sistema experto no tiene actuadores: su salida es un consejo (un diagnóstico, una configuración), y es una persona quien decide y lo ejecuta. MYCIN recomendaba un antibiótico, pero lo prescribía el médico; el agente, en cambio, actúa él mismo y ve el efecto de sus acciones. Al actuar, el agente enfrenta problemas nuevos: el tiempo, la incertidumbre sobre el efecto de sus acciones y la presencia de otros actores.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · QUÉ ES UN AGENTE ============================ -->
+<section data-min="2">
+  <div class="kicker">Agentes</div>
+  <h2>¿Qué es un agente?</h2>
+  <p>Cualquier cosa que <strong>percibe</strong> su entorno mediante sensores y <strong>actúa</strong> sobre él mediante actuadores. <span class="muted small">(Russell y Norvig, 2021)</span></p>
+  <svg class="diagram" viewBox="0 0 1180 300" role="img" aria-label="Ciclo percepción-acción entre agente y entorno">
+    <defs>
+      <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e8ecf4"/></marker>
+      <style>.at{font-size:26px;font-weight:700;fill:#e8ecf4}.as{font-size:21px;fill:#a3adc2}.al{font-size:22px;font-weight:700}</style>
+    </defs>
+    <rect x="20" y="10" width="440" height="280" rx="16" fill="#0f2a3a" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="240" y="44" text-anchor="middle" class="at">Agente</text>
+    <rect x="50" y="62" width="380" height="54" rx="10" fill="#172033" stroke="#2a3550"/><text x="240" y="97" text-anchor="middle" class="as">Sensores</text>
+    <rect x="50" y="128" width="380" height="80" rx="10" fill="#2a2210" stroke="#f5b942"/><text x="240" y="162" text-anchor="middle" class="at" style="font-size:23px">Función del agente</text><text x="240" y="192" text-anchor="middle" class="as">percepciones → ¿qué hago ahora?</text>
+    <rect x="50" y="220" width="380" height="54" rx="10" fill="#172033" stroke="#2a3550"/><text x="240" y="255" text-anchor="middle" class="as">Actuadores</text>
+    <rect x="720" y="10" width="440" height="280" rx="16" fill="#172033" stroke="#2a3550" stroke-width="2.5"/>
+    <text x="940" y="44" text-anchor="middle" class="at">Entorno</text>
+    <text x="940" y="130" text-anchor="middle" class="as">órdenes de trabajo, técnicos,</text>
+    <text x="940" y="160" text-anchor="middle" class="as">equipos, clientes, vías</text>
+    <g class="fragment" data-fragment-index="1"><path class="msg-line" d="M720,89 L432,89" stroke="#e8ecf4" stroke-width="3" marker-end="url(#ag)"/><text x="576" y="76" text-anchor="middle" class="al" fill="#38bdf8">percepciones</text></g>
+    <g class="fragment" data-fragment-index="2"><path class="msg-line" d="M430,247 L718,247" stroke="#e8ecf4" stroke-width="3" marker-end="url(#ag)"/><text x="576" y="234" text-anchor="middle" class="al" fill="#f5b942">acciones</text></g>
+  </svg>
+  <p class="fragment" data-fragment-index="3"><span class="pill">autonomía</span><span class="pill">reactividad</span><span class="pill">proactividad</span><span class="pill">habilidad social</span> <span class="muted small">Wooldridge y Jennings (1995)</span></p>
+  <aside class="notes">
+    <p>La definición de Russell y Norvig es deliberadamente amplia: un termostato, un robot, un programa de trading o un chatbot son agentes. Lo que interesa es la función del agente: cómo convierte la historia de percepciones en una acción.</p>
+    <p>Wooldridge y Jennings (1995) añadieron cuatro propiedades para hablar de agentes inteligentes: autonomía (actúa sin intervención directa), reactividad (responde a cambios), proactividad (persigue metas por iniciativa propia) y habilidad social (interactúa con otros agentes y personas).</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · AGENTE RACIONAL ============================ -->
+<section data-min="2">
+  <div class="kicker">Agentes</div>
+  <h2>El agente racional</h2>
+  <div class="card accent"><p>Un agente es <strong>racional</strong> si, con lo que ha percibido y lo que sabe, elige la acción que <strong>en promedio dará el mejor resultado</strong> según la medida con la que lo evaluamos.</p>
+    <p class="small muted" style="margin-top:8px">Definición formal: maximiza el <em>valor esperado</em> de su medida de desempeño (Russell y Norvig, 2021).</p></div>
+  <ul style="margin-top:22px">
+    <li class="fragment"><strong>No adivina el futuro:</strong> decide sin saber cómo saldrá cada acción.</li>
+    <li class="fragment"><strong>Puede salirle mal:</strong> una buena decisión puede fallar por mala suerte, como un trancón imprevisto.</li>
+    <li class="fragment"><strong>Optimiza lo que le pedimos medir:</strong> si solo cuenta kilómetros, dejará esperando a los clientes lejanos. Elegir esa medida es una decisión de gestión.</li>
+  </ul>
+  <aside class="notes">
+    <p>La racionalidad depende de cuatro cosas: la medida de desempeño, el conocimiento previo del agente, las acciones disponibles y lo que ha percibido hasta ahora.</p>
+    <p>«Valor esperado» quiere decir el resultado promedio, pesando cada desenlace por su probabilidad. Ejemplo con el despachador de MantenIA: la técnica A llega en 30 minutos el 90 % de las veces y en 90 minutos el 10 % (por el tráfico); el técnico B llega siempre en 40 minutos. La espera esperada con A es 0,9 × 30 + 0,1 × 90 = 36 minutos, menor que los 40 de B. El agente racional envía a A, aunque a veces le salga peor: lo juzgamos por la calidad de la decisión con la información que tenía, no por el resultado de un caso.</p>
+    <p>Para un público de gestión, el tercer punto es el más importante: un agente optimiza exactamente lo que le pedimos medir. Si el despachador solo minimiza kilómetros, dejará esperando a los clientes lejanos. Este riesgo, la mala especificación del objetivo, se estudia a fondo en la Unidad 6.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · EL DESPACHADOR ============================ -->
+<section data-min="1.5">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>Antes de formalizar: el despachador</h2>
+  <div class="card amber"><p>Cada mañana llegan unas 60 órdenes de trabajo. El despachador decide quién atiende qué y en qué orden. Durante el día reprograma ante urgencias, tráfico o una ausencia.</p></div>
+  <p class="lead fragment" style="margin-top:28px">Hoy lo hace una persona con una hoja de cálculo y el teléfono.<br><span class="amber">¿Qué tendría que percibir, saber y poder hacer un agente de software para apoyarla?</span></p>
+  <aside class="notes">
+    <p>Partimos del trabajo real antes de la notación. El despachador humano combina información incompleta, metas en conflicto y cambios constantes; esa es exactamente la situación para la que se diseñan los agentes.</p>
+    <p>La pregunta lleva a la siguiente diapositiva: PEAS es una forma ordenada de responderla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · PEAS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Especificación</div>
+  <h2>PEAS: especificar un agente con cuatro preguntas</h2>
+  <table>
+    <tr><td><span class="accent">P</span> · Desempeño</td><td>¿Cómo sabremos que lo hace bien?</td></tr>
+    <tr class="fragment"><td><span class="accent">E</span> · Entorno</td><td>¿Dónde opera y con qué se encuentra?</td></tr>
+    <tr class="fragment"><td><span class="accent">A</span> · Actuadores</td><td>¿Qué puede hacer?</td></tr>
+    <tr class="fragment"><td><span class="accent">S</span> · Sensores</td><td>¿Qué puede percibir?</td></tr>
+  </table>
+  <p class="fragment" style="margin-top:22px">Especificar <em>antes</em> de construir: es el equivalente de los requisitos en un proyecto de IA.</p>
+  <aside class="notes">
+    <p>PEAS viene de las siglas en inglés: Performance, Environment, Actuators, Sensors. Es la primera herramienta de diseño del curso y la usarán en el proyecto integrador.</p>
+    <p>En la práctica, la mayoría de los proyectos de IA que fracasan no lo hacen por el algoritmo sino por una especificación pobre: una medida de desempeño ambigua o sensores que no capturan lo que importa.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · PEAS DEL DESPACHADOR ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>PEAS del agente despachador</h2>
+  <table class="compact">
+    <tr><td>Desempeño</td><td>Urgencias atendidas en menos de 4 h · órdenes a tiempo · kilómetros · carga equilibrada</td></tr>
+    <tr><td>Entorno</td><td>Órdenes, técnicos (habilidades, ubicación, turno), equipos, plantas, vías</td></tr>
+    <tr><td>Actuadores</td><td>Asignar, reprogramar, notificar, escalar a un supervisor</td></tr>
+    <tr><td>Sensores</td><td>Sistema de órdenes de trabajo, GPS, reportes de técnicos, sensores de equipos</td></tr>
+  </table>
+  <p class="fragment" style="margin-top:20px"><span class="amber">Atención:</span> las metas de desempeño compiten entre sí; hay que ponderarlas.</p>
+  <aside class="notes">
+    <p>Recorrer la tabla. Destacar que la medida de desempeño tiene cuatro componentes que tiran en direcciones distintas: atender rápido las urgencias puede desequilibrar la carga y aumentar los kilómetros.</p>
+    <p>Ponderarlas no es un problema técnico sino de política de la empresa. El agente solo hará visible el compromiso que la organización decida.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · PROPIEDADES DEL ENTORNO ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Entornos</div>
+  <h2>Propiedades del entorno</h2>
+  <div class="cols-3 envgrid">
+    <div class="card"><h4>Observable</h4><p>¿Ve todo lo relevante, o solo una parte?</p></div>
+    <div class="card fragment"><h4>Determinista</h4><p>¿La misma acción produce siempre el mismo efecto?</p></div>
+    <div class="card fragment"><h4>Episódico</h4><p>¿O cada decisión condiciona las siguientes?</p></div>
+    <div class="card fragment"><h4>Estático</h4><p>¿O cambia mientras el agente delibera?</p></div>
+    <div class="card fragment"><h4>Discreto</h4><p>¿Estados y tiempo finitos, o continuos?</p></div>
+    <div class="card fragment"><h4>Un solo agente</h4><p>¿O hay otros que también deciden?</p></div>
+  </div>
+  <aside class="notes">
+    <p>Cada propiedad es un eje: totalmente o parcialmente observable; determinista o estocástico; episódico o secuencial; estático o dinámico; discreto o continuo; de un agente o multiagente. Russell y Norvig añaden si el entorno es conocido o desconocido para el agente.</p>
+    <p>La clasificación importa porque determina la técnica. Un entorno observable, determinista y estático admite planificar todo de antemano. Uno parcial, estocástico y dinámico exige creencias, replanificación y razonamiento con incertidumbre (Unidades 2 y 7).</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · CLASIFICAR TRES ENTORNOS ============================ -->
+<section data-min="2">
+  <div class="kicker">Entornos</div>
+  <h2>Tres entornos organizacionales</h2>
+  <table class="compact">
+    <tr><th></th><th>Despachador</th><th>Chatbot de servicio</th><th>Trading algorítmico</th></tr>
+    <tr><td>Observable</td><td>Parcial</td><td>Parcial</td><td>Parcial</td></tr>
+    <tr><td>Determinista</td><td>Estocástico</td><td>Estocástico</td><td>Estocástico</td></tr>
+    <tr><td>Episódico</td><td>Secuencial</td><td>Secuencial</td><td>Secuencial</td></tr>
+    <tr><td>Estático</td><td>Dinámico</td><td>Estático</td><td>Dinámico</td></tr>
+    <tr><td>Agentes</td><td>Multiagente</td><td>Multiagente</td><td>Multiagente competitivo</td></tr>
+  </table>
+  <p class="fragment" style="margin-top:18px">Las organizaciones suelen ofrecer el caso difícil: <em>parcial, estocástico, secuencial, dinámico y multiagente</em>.</p>
+  <aside class="notes">
+    <p>El chatbot se clasifica como estático porque el cliente espera mientras el agente responde, aunque la conversación avanza. Es multiagente porque el cliente también decide.</p>
+    <p>El trading es el extremo: los demás agentes son adversarios y el mercado cambia en milisegundos. Algunas clasificaciones son discutibles, y eso está bien: el valor del ejercicio es hacer explícitos los supuestos del diseño.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · REACTIVA ============================ -->
+<section data-min="2">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker">Arquitecturas</div>
+      <h2>Arquitectura reactiva</h2>
+      <ul>
+        <li>Reglas condición → acción, sin modelo del mundo</li>
+        <li class="fragment">Rápida y robusta; no planifica ni anticipa</li>
+        <li class="fragment">Brooks (1986): conductas por capas que se inhiben unas a otras (subsunción)</li>
+        <li class="fragment"><strong>MantenIA:</strong> si la temperatura supera el límite → detener el equipo y alertar</li>
+      </ul>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/roomba_original.jpg" alt="Robot aspirador Roomba de primera generación" style="max-height:380px">
+      <figcaption class="credit">Roomba de primera generación. Foto: Larry D. Moore, <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Roomba_original.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Rodney Brooks (1986) propuso abandonar el modelo interno del mundo: conductas simples por capas, como evitar obstáculos o explorar, que reaccionan directamente a los sensores. En 1990 lo resumió así: "el mundo es su propio mejor modelo; siempre está exactamente al día" (<em>Elephants Don't Play Chess</em>).</p>
+    <p>El Roomba de primera generación (2002), de iRobot, empresa que Brooks cofundó en 1990, ilustra la idea: limpiaba sin construir un mapa de la casa. En las organizaciones, las reglas reactivas son las alarmas y los disparadores automáticos, rápidos y confiables, pero incapaces de anticipar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · DELIBERATIVA ============================ -->
+<section data-min="1.5">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker">Arquitecturas</div>
+      <h2>Arquitectura deliberativa</h2>
+      <ul>
+        <li>Mantiene un modelo del mundo y metas explícitas</li>
+        <li class="fragment">Planifica una secuencia de acciones antes de actuar</li>
+        <li class="fragment">Shakey (SRI, 1966–1972): el primer robot móvil que razonaba sobre sus acciones; de él nació el planificador STRIPS</li>
+        <li class="fragment"><strong>MantenIA:</strong> planear la ruta del día de cada técnico</li>
+      </ul>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/shakey_sri.jpg" alt="Robot Shakey de SRI International con sus componentes señalados" style="max-height:440px">
+      <figcaption class="credit">Shakey, SRI International. <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:SRI_Shakey_with_callouts.jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>El enfoque deliberativo es el opuesto: el agente piensa antes de actuar. Shakey combinaba visión, un modelo simbólico de su entorno y el planificador STRIPS (Fikes y Nilsson, 1971), base de la planificación automática que veremos en la Unidad 2.</p>
+    <p>Su debilidad es el tiempo: si el mundo cambia mientras el agente planifica, el plan puede llegar tarde.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · BDI ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Arquitecturas</div>
+  <h2>Arquitectura BDI: creencias, deseos, intenciones</h2>
+  <p class="small" style="margin:-4px 0 6px">BDI viene del inglés <em>Belief–Desire–Intention</em>. Es un modelo de agente inspirado en cómo decidimos las personas: actúa según lo que <strong>cree</strong> del mundo, lo que <strong>desea</strong> lograr y aquello con lo que se <strong>compromete</strong>.</p>
+  <svg class="diagram" viewBox="0 0 1180 300" role="img" aria-label="Ciclo de razonamiento de un agente BDI">
+    <defs>
+      <marker id="bd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+      <style>.bb{rx:14;stroke-width:2.5}.btt{font-size:25px;font-weight:700;fill:#e8ecf4}.bts{font-size:19px;fill:#a3adc2}</style>
+    </defs>
+    <rect class="bb" x="10" y="60" width="190" height="120" fill="#172033" stroke="#2a3550"/><text x="105" y="128" text-anchor="middle" class="btt">Percepción</text>
+    <g class="fragment" data-fragment-index="1">
+      <path class="msg-line" d="M200,120 L240,120" stroke="#a3adc2" stroke-width="3" marker-end="url(#bd)"/>
+      <rect class="bb" x="240" y="60" width="210" height="120" fill="#0f2a3a" stroke="#38bdf8"/><text x="345" y="112" text-anchor="middle" class="btt">Creencias</text><text x="345" y="142" text-anchor="middle" class="bts">lo que cree</text><text x="345" y="164" text-anchor="middle" class="bts">del mundo</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <path class="msg-line" d="M450,120 L490,120" stroke="#a3adc2" stroke-width="3" marker-end="url(#bd)"/>
+      <rect class="bb" x="490" y="60" width="210" height="120" fill="#2a2210" stroke="#f5b942"/><text x="595" y="112" text-anchor="middle" class="btt">Deseos</text><text x="595" y="142" text-anchor="middle" class="bts">lo que querría</text><text x="595" y="164" text-anchor="middle" class="bts">lograr</text>
+    </g>
+    <g class="fragment" data-fragment-index="3">
+      <path class="msg-line" d="M700,120 L740,120" stroke="#a3adc2" stroke-width="3" marker-end="url(#bd)"/>
+      <rect class="bb" x="740" y="60" width="210" height="120" fill="#1d1733" stroke="#a78bfa"/><text x="845" y="112" text-anchor="middle" class="btt">Intenciones</text><text x="845" y="142" text-anchor="middle" class="bts">a lo que se</text><text x="845" y="164" text-anchor="middle" class="bts">compromete</text>
+    </g>
+    <g class="fragment" data-fragment-index="4">
+      <path class="msg-line" d="M950,120 L985,120" stroke="#a3adc2" stroke-width="3" marker-end="url(#bd)"/>
+      <rect class="bb" x="985" y="60" width="185" height="120" fill="#10261a" stroke="#4ade80"/><text x="1077" y="112" text-anchor="middle" class="btt">Plan y</text><text x="1077" y="142" text-anchor="middle" class="btt">acción</text>
+      <path d="M1077,180 L1077,250 L105,250 L105,182" fill="none" stroke="#a3adc2" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#bd)"/>
+      <text x="590" y="285" text-anchor="middle" class="bts">el mundo cambia: se revisan creencias e intenciones</text>
+    </g>
+  </svg>
+  <p class="fragment" data-fragment-index="5">Clave: el <em>compromiso</em>. Una intención persiste hasta lograrse, volverse imposible o dejar de tener sentido.</p>
+  <aside class="notes">
+    <p>BDI viene de la teoría del razonamiento práctico del filósofo Michael Bratman (1987): las personas no replanifican todo a cada instante, se comprometen con intenciones. Rao y Georgeff (1995) llevaron la idea de la teoría a la práctica en agentes de software. Su sistema PRS se probó, con un simulador y con financiación de la NASA, en el manejo de fallas del sistema de control de reacción del transbordador espacial (Georgeff e Ingrand, 1989); también se aplicó en gestión de redes y modelado de combate aéreo.</p>
+    <p>Ejemplo con el despachador de MantenIA. Creencia: la técnica Ana está libre y a 20 minutos de la planta. Deseos: atender todas las órdenes del día y no pagar horas extra, que pueden chocar entre sí. Intención: enviar a Ana a la orden 512. Si llega una orden urgente, el agente no replanifica todo: mantiene su intención mientras siga teniendo sentido.</p>
+    <p>El compromiso es lo que distingue una intención de un deseo. Un agente puede desear muchas cosas incompatibles, pero solo se compromete con algunas y las persigue hasta que tenga una buena razón para abandonarlas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · BDI EN MANTENIA ============================ -->
+<section data-min="1.5">
+  <div class="kicker amber">Caso MantenIA</div>
+  <h2>El despachador como agente BDI</h2>
+  <div class="cols-3">
+    <div class="card accent"><h4>Creencias</h4><p>Ana está en la Planta Norte · la orden 512 es urgente · la vía a Chinchiná está cerrada</p></div>
+    <div class="card amber fragment"><h4>Deseos</h4><p>Urgencias en menos de 4 h · menos kilómetros · carga equilibrada</p></div>
+    <div class="card violet fragment"><h4>Intención</h4><p>Enviar a Ana a la orden 512 por la ruta alterna</p></div>
+  </div>
+  <p class="fragment" style="margin-top:22px">Si llega una urgencia mayor, ¿reconsiderar o mantener el compromiso? <span class="amber">Equilibrio entre persistencia y reactividad.</span></p>
+  <aside class="notes">
+    <p>Las creencias pueden ser falsas: tal vez la vía ya se abrió. Los deseos pueden ser incompatibles entre sí. La intención es el compromiso concreto que el agente ejecuta.</p>
+    <p>El dilema de la reconsideración es central en el diseño de agentes. Si reconsidera demasiado, nunca termina nada; si reconsidera muy poco, ignora cambios importantes. Es el mismo dilema de cualquier equipo de operaciones.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · HÍBRIDAS ============================ -->
+<section data-min="1.5">
+  <div class="cols c64 mid">
+    <div>
+      <div class="kicker">Arquitecturas</div>
+      <h2>Arquitecturas híbridas por capas</h2>
+      <div class="layer violet">Capa social · coordinarse con la flota</div>
+      <div class="layer amber fragment">Capa deliberativa · planear rutas</div>
+      <div class="layer accent fragment">Capa reactiva · esquivar obstáculos</div>
+      <p class="fragment" style="margin-top:16px">Cada capa responde a una escala de tiempo distinta.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/robot_bodega_amazon.jpg" alt="Robot móvil de un centro de distribución de Amazon" style="max-height:420px">
+      <figcaption class="credit">Robot de bodega. Foto: Geni, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Amazon_warehouse_robot_2020.JPG">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>La práctica combina ambos mundos: una capa reactiva para lo urgente, en milisegundos; una deliberativa para lo planificable, en segundos o minutos; y en muchos casos una capa social para coordinarse con otros agentes. Arquitecturas clásicas de este tipo son TouringMachines e InteRRaP.</p>
+    <p>Un robot de bodega es el ejemplo actual: frena solo ante un obstáculo, planea su ruta hacia el estante y se coordina con cientos de robots para no bloquear los pasillos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · IA DISTRIBUIDA ============================ -->
+<section data-min="2">
+  <div class="kicker">IA distribuida</div>
+  <h2>De un agente a muchos: la IA distribuida</h2>
+  <div class="cols">
+    <div class="card"><h4>Resolución distribuida de problemas</h4><p>Módulos diseñados para cooperar en un mismo problema</p></div>
+    <div class="card accent fragment"><h4>Sistemas multiagente</h4><p>Agentes autónomos, quizá con metas propias, que deben coordinarse</p></div>
+  </div>
+  <p class="fragment" style="margin-top:22px">¿Por qué distribuir? El problema ya está repartido (geografía, áreas, empresas), y se gana robustez, escala y respeto por la información local.</p>
+  <p class="fragment amber">MantenIA con 40 técnicos: un despachador central se vuelve un cuello de botella.</p>
+  <aside class="notes">
+    <p>La inteligencia artificial distribuida estudia sistemas con varios solucionadores. La división clásica, que Jennings, Sycara y Wooldridge (1998) atribuyen a Bond y Gasser (1988), distingue dos tradiciones: la resolución distribuida de problemas, donde las estrategias de interacción se diseñan como parte del sistema, y los sistemas multiagente, que estudian agentes autónomos, quizá preexistentes, que deben resolver un problema juntos.</p>
+    <p>Muchos problemas organizacionales están distribuidos por naturaleza: sedes, áreas, proveedores. Además, parte de la información es privada; un contratista no comparte su agenda completa. Esa es la puerta al Bloque 3.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · SÍNTESIS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de este bloque</h2>
+  <ul>
+    <li>Un agente percibe y actúa; ser racional es maximizar el desempeño esperado</li>
+    <li>Lo que se mide define el comportamiento: PEAS antes de construir</li>
+    <li>Los entornos organizacionales: parciales, estocásticos, dinámicos y multiagente</li>
+    <li>Arquitecturas: reactiva, deliberativa, BDI e híbrida por capas</li>
+    <li>Cuando el problema está repartido, la inteligencia también se reparte</li>
+  </ul>
+  <aside class="notes">
+    <p>Recapitular. El vínculo con el proyecto integrador es directo: cada equipo deberá describir su caso con PEAS y las propiedades del entorno.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · TRABAJO INDEPENDIENTE 2 ============================ -->
+<section data-min="1.5">
+  <div class="kicker amber">Trabajo independiente 2</div>
+  <h2>Un agente para su organización</h2>
+  <div class="ti-grid">
+    <div>
+      <p>Identifique un proceso de su organización donde un agente de software podría <em>actuar</em>, no solo responder. Especifique su PEAS y clasifique su entorno con las seis propiedades.</p>
+      <p>Recomiende una arquitectura (reactiva, deliberativa, BDI o híbrida) y justifique la elección.</p>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Tiempo</span>60 min</div>
+      <div><span class="label">Entregable</span>1 página: tabla PEAS y justificación</div>
+      <div><span class="label">Entrega</span>inicio de la semana 2</div>
+      <div><span class="label">Apoyo</span><a href="https://artint.info/3e/html/ArtInt3e.Ch2.html">Poole y Mackworth, cap. 2</a></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Criterios de evaluación: PEAS completo y específico, clasificación del entorno justificada y coherencia entre el entorno y la arquitectura elegida.</p>
+    <p>Recomendar hacerlo antes de la sesión 2 si es posible, porque es insumo directo de la propuesta del proyecto integrador.</p>
+  </aside>
+</section>
+
+<!-- ============================ 18 · TRANSICIÓN ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación</div>
+  <h1>Bloque 3<br><span class="accent">Sistemas multiagente</span></h1>
+  <p class="lead muted">Cuando muchos agentes deben comunicarse, cooperar y competir.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="bloque3_sistemas_multiagente.html">Ir al Bloque 3 →</a></p>
+  <aside class="notes">
+    <p>Pasar directamente al Bloque 3; no hay laboratorio entre los bloques 2 y 3.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del bloque 2</div>
+  <h2>Para profundizar</h2>
+  <div class="cols refs-compact">
+    <ol class="refs">
+      <li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em> (4.ª ed.), cap. 2. Pearson. <a href="https://aima.cs.berkeley.edu/">aima.cs.berkeley.edu</a></li>
+      <li>Poole, D. y Mackworth, A. (2023). <em>Artificial Intelligence: Foundations of Computational Agents</em> (3.ª ed.), caps. 1–2. <a href="https://artint.info/3e/html/ArtInt3e.Ch2.html">Texto abierto</a></li>
+      <li>Wooldridge, M. (2009). <em>An Introduction to MultiAgent Systems</em> (2.ª ed.). Wiley.</li>
+      <li>Wooldridge, M. y Jennings, N. (1995). Intelligent agents: theory and practice. <em>The Knowledge Engineering Review</em>, 10(2). <a href="https://www.cs.ox.ac.uk/people/michael.wooldridge/pubs/ker95/subsubsectionstar3_1_1_1.html">Versión de autor</a></li>
+      <li>Brooks, R. (1986). A robust layered control system for a mobile robot. <em>IEEE Journal on Robotics and Automation</em>, 2(1). <a href="https://dspace.mit.edu/handle/1721.1/6432">AI Memo 864</a></li>
+      <li>Brooks, R. (1990). Elephants don't play chess. <em>Robotics and Autonomous Systems</em>, 6(1–2). <a href="https://people.csail.mit.edu/brooks/papers/elephants.pdf">PDF</a></li>
+    </ol>
+    <ol class="refs" start="7">
+      <li>Fikes, R. y Nilsson, N. (1971). STRIPS: a new approach to the application of theorem proving to problem solving. <em>Artificial Intelligence</em>, 2(3–4). <a href="https://ai.stanford.edu/~nilsson/OnlinePubs-Nils/PublishedPapers/strips.pdf">PDF</a></li>
+      <li>Bratman, M. (1987). <em>Intention, Plans, and Practical Reason</em>. Harvard University Press. <a href="https://press.uchicago.edu/ucp/books/book/distributed/I/bo3629095.html">Reedición CSLI</a></li>
+      <li>Rao, A. y Georgeff, M. (1995). BDI agents: from theory to practice. <em>ICMAS-95</em>. <a href="https://cdn.aaai.org/ICMAS/1995/ICMAS95-042.pdf">PDF</a></li>
+      <li>Georgeff, M. e Ingrand, F. (1989). Decision-making in an embedded reasoning system. <em>IJCAI-89</em>. <a href="https://www.ijcai.org/Proceedings/89-2/Papers/020.pdf">PDF</a></li>
+      <li>Bond, A. y Gasser, L. (eds.) (1988). <em>Readings in Distributed Artificial Intelligence</em>. Morgan Kaufmann.</li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="bloque1_ia_sistemas_expertos.html">← Bloque 1</a><a href="index.html">Volver a la agenda</a><a href="bloque3_sistemas_multiagente.html">Bloque 3 →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 1 · Bloque 2 · IA distribuida y agentes</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

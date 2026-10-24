@@ -1,0 +1,31 @@
+Ejemplo PDDL de MantenIA · Sesión 2 · Sistemas Inteligentes
+
+mantenia_dominio.pddl ........... dominio correcto (5 acciones: desplazarse, retirar-repuesto, bloquear, reparar, liberar)
+mantenia_problema.pddl .......... problema "bomba-3": restablecer la bomba 3 de la Planta Norte
+mantenia_plan.txt ............... plan de 6 pasos encontrado por Fast Downward y aceptado por el validador
+mantenia_dominio_mal_traducido.pddl  mismo dominio, pero a "reparar" le falta la precondición (bloqueado ?e),
+                                     como si un LLM hubiera omitido la regla de bloqueo al traducir el procedimiento
+
+Comprobado el 21 de octubre de 2026 con Unified Planning 1.3.0 y up-fast-downward 1.0.0 (Python 3.9):
+- Dominio correcto: Fast Downward encuentra el plan de mantenia_plan.txt; el validador de Unified Planning lo acepta (VALID).
+- Dominio mal traducido: Fast Downward propone
+    1. desplazarse(ana, base, bodega)  2. retirar-repuesto(ana, sello, bodega)  3. desplazarse(ana, bodega, planta-norte)
+    4. reparar(ana, bomba3, sello, planta-norte)  5. bloquear(ana, bomba3, planta-norte)  6. liberar(ana, bomba3, planta-norte)
+  Es decir: repara la bomba encendida y la bloquea después. Validado contra el modelo mal traducido: VALID.
+  Validado contra el modelo correcto: INVALID ("Preconditions [bloqueado(bomba3)] of 4-th action instance
+  reparar(ana, bomba3, sello, planta-norte) are not satisfied.").
+
+Lección: el validador verifica contra el modelo; si el modelo está mal, verifica lo incorrecto.
+Por eso un modelo traducido por un LLM también debe revisarse.
+
+Para reproducir:
+  pip install unified-planning==1.3.0 up-fast-downward
+  (instala up-fast-downward 1.0.0, que integra Fast Downward 26.6; así se probó.
+   Ojo: el extra 'pip install unified-planning[fast-downward]' instala la versión antigua 0.5.2.
+   Conviene probar la combinación en el entorno del curso (VS Code, Python 3.13) en Windows,
+   macOS y Linux antes de diseñar el Laboratorio 2A.)
+  from unified_planning.shortcuts import *
+  from unified_planning.io import PDDLReader
+  pb = PDDLReader().parse_problem("mantenia_dominio.pddl", "mantenia_problema.pddl")
+  with OneshotPlanner(name="fast-downward") as p: plan = p.solve(pb).plan
+  with PlanValidator(problem_kind=pb.kind) as v: print(v.validate(pb, plan).status)

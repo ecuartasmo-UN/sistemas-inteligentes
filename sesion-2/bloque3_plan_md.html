@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 3 · Planes explícitos en agentes: plan.md — Sesión 2 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .planfile { display: grid; grid-template-columns: 860px 1fr; gap: 22px; align-items: start; }
+  .planfile .file .body { font-size: 24px; line-height: 1.32; }
+  .planfile .sec + .sec { margin-top: 6px; }
+  .maptab td, .maptab th { font-size: 25px; padding: 7px 12px; }
+  .maptab td:first-child { width: 48%; }
+  .maptab td:last-child { color: var(--violet); font-weight: 600; }
+  .p7 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .p7 .card { padding: 14px 16px; }
+  .p7 .card h4 { font-size: 24px; color: var(--text); margin-bottom: 6px; }
+  .p7 .card p { font-size: 20px; color: var(--muted); margin: 0; line-height: 1.28; }
+  .errtab td, .errtab th { font-size: 23px; padding: 6px 10px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 2 · Unidad 2 · Bloque 3 de 3</div>
+  <h1>Planes explícitos en agentes: el plan.md</h1>
+  <p class="lead muted">Cómo un agente con LLM hace visible, revisable y verificable su plan</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="bloque2_llms_planificacion.html">← Bloque 2</a><a href="index.html">Agenda</a><a href="cierre_sesion.html">Cierre →</a></p>
+  <aside class="notes">
+    <p>La ilustración de fondo, de un artículo sobre desarrollo guiado por especificaciones, resume la idea del bloque: al agente se le carga con una especificación escrita, no con instrucciones improvisadas. Venimos de la pausa. Ruta del bloque: dónde aparecen hoy los planes explícitos en los agentes con LLMs; por qué un plan.md es, en el fondo, un plan clásico; y, sobre todo, cómo se escribe uno correcto. La referencia del contenido es el Anexo J del programa del curso. Todo prepara el Laboratorio 2C.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LOS AGENTES ESCRIBEN SU PLAN ============================ -->
+<section data-min="2">
+  <div class="kicker">Planes explícitos</div>
+  <h2>Los agentes también escriben su plan</h2>
+  <div class="cols c46 mid">
+    <div>
+      <ul style="font-size:28px">
+        <li>Antes de tocar nada, el agente investiga, pregunta y escribe un plan en Markdown con sus tareas</li>
+        <li class="fragment">Una persona lo lee, lo edita y da la orden de ejecutar</li>
+        <li class="fragment">Es la planificación del Bloque 1, en lenguaje natural</li>
+      </ul>
+    </div>
+    <figure class="figure">
+      <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Captura del Plan Mode de Cursor: un plan preparado en el archivo add-github-oauth-84bfc06a.plan.md con tres tareas por hacer y un botón Build</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+      <figcaption class="credit">Plan Mode de Cursor: un archivo <code>.plan.md</code> con 3 tareas y el botón «Build». Cursor (Anysphere), <a href="https://cursor.com/blog/plan-mode">«Introducing Plan Mode»</a>, 7 oct. 2025. Derechos reservados; uso educativo.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Los asistentes de programación con IA convirtieron la planificación explícita en una práctica diaria. La imagen es del anuncio oficial del Plan Mode de Cursor (7 de octubre de 2025): el agente preparó un plan que vive en un archivo Markdown, add-github-oauth-84bfc06a.plan.md, con un objetivo, un enlace al plan detallado y tres tareas con casillas. Nada se construye hasta que la persona pulsa «Build».</p>
+    <p>Según el blog: «When you're happy with the plan, it creates a Markdown file with file paths and code references. You can edit the plan directly, including adding or removing to-dos.» Y: «Most new features at Cursor now begin with Agent writing a plan». El blog afirma que esto mejora el código generado, pero no publica datos: es una afirmación del fabricante.</p>
+    <p>Usaremos el nombre genérico plan.md para este artefacto: cada herramienta le da su propio nombre, como veremos en la siguiente diapositiva.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · DÓNDE APARECE ============================ -->
+<section data-min="2">
+  <div class="kicker">Planes explícitos</div>
+  <h2>Dónde aparece hoy: un mismo patrón, muchos nombres</h2>
+  <div class="cols c64">
+    <table class="compact" style="font-size:22px">
+      <tr><th>Herramienta</th><th>Artefacto</th><th>Lo que documenta</th></tr>
+      <tr><td>Claude Code</td><td>modo de planificación</td><td>investiga sin editar; nada cambia hasta aprobar el plan</td></tr>
+      <tr><td>Cursor</td><td><code>.plan.md</code></td><td>plan editable con tareas</td></tr>
+      <tr><td>Kiro</td><td><code>tasks.md</code></td><td>tareas ligadas a requisitos, con su estado</td></tr>
+      <tr><td>GitHub Spec Kit</td><td><code>plan.md</code>, <code>tasks.md</code></td><td>tareas <code>[ ]</code> que se marcan <code>[X]</code></td></tr>
+      <tr><td>OpenAI Codex</td><td><code>PLANS.md</code></td><td>documento vivo: avance y decisiones</td></tr>
+      <tr><td>Manus</td><td><code>todo.md</code></td><td>reescribe la lista para no perder el objetivo</td></tr>
+    </table>
+    <figure class="figure">
+      <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotograma de Kiro: archivo tasks.md con un plan de implementación; cada tarea tiene una casilla, subtareas, los requisitos que cubre y un enlace Start task</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+      <figcaption class="credit"><code>tasks.md</code> en Kiro: cada tarea con casilla y los requisitos que cubre. Fotograma de la animación de <a href="https://kiro.dev/blog/introducing-kiro/">«Introducing Kiro»</a>, 14 jul. 2025. Derechos reservados; uso educativo.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Todas son fuentes oficiales, consultadas el 21 de octubre de 2026; las herramientas cambian rápido, así que los nombres pueden variar.</p>
+    <p>Claude Code: en el modo de planificación, «Claude reads files, runs shell commands to explore, and writes a plan, but does not edit your source»; el plan se puede abrir y editar con Ctrl+G antes de aprobarlo, y los archivos de plan se guardan por defecto en ~/.claude/plans. Cursor: un archivo .plan.md con tareas editables. Kiro: cada especificación genera requirements.md, design.md y tasks.md, y la interfaz marca las tareas en curso y completadas. GitHub Spec Kit (licencia MIT): los comandos de especificar, planificar y desglosar en tareas producen spec.md, plan.md y tasks.md; la plantilla pide marcar cada tarea completada con [X]. OpenAI Codex: la receta de PLANS.md describe «ExecPlans» como documentos vivos y autocontenidos, con secciones obligatorias de avance, sorpresas, registro de decisiones y retrospectiva. Manus: un todo.md que el agente reescribe paso a paso.</p>
+    <p>GitHub Copilot también tiene un agente de planificación de solo lectura que produce el plan en Markdown. Lo común: el plan es un archivo de texto, se revisa antes de ejecutar y se actualiza durante la ejecución.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · TRES FUNCIONES ============================ -->
+<section data-min="2">
+  <div class="kicker">Planes explícitos</div>
+  <h2>Tres funciones de un plan explícito</h2>
+  <div class="cols-3" style="margin-bottom:16px">
+    <div class="card accent"><h4>Contrato revisable</h4><p style="font-size:22px;margin:0">En Claude Code, las ediciones quedan bloqueadas hasta que la persona aprueba el plan</p></div>
+    <div class="card violet fragment" data-fragment-index="1"><h4 class="violet">Memoria externa</h4><p style="font-size:22px;margin:0">Notas fuera de la ventana de contexto; con el plan se puede retomar el trabajo</p></div>
+    <div class="card ok fragment" data-fragment-index="2"><h4 class="ok">Monitoreo</h4><p style="font-size:22px;margin:0">Reescribir la lista «recita» los objetivos y mantiene el rumbo</p></div>
+  </div>
+  <div class="imgrow">
+    <figure class="figure fragment" data-fragment-index="2">
+      <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Figura de Manus: a la izquierda, los objetivos quedan solo al inicio del contexto; a la derecha, se vuelven a insertar después de las últimas observaciones</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+      <figcaption class="credit">«Manipulate Attention Through Recitation». Ji, Y. (2025), <a href="https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus">blog de Manus</a>. Derechos reservados; uso educativo.</figcaption>
+    </figure>
+    <figure class="figure fragment" data-fragment-index="2">
+      <img src="assets/img/checklist_prevuelo.jpg" alt="Un piloto de la Fuerza Aérea de Estados Unidos lee una lista de chequeo prevuelo en la cabina de un KC-135" style="max-height:250px">
+      <figcaption class="credit">El mismo principio en aviación: la lista de chequeo prevuelo. U.S. Air Force (2014), dominio público, <a href="https://commons.wikimedia.org/wiki/File:Running_the_checklist_(14729226029).jpg">Wikimedia Commons</a></figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>Contrato: la documentación de Claude Code dice que en el modo de planificación «edits stay blocked until you approve the plan». La persona aprueba antes de que el agente actúe: es el punto más barato para detectar que entendió mal la tarea.</p>
+    <p>Memoria externa: Anthropic (29 de septiembre de 2025) llama a esto «structured note-taking»: «the agent regularly writes notes persisted to memory outside of the context window», y pone como ejemplos la lista de tareas de Claude Code y un archivo NOTES.md. La receta de OpenAI para Codex exige que siempre se pueda «restart from only the ExecPlan and no other work».</p>
+    <p>Monitoreo: según el blog de Manus (18 de julio de 2025), una tarea típica requiere unas 50 llamadas a herramientas; al reescribir su todo.md, el agente «recita» sus objetivos al final del contexto y evita perderlos de vista. La figura lo muestra: a la derecha, los objetivos (en verde) se vuelven a insertar cerca de lo más reciente. Matiz: unas notas de octubre de 2025 sobre un webinar con el autor (fuente secundaria) dicen que Manus luego reemplazó el todo.md por un agente planificador, porque actualizarlo consumía cerca de un tercio de las acciones. Los planes también tienen costo.</p>
+    <p>La foto conecta con una práctica humana probada: en aviación, la lista de chequeo prevuelo hace explícitos los pasos y su verificación, y no depende de la memoria del piloto.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · UN PLAN CLÁSICO ============================ -->
+<section data-min="2.5">
+  <div class="kicker violet">Conexión con el Bloque 1</div>
+  <h2>Un plan.md es un plan clásico, escrito para personas</h2>
+  <table class="maptab compact">
+    <tr><th>En el plan.md</th><th>En la planificación clásica</th></tr>
+    <tr class="fragment"><td>Objetivo y criterios de aceptación</td><td>Meta</td></tr>
+    <tr class="fragment"><td>Contexto y supuestos</td><td>Estado inicial</td></tr>
+    <tr class="fragment"><td>Pasos con dependencias</td><td>Acciones con precondiciones; orden parcial</td></tr>
+    <tr class="fragment"><td>Fases y subtareas</td><td>Descomposición jerárquica (HTN)</td></tr>
+    <tr class="fragment"><td>Casillas y registro de avance</td><td>Monitoreo de la ejecución</td></tr>
+    <tr class="fragment"><td>Actualización ante una falla</td><td>Replanificación</td></tr>
+    <tr class="fragment"><td>Revisión y aprobación humana</td><td>Validación del plan</td></tr>
+  </table>
+  <p class="fragment" style="font-size:26px;margin-top:14px">Diferencia central: al plan PDDL lo valida una máquina; al plan.md, <em>una persona</em> y las <em>verificaciones que el propio plan declara</em>.</p>
+  <aside class="notes">
+    <p>Construir la tabla fila por fila, recordando el Bloque 1: la meta (en-servicio bomba3) es el objetivo; el estado inicial es el contexto; las acciones con precondiciones son los pasos con sus dependencias; el árbol HTN son las fases; el monitoreo y la replanificación son las casillas y el registro de avance.</p>
+    <p>La diferencia que importa está en la última fila. Un plan PDDL se valida de forma automática contra un modelo formal del dominio. Un plan.md está en lenguaje natural: lo valida una persona y, paso a paso, las verificaciones que el propio plan declara. Por eso la calidad de un plan.md depende, sobre todo, de que cada paso traiga una verificación que se pueda ejecutar.</p>
+    <p>Puente con la Sesión 1: en la arquitectura BDI, las intenciones son planes con los que el agente se compromete. Un plan.md aprobado es ese compromiso, escrito y visible para todos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · CUÁNDO Y CÓMO ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Cómo escribir un plan.md correcto</div>
+  <h2>Cuándo conviene y cómo se hace</h2>
+  <div class="cols c46 mid" style="margin-bottom:14px">
+    <div class="stack">
+      <div class="card ok" style="padding:12px 18px"><h4 class="ok" style="font-size:25px">Conviene</h4><p style="font-size:22px;margin:0">El enfoque no es obvio, la tarea toca varias partes o el dominio es poco conocido</p></div>
+      <div class="card bad" style="padding:12px 18px"><h4 class="bad" style="font-size:25px">No conviene</h4><p style="font-size:22px;margin:0">Si el cambio cabe en una frase, se omite el plan <span class="muted" style="font-size:18px">(Anthropic, s. f.)</span></p></div>
+    </div>
+    <figure class="figure">
+      <div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Diagrama: en el modo plan el agente lee archivos, analiza, reúne contexto y desarrolla la estrategia, pero no modifica ni crea archivos; en el modo de ejecución puede además modificar código, ejecutar comandos y probar</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div>
+      <figcaption class="credit">Explorar sin actuar: en el modo plan el agente analiza pero no modifica archivos (modos de Cline). Rannaberg, C. (2025), <a href="https://carlrannaberg.medium.com/my-current-ai-coding-workflow-f6bdc449df7f">Medium</a>. Derechos reservados; uso educativo.</figcaption>
+    </figure>
+  </div>
+  <div class="steps5">
+    <div class="card fragment"><div class="n">1</div><h4>Explorar</h4><p>leer el contexto sin modificar nada</p></div>
+    <div class="card fragment"><div class="n">2</div><h4>Redactar</h4><p>el plan, con la estructura recomendada</p></div>
+    <div class="card fragment"><div class="n">3</div><h4>Revisar y aprobar</h4><p>una persona, con la lista de chequeo</p></div>
+    <div class="card fragment"><div class="n">4</div><h4>Ejecutar</h4><p>verificando cada paso antes de marcarlo</p></div>
+    <div class="card fragment"><div class="n">5</div><h4>Mantenerlo vivo</h4><p>registrar, replanificar y cerrar</p></div>
+  </div>
+  <aside class="notes">
+    <p>Un plan cuesta tiempo; no siempre vale la pena. La guía de buenas prácticas de Claude Code lo resume: si se puede describir el cambio en una frase, no hace falta plan. Conviene cuando el enfoque no es obvio, cuando la tarea toca varias partes (archivos, sistemas, áreas) o cuando el dominio es poco conocido.</p>
+    <p>El diagrama, de un artículo de divulgación sobre el asistente Cline, muestra la separación en la práctica: en el modo plan el agente puede leer, analizar y desarrollar una estrategia, pero no puede modificar ni crear archivos; eso solo ocurre en el modo de ejecución, después de aprobar el plan.</p>
+    <p>El proceso en cinco pasos del Anexo J. El primero es el más subestimado: explorar sin actuar. Separar la exploración y la planificación de la ejecución evita resolver el problema equivocado. El tercero es el punto más barato para detectar un error: antes de que el agente toque nada.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · ESTRUCTURA 1/3 ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Estructura · 1 de 3</div>
+  <h2>Objetivo, contexto, alcance y restricciones</h2>
+  <div class="planfile">
+    <div class="file">
+      <div class="bar"><i></i><i></i><i></i><span>plan.md</span></div>
+      <div class="body"><div class="sec"><span class="md-t"># Plan: restablecer la bomba 3 (OT-512)</span></div><div class="sec fragment" data-fragment-index="1"><span class="md-h">## Objetivo</span>
+Bomba 3 en servicio hoy antes de las 14:00, con
+el sello cambiado y la prueba de presión aprobada.</div><div class="sec fragment" data-fragment-index="2"><span class="md-h">## Contexto</span>
+- OT-512 (sistema de mantenimiento): fuga en el
+  sello de la bomba 3. Sello SM-40 en bodega.
+- Ana está certificada; Luis no.
+- Supuesto: la línea 2 opera sin la bomba 3.</div><div class="sec fragment" data-fragment-index="3"><span class="md-h">## Alcance</span>
+- Incluye: cambio del sello, prueba y arranque.
+- Fuera de alcance: el motor, la línea 2, compras.</div><div class="sec fragment" data-fragment-index="4"><span class="md-h">## Restricciones</span>
+- Bloqueo y etiquetado; solo personal certificado.</div></div>
+    </div>
+    <div>
+      <div class="annot fragment" data-fragment-index="1"><strong>≈ meta.</strong> Una o dos frases que se puedan comprobar</div>
+      <div class="annot fragment" data-fragment-index="2"><strong>≈ estado inicial.</strong> Nombra sistemas, datos y supuestos</div>
+      <div class="annot fragment" data-fragment-index="3"><strong>Límites.</strong> Lo que no se declara fuera, el agente puede creerlo dentro</div>
+      <div class="annot fragment" data-fragment-index="4"><strong>Lo que no se negocia.</strong> Aquí, la seguridad</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Construimos el plan.md de la misma orden del Bloque 1, sección por sección. Leer cada sección y su anotación.</p>
+    <p>Objetivo: no «arreglar la bomba», sino un resultado comprobable con plazo. Contexto: el estado de partida, con nombres concretos (la orden en el sistema, el repuesto, quién está certificado) y los supuestos explícitos, porque un supuesto falso es una causa típica de fracaso. Alcance: qué incluye y qué no; un agente sin límites tiende a «mejorar» cosas que nadie pidió. Restricciones: lo que no se negocia, que en el Bloque 1 eran precondiciones.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · ESTRUCTURA 2/3 ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Estructura · 2 de 3</div>
+  <h2>Pasos: acción, resultado, dependencia y verificación</h2>
+  <div class="planfile">
+    <div class="file">
+      <div class="bar"><i></i><i></i><i></i><span>plan.md</span></div>
+      <div class="body"><div class="sec"><span class="md-h">## Pasos</span>
+<span class="md-box">- [ ]</span> 1. Retirar el sello SM-40 de la bodega
+       → sello en mano · Verif.: salida en inventario
+<span class="md-box">- [ ]</span> 2. Bloquear y etiquetar la bomba 3
+       → sin energía · Verif.: candado de Ana puesto</div><div class="sec fragment" data-fragment-index="1"><span class="md-box">- [ ]</span> 3. Cambiar el sello (<span class="amber">requiere 1 y 2</span>)
+       → sello nuevo · Verif.: lista del fabricante
+<span class="md-box">- [ ]</span> 4. Prueba de presión (<span class="amber">requiere 3</span>)
+       → sin fuga · Verif.: 30 min a presión nominal</div><div class="sec fragment" data-fragment-index="2"><span class="md-box">- [ ]</span> 5. <span class="md-bad">APROBACIÓN:</span> el supervisor autoriza (req. 4)
+       → autorización · Verif.: firma en la OT-512
+<span class="md-box">- [ ]</span> 6. Retirar el bloqueo y arrancar (req. 5)
+       → en servicio · Verif.: caudal nominal</div></div>
+    </div>
+    <div>
+      <div class="annot"><strong>≈ acciones.</strong> Un verbo y un resultado observable por paso</div>
+      <div class="annot fragment" data-fragment-index="1"><strong>≈ precondiciones.</strong> 1 y 2 son independientes; 3 necesita ambos</div>
+      <div class="annot fragment" data-fragment-index="2"><strong>Aprobación humana</strong> antes de lo irreversible: arrancar el equipo</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El corazón del plan. Cada paso tiene cuatro partes: una acción que empieza con verbo, el resultado esperado, sus dependencias y la verificación que dirá si quedó bien.</p>
+    <p>Las dependencias escriben en lenguaje natural lo que en PDDL eran precondiciones, y forman un orden parcial: los pasos 1 y 2 no dependen entre sí; el 3 necesita los dos.</p>
+    <p>El paso 5 es una aprobación humana explícita: arrancar un equipo después de una intervención es una acción con riesgo, y la decide una persona con nombre y cargo. En el modelo PDDL del Bloque 1 no había prueba de presión ni aprobación: el plan.md suele ser más rico en verificaciones y decisiones humanas, y el PDDL más preciso en precondiciones.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · ESTRUCTURA 3/3 ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Estructura · 3 de 3</div>
+  <h2>Aceptación, riesgos y registro de avance</h2>
+  <div class="planfile">
+    <div class="file">
+      <div class="bar"><i></i><i></i><i></i><span>plan.md</span></div>
+      <div class="body"><div class="sec"><span class="md-h">## Criterios de aceptación</span>
+- En servicio antes de las 14:00, sin fuga tras
+  30 min y con la OT-512 cerrada en el sistema.</div><div class="sec fragment" data-fragment-index="1"><span class="md-h">## Riesgos y aprobaciones</span>
+- Sello defectuoso · señal: fuga en la prueba
+  → pedir un sello a la Planta Sur
+- Ana no disponible · señal: aviso de ausencia
+  → escalar al jefe; no reasignar a Luis</div><div class="sec fragment" data-fragment-index="2"><span class="md-h">## Registro de avance</span>
+- 09:10 · Paso 1 cumplido (salida en inventario).
+- 09:45 · Paso 2 cumplido (candado de Ana puesto).</div></div>
+    </div>
+    <div>
+      <div class="annot"><strong>Verificación de extremo a extremo.</strong> ¿Se logró el objetivo completo?</div>
+      <div class="annot fragment" data-fragment-index="1"><strong>Plan B.</strong> Cada riesgo con su señal y su respuesta</div>
+      <div class="annot fragment" data-fragment-index="2"><strong>≈ monitoreo y memoria.</strong> Qué pasó, cuándo y por qué cambió</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Los criterios de aceptación verifican el resultado completo, no los pasos sueltos: puede que cada paso esté marcado y aun así el objetivo no se cumpla.</p>
+    <p>Los riesgos llevan una señal de alerta y una respuesta preparada. Fíjense en la respuesta al segundo riesgo: si Ana no está, no se reasigna la tarea a Luis, porque violaría una restricción; se escala.</p>
+    <p>El registro de avance es la memoria del plan: fecha, hora, qué se hizo y con qué evidencia. Es lo que permite que otra persona, u otra sesión del agente, retome el trabajo donde quedó.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · OBJETIVO VERIFICABLE ============================ -->
+<section data-min="1.5">
+  <div class="kicker amber">Principios · antes y después</div>
+  <h2>Un objetivo que se pueda comprobar</h2>
+  <div class="ba">
+    <div class="card bad"><h4>Antes</h4><p class="mono">Arreglar la bomba 3 lo antes posible.</p></div>
+    <div class="card ok fragment"><h4>Después</h4><p class="mono">Bomba 3 en servicio hoy antes de las 14:00, con el sello cambiado y la prueba de presión aprobada.</p></div>
+  </div>
+  <p class="fragment" style="font-size:27px;margin-top:22px">Sin un criterio comprobable, el agente decide por su cuenta cuándo terminó.</p>
+  <aside class="notes">
+    <p>Primero de los tres principios más importantes. «Lo antes posible» no se puede comprobar; «en servicio antes de las 14:00 con la prueba aprobada» sí. Un objetivo verificable es lo que convierte el plan.md en un contrato: ambas partes saben cuándo se cumplió.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · VERIFICACIÓN Y ALCANCE ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Principios · antes y después</div>
+  <h2>Verificación por paso y fuera de alcance</h2>
+  <div class="ba" style="margin-bottom:16px">
+    <div class="card bad"><h4>Antes</h4><p class="mono">3. Cambiar el sello.</p></div>
+    <div class="card ok fragment" data-fragment-index="1"><h4>Después</h4><p class="mono">3. Cambiar el sello (requiere 1 y 2) → sello nuevo · Verif.: lista del fabricante</p></div>
+  </div>
+  <div class="ba">
+    <div class="card bad fragment" data-fragment-index="2"><h4>Antes</h4><p>Sin sección de alcance: el agente «aprovecha» y cambia también el motor.</p></div>
+    <div class="card ok fragment" data-fragment-index="3"><h4>Después</h4><p class="mono">Fuera de alcance: el motor, la línea 2 y las compras.</p></div>
+  </div>
+  <p class="fragment" data-fragment-index="4" style="font-size:24px;margin-top:16px">«Sin una verificación que pueda ejecutar, <em>parece terminado</em> es la única señal disponible» <span class="muted" style="font-size:19px">(Anthropic, s. f., traducción propia)</span></p>
+  <aside class="notes">
+    <p>Segundo principio: cada paso trae su verificación, que puede ser una prueba, un conteo, una consulta a un sistema o una revisión humana. Sin ella, los errores aparecen al final, cuando corregirlos cuesta más.</p>
+    <p>Tercer principio: declarar lo que queda fuera. Un agente diligente sin límites hace más de lo pedido, y «más» puede significar tocar algo que no debía tocar.</p>
+    <p>La cita es de la guía de buenas prácticas de Claude Code: «Without a check it can run, "looks done" is the only signal available».</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · SIETE PRINCIPIOS MÁS ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Principios</div>
+  <h2>Siete principios más</h2>
+  <div class="p7">
+    <div class="card"><h4>Un paso, una acción</h4><p>empieza con un verbo y deja algo revisable</p></div>
+    <div class="card fragment"><h4>Dependencias explícitas</h4><p>qué requiere qué; lo independiente, en paralelo</p></div>
+    <div class="card fragment"><h4>Concreto</h4><p>nombra sistemas, datos, archivos y responsables</p></div>
+    <div class="card fragment"><h4>Granularidad</h4><p>si la lista crece, agrupe en fases</p></div>
+    <div class="card fragment amber"><h4>Aprobar antes de lo irreversible</h4><p>borrar, enviar, pagar, arrancar un equipo</p></div>
+    <div class="card fragment"><h4>Replanificar explícitamente</h4><p>registrar la falla, ajustar y volver a aprobar</p></div>
+    <div class="card fragment violet"><h4>Una casilla no es una prueba</h4><p>la verificación debe ser externa al agente</p></div>
+  </div>
+  <aside class="notes">
+    <p>Los otros siete principios del Anexo J, en una frase cada uno. Dos merecen énfasis.</p>
+    <p>«Aprobar antes de lo irreversible»: borrar, enviar, publicar, pagar o, en MantenIA, volver a arrancar un equipo, requiere un paso de aprobación explícito.</p>
+    <p>«Una casilla marcada no es una prueba»: el agente puede marcar un paso que no cumplió. Es el mismo argumento del club de lectura: los LLMs no se verifican bien a sí mismos. La verificación debe ser externa al agente que ejecuta: una prueba, un validador o una revisión independiente. Es el principio del marco LLM-Modulo aplicado al plan.md.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · ERRORES FRECUENTES ============================ -->
+<section data-min="1.5">
+  <div class="kicker amber">Errores frecuentes</div>
+  <h2>Siete errores y cómo corregirlos</h2>
+  <table class="errtab compact">
+    <tr><th>Error</th><th>Consecuencia</th><th>Corrección</th></tr>
+    <tr><td>Objetivo vago</td><td>resuelve otro problema</td><td>criterios de aceptación</td></tr>
+    <tr><td>Pasos sin verificación</td><td>errores que aparecen al final</td><td>una verificación por paso</td></tr>
+    <tr><td>Sin «fuera de alcance»</td><td>cambios que nadie pidió</td><td>exclusiones explícitas</td></tr>
+    <tr><td>Plan que no se actualiza</td><td>pierde su valor como memoria</td><td>registro tras cada paso</td></tr>
+    <tr><td>Plan excesivo</td><td>rígido; consume contexto</td><td>fases y nivel adecuado</td></tr>
+    <tr><td>Actuar mientras se planifica</td><td>problema equivocado</td><td>explorar, aprobar, ejecutar</td></tr>
+    <tr><td>Aprobar sin leer</td><td>la revisión no valida nada</td><td>la lista de chequeo</td></tr>
+  </table>
+  <aside class="notes">
+    <p>Repasar la tabla del Anexo J.7 sin leerla completa: elegir dos o tres errores y preguntarse cuál de ellos se comete más en las organizaciones de los estudiantes, aun sin agentes de IA. Casi todos son errores de gestión de proyectos de toda la vida; los agentes solo los hacen más rápidos y más costosos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · LISTA DE CHEQUEO ============================ -->
+<section data-min="1.5">
+  <div class="kicker amber">Antes de aprobar</div>
+  <h2>La lista de chequeo del Laboratorio 2C</h2>
+  <div class="cols">
+    <ul class="checklist">
+      <li>El objetivo se puede comprobar</li>
+      <li>El contexto nombra fuentes, sistemas y supuestos</li>
+      <li>Hay una sección de «fuera de alcance»</li>
+      <li>Las restricciones están escritas</li>
+      <li>Cada paso: acción, resultado y verificación</li>
+    </ul>
+    <ul class="checklist">
+      <li>Las dependencias son explícitas</li>
+      <li>Lo irreversible pide aprobación humana</li>
+      <li>Hay verificación de extremo a extremo</li>
+      <li>Los riesgos tienen señal y respuesta</li>
+      <li>El registro está al día y explica los cambios</li>
+    </ul>
+  </div>
+  <p style="font-size:24px;margin-top:16px" class="muted">Versión completa en <code>plantilla_plan.md</code> y en el Anexo J.6 del programa.</p>
+  <aside class="notes">
+    <p>Estos diez puntos son los que el equipo usará en el Laboratorio 2C para revisar el plan.md que redacte el LLM, y los mismos con los que se revisará el plan.md del proyecto integrador. El plan de MantenIA que construimos cumple los diez.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · REPLANIFICACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Mantenerlo vivo</div>
+  <h2>10:30, la prueba falla: replanificar por escrito</h2>
+  <div class="planfile">
+    <div class="file">
+      <div class="bar"><i></i><i></i><i></i><span>plan.md</span></div>
+      <div class="body"><div class="sec"><span class="md-ok">- [x]</span> 1. Retirar el sello SM-40 de la bodega
+<span class="md-ok">- [x]</span> 2. Bloquear y etiquetar la bomba 3
+<span class="md-ok">- [x]</span> 3. Cambiar el sello (requiere 1 y 2)</div><div class="sec fragment" data-fragment-index="1"><span class="md-bad">- [ ]</span> 4. Prueba de presión <span class="md-bad">✗ fuga</span></div><div class="sec fragment" data-fragment-index="2"><span class="md-new"><span class="md-box">- [ ]</span> 3b. Traer un sello SM-40 de la Planta Sur</span>
+<span class="md-new"><span class="md-box">- [ ]</span> 3c. Repetir el cambio de sello (req. 3b)</span></div><div class="sec fragment" data-fragment-index="3"><span class="md-h">## Registro de avance</span>
+- 10:30 · Paso 4 falló: fuga; sello defectuoso.
+- 10:35 · Replanificación: pasos 3b y 3c; plazo 16:00.
+- 10:40 · El supervisor aprueba el nuevo plazo.</div></div>
+    </div>
+    <div>
+      <div class="annot fragment" data-fragment-index="1"><strong>Monitoreo.</strong> La verificación del paso 4 detecta la falla</div>
+      <div class="annot fragment" data-fragment-index="2"><strong>Replanificación.</strong> Pasos nuevos desde el estado real</div>
+      <div class="annot fragment" data-fragment-index="3"><strong>Nueva aprobación.</strong> Cambió el plazo: decide una persona</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El mismo episodio del Bloque 1, ahora en el plan.md. La verificación del paso 4 es la que detecta la falla: sin ella, la bomba se habría devuelto a servicio con fuga.</p>
+    <p>La replanificación no se improvisa en la cabeza de nadie: se escribe. Aparecen pasos nuevos (3b y 3c) desde el estado real, el registro dice qué cambió y por qué, y como cambió el plazo, que era parte del objetivo, el supervisor vuelve a aprobar.</p>
+    <p>Esto es lo que practicarán en el Laboratorio 2C: inyectar una falla durante la ejecución, registrarla y replanificar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · SÍNTESIS ============================ -->
+<section data-min="1">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de este bloque</h2>
+  <div class="flow4">
+    <div class="card"><h4>Contrato</h4><p class="small">una persona lo revisa y lo aprueba antes de actuar</p></div>
+    <div class="card accent"><h4>Plan clásico</h4><p class="small">meta, pasos, dependencias, monitoreo</p></div>
+    <div class="card ok"><h4>Verificable</h4><p class="small">cada paso trae su prueba; la casilla no basta</p></div>
+    <div class="card amber"><h4>Vivo</h4><p class="small">registro y replanificación por escrito</p></div>
+  </div>
+  <p class="muted" style="font-size:24px;margin-top:20px">Construir agentes que generan y ejecutan sus planes (ReAct, <em>plan-and-execute</em>, frameworks) es tema de la asignatura <em>Agentes de IA</em>.</p>
+  <aside class="notes">
+    <p>Recapitular. Y marcar la frontera: aquí aprendimos a escribir, revisar y mantener un plan explícito; cómo programar agentes que lo hagan solos se estudia en Agentes de IA.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · TRABAJO INDEPENDIENTE 3 ============================ -->
+<section data-min="1">
+  <div class="kicker amber">Trabajo independiente 3</div>
+  <h2>El plan.md de una tarea real de su trabajo</h2>
+  <div class="ti-grid">
+    <div>
+      <ol class="small" style="font-size:25px">
+        <li>Pida a un LLM el plan.md de una tarea real de su trabajo, con la plantilla</li>
+        <li>Revíselo con la lista de chequeo y corríjalo</li>
+        <li>Documente al menos 5 cambios y por qué los hizo</li>
+      </ol>
+      <p class="muted" style="font-size:22px">No incluya datos confidenciales: anonimice antes de escribirle al LLM.</p>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Tiempo</span>75 min</div>
+      <div><span class="label">Entregable</span>las dos versiones y una tabla de cambios</div>
+      <div><span class="label">Entrega</span>inicio de la semana 2</div>
+      <div><span class="label">Apoyo</span><code>plantilla_plan.md</code></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El enunciado completo está en trabajo_independiente.md. La tarea debe ser real y de una o dos semanas: un cierre de mes, una migración, la preparación de una auditoría, un evento. El valor está en la tabla de cambios: qué le faltaba al plan del LLM según la lista de chequeo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 18 · ANUNCIO DEL LAB 2C ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 40 min</div>
+  <h1>Laboratorio 2C<br><span class="accent">Escribir, revisar y ejecutar un plan.md</span></h1>
+  <p class="lead muted">Un LLM redacta el plan.md de una intervención de MantenIA; el equipo lo revisa con la lista de chequeo, lo corrige y lo aprueba; en la ejecución simulada se inyecta una falla, que el equipo registra y replanifica.</p>
+  <p class="muted" style="font-size:24px">Notebook autocontenido en VS Code: toda la explicación está dentro del ejercicio.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="cierre_sesion.html">Cierre →</a></p>
+  <aside class="notes">
+    <p>Dar paso al laboratorio (40 min). Después viene el cierre de la sesión (15 min).</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del bloque 3</div>
+  <h2>Para profundizar</h2>
+  <div class="cols refs-compact refs-tight">
+    <ol class="refs">
+      <li>Anthropic (s. f.). Best practices for Claude Code. Documentación, consultada el 21 de octubre de 2026. <a href="https://code.claude.com/docs/en/best-practices">Documentación</a></li>
+      <li>Anthropic (s. f.). Choose a permission mode: plan mode. Documentación de Claude Code. <a href="https://code.claude.com/docs/en/permission-modes">Documentación</a></li>
+      <li>Rajasekaran, P., Dixon, E., Ryan, C. y Hadfield, J. (2025, 29 de septiembre). Effective context engineering for AI agents. Anthropic. <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Blog</a></li>
+      <li>Ji, Y. (2025, 18 de julio). Context engineering for AI agents: Lessons from building Manus. <a href="https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus">Blog de Manus</a></li>
+      <li>Smith, J. (2025, 7 de octubre). Introducing Plan Mode. Cursor. <a href="https://cursor.com/blog/plan-mode">Blog</a></li>
+      <li>Swaminathan, N. y Singh, D. (2025, 14 de julio). Introducing Kiro. <a href="https://kiro.dev/blog/introducing-kiro/">Blog</a> · <a href="https://kiro.dev/docs/specs/">Especificaciones</a></li>
+    </ol>
+    <ol class="refs" start="7">
+      <li>Delimarsky, D. (2025, 2 de septiembre). Spec-driven development with AI: Get started with a new open source toolkit. GitHub Blog. <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/">Blog</a> · <a href="https://github.com/github/spec-kit">Spec Kit (MIT)</a></li>
+      <li>Friel, A. (2025, 7 de octubre). Using PLANS.md for multi-hour problem solving. OpenAI Cookbook (receta archivada). <a href="https://developers.openai.com/cookbook/articles/codex_exec_plans">Cookbook</a></li>
+      <li>Martin, L. (2025, 15 de octubre). Notas sobre un webinar con Yichao «Peak» Ji (Manus). Fuente secundaria. <a href="https://rlancemartin.github.io/2025/10/15/manus/">Blog personal</a></li>
+      <li>Kambhampati, S. et al. (2024). Position: LLMs can't plan, but can help planning in LLM-Modulo frameworks. <em>ICML 2024</em>. <a href="https://proceedings.mlr.press/v235/kambhampati24a.html">PMLR</a></li>
+      <li>Rao, A. S. y Georgeff, M. P. (1995). BDI agents: From theory to practice. <em>ICMAS-95</em>. Vista en la Sesión 1.</li>
+      <li>Programa de la asignatura, versión 4 (2026), Anexo J: guía para escribir un plan.md correcto.</li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="bloque2_llms_planificacion.html">← Bloque 2</a><a href="index.html">Volver a la agenda</a><a href="cierre_sesion.html">Cierre →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 2 · Bloque 3 · Planes explícitos en agentes: plan.md</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

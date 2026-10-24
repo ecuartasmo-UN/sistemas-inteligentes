@@ -2,25 +2,37 @@
 
 **Especialización en Inteligencia Artificial · Universidad Nacional de Colombia, sede Manizales**
 
-Laboratorios del curso *Sistemas Inteligentes*. Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación está dentro del notebook. Se trabajan en parejas, en VS Code, en su propio computador.
+Material del curso *Sistemas Inteligentes*: el contenido del curso, las diapositivas de cada sesión y los laboratorios.
+
+## Ver las diapositivas
+
+Las diapositivas se abren en el navegador desde **https://ecuartasmo-un.github.io/sistemas-inteligentes/**:
+
+- [Sesión 1](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-1/): IA, sistemas expertos, agentes y sistemas multiagente
+- [Sesión 2](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-2/): planificación automática, LLMs y planificación, plan.md
+
+También funcionan sin internet: descargue el repositorio y abra `sesion-N/index.html` con doble clic. Use las flechas del teclado para avanzar.
 
 ## Contenido
 
-| Carpeta | Qué contiene |
+| Carpeta o archivo | Qué contiene |
 | :--- | :--- |
+| [`Sistemas_Inteligentes_contenido_actualizado_2026_v4.md`](Sistemas_Inteligentes_contenido_actualizado_2026_v4.md) | Contenido del curso: unidades, sesiones, laboratorios, evaluación y referencias |
 | [`entorno/`](entorno/) | Guía de instalación del entorno del curso (`INSTALACION.md`), las librerías (`requirements.txt`) y un notebook que comprueba que todo funciona (`verificar_entorno.ipynb`). Se usa en la fase previa, antes de la sesión 1 |
-| [`sesion-2/lab_2A_planificar_pddl/`](sesion-2/lab_2A_planificar_pddl/) | Laboratorio 2A · Planificar una operación en PDDL. No usa LLM |
-| [`sesion-2/lab_2B_llm_modulo/`](sesion-2/lab_2B_llm_modulo/) | Laboratorio 2B · LLM-Modulo en práctica |
-| [`sesion-2/lab_2C_plan_md/`](sesion-2/lab_2C_plan_md/) | Laboratorio 2C · Escribir, revisar y ejecutar un plan.md |
+| [`sesion-1/`](sesion-1/) | Diapositivas de la sesión 1 y su trabajo independiente |
+| [`sesion-2/`](sesion-2/) | Diapositivas de la sesión 2 (con el club de lectura), trabajo independiente, plantilla del plan.md y ejemplo en PDDL |
+| [`sesion-2/labs/lab_2A_planificar_pddl/`](sesion-2/labs/lab_2A_planificar_pddl/) | Laboratorio 2A · Planificar una operación en PDDL. No usa LLM |
+| [`sesion-2/labs/lab_2B_llm_modulo/`](sesion-2/labs/lab_2B_llm_modulo/) | Laboratorio 2B · LLM-Modulo en práctica |
+| [`sesion-2/labs/lab_2C_plan_md/`](sesion-2/labs/lab_2C_plan_md/) | Laboratorio 2C · Escribir, revisar y ejecutar un plan.md |
 
-Cada laboratorio tiene su propio `README.md` con el tiempo, el modo de trabajo y lo que se entrega.
+Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación está dentro del notebook. Se trabajan en parejas, en VS Code, en su propio computador. Cada uno tiene su propio `README.md` con el tiempo, el modo de trabajo y lo que se entrega.
 
 ## Cómo empezar
 
 1. **Descargue el repositorio.** Con Git: `git clone https://github.com/ecuartasmo-UN/sistemas-inteligentes.git`. Sin Git: botón **Code › Download ZIP** y descomprímalo. La carpeta que obtiene es la **carpeta del curso**.
 2. **Instale el entorno** siguiendo [`entorno/INSTALACION.md`](entorno/INSTALACION.md): Python 3.13, VS Code con las extensiones de Python y Jupyter, y un entorno virtual `.venv` en la carpeta del curso.
 3. **Compruebe la instalación** abriendo `entorno/verificar_entorno.ipynb` en VS Code, con el kernel `.venv`, y ejecutándolo completo.
-4. **Abra el laboratorio** de la sesión y ejecute sus celdas en orden.
+4. **Abra el laboratorio** de la sesión, en `sesion-N/labs/`, y ejecute sus celdas en orden.
 
 ## Acceso a un modelo de lenguaje (2B y 2C)
 
@@ -40,4 +52,4 @@ Si no puede instalar el entorno, cada laboratorio también corre en Google Colab
 
 ## Créditos
 
-Las imágenes de los notebooks son de dominio público, tienen licencia Creative Commons o son diagramas propios; cada una lleva su crédito junto a la imagen. MantenIA, la empresa de los ejemplos, es ficticia.
+Las imágenes de las diapositivas y de los notebooks son de dominio público, tienen licencia Creative Commons o son diagramas propios; cada una lleva su crédito junto a la imagen. Las imágenes con derechos reservados que se muestran en clase no se incluyen aquí: en su lugar aparece un recuadro con su descripción, y el crédito enlaza a la fuente original. MantenIA, la empresa de los ejemplos, es ficticia.
