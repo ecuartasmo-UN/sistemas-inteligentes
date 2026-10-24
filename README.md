@@ -20,7 +20,7 @@ También funcionan sin internet: descargue el repositorio y abra `sesion-N/index
 | [`Sistemas_Inteligentes_contenido_actualizado_2026_v4.md`](Sistemas_Inteligentes_contenido_actualizado_2026_v4.md) | Contenido del curso: unidades, sesiones, laboratorios, evaluación y referencias |
 | [`entorno/`](entorno/) | Guía de instalación del entorno del curso (`INSTALACION.md`), las librerías (`requirements.txt`) y un notebook que comprueba que todo funciona (`verificar_entorno.ipynb`). Se usa en la fase previa, antes de la sesión 1 |
 | [`sesion-1/`](sesion-1/) | Diapositivas de la sesión 1 y su trabajo independiente |
-| [`sesion-2/`](sesion-2/) | Diapositivas de la sesión 2 (con el club de lectura), trabajo independiente, plantilla del plan.md y ejemplo en PDDL |
+| [`sesion-2/`](sesion-2/) | Diapositivas de la sesión 2 (con el club de lectura), la lectura del club, trabajo independiente, plantilla del plan.md y ejemplo en PDDL. La lectura es Kambhampati et al. (2024), *Position: LLMs Can't Plan, But Can Help Planning in LLM-Modulo Frameworks*, ICML 2024, versión de [arXiv:2402.01817](https://arxiv.org/abs/2402.01817) con licencia CC BY 4.0 |
 | [`sesion-2/labs/lab_2A_planificar_pddl/`](sesion-2/labs/lab_2A_planificar_pddl/) | Laboratorio 2A · Planificar una operación en PDDL. No usa LLM |
 | [`sesion-2/labs/lab_2B_llm_modulo/`](sesion-2/labs/lab_2B_llm_modulo/) | Laboratorio 2B · LLM-Modulo en práctica |
 | [`sesion-2/labs/lab_2C_plan_md/`](sesion-2/labs/lab_2C_plan_md/) | Laboratorio 2C · Escribir, revisar y ejecutar un plan.md |
