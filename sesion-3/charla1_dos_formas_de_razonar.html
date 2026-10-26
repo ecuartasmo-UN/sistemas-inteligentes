@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla inicial · Dos formas de razonar — Sesión 3 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .two-ways .card h4 { font-size: 30px; }
+  .two-ways .card p { font-size: 25px; margin: 0 0 8px; }
+  .anat .card h4 { font-size: 27px; margin-bottom: 8px; }
+  .anat .card p { font-size: 21px; line-height: 1.3; margin: 0 0 6px; }
+  .anat .card .mono { font-size: 19px; }
+  .verdict-row { display: flex; gap: 12px; align-items: center; margin-top: 12px; font-size: 21px; color: var(--muted); }
+  .opt .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .opt .card p { font-size: 20px; margin: 6px 0 0; line-height: 1.3; }
+  .steps li { font-size: 25px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 3 · Unidad 3 · Charla inicial</div>
+  <h1>Dos formas de razonar</h1>
+  <p class="lead muted">Con restricciones y con modelos de lenguaje</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="index.html">← Agenda</a><a href="charla2_verificar_con_logica.html">Charla intermedia →</a></p>
+  <aside class="notes">
+    <p>Bienvenida a la Unidad 3. En la sesión 2 vimos que un LLM puede proponer un plan y un validador lo revisa. Hoy damos un paso atrás y nos preguntamos algo más general: ¿cómo razona una máquina? Esta charla presenta las dos formas que vamos a contrastar toda la sesión y prepara el Laboratorio 3A, una sesión de vibe coding que viene enseguida.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LA PREGUNTA ============================ -->
+<section data-min="2">
+  <div class="kicker">La pregunta de la unidad</div>
+  <h2>¿Cómo razona una máquina, y cómo sabemos si razonó bien?</h2>
+  <div class="cols two-ways">
+    <div class="card accent">
+      <h4 class="accent">Un solver</h4>
+      <p>Encuentra una solución que cumple <strong>todas</strong> las restricciones del problema, o demuestra que no existe</p>
+      <p class="muted" style="font-size:21px">Exacto y con garantías, pero solo resuelve lo que le escribimos en su lenguaje</p>
+    </div>
+    <div class="card violet fragment">
+      <h4 class="violet">Un LLM</h4>
+      <p>Razona generando pasos intermedios en lenguaje natural</p>
+      <p class="muted" style="font-size:21px">Flexible y fácil de usar, pero sin garantía de que la respuesta sea correcta</p>
+    </div>
+  </div>
+  <svg class="diagram fragment" viewBox="0 0 1200 96" role="img" aria-label="Agenda de la sesión: charla inicial 30 minutos, Laboratorio 3A de vibe coding 60, pausa 15, charla intermedia 30, Laboratorio 3B 60, charla de cierre 30 y club de lectura 15" style="margin-top:22px">
+    <defs><style>.ag{font-size:17px;fill:#e8ecf4;font-weight:600}.agm{font-size:15px;fill:#a3adc2}</style></defs>
+    <!-- 240 min en 1200 px: 5 px por minuto -->
+    <rect x="0" y="8" width="148" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="74" y="36" text-anchor="middle" class="ag">Charla inicial</text>
+    <rect x="152" y="8" width="296" height="44" rx="8" fill="rgba(245,185,66,.18)" stroke="#f5b942"/><text x="300" y="36" text-anchor="middle" class="ag">Laboratorio 3A · vibe coding</text>
+    <rect x="452" y="8" width="71" height="44" rx="8" fill="rgba(163,173,194,.10)" stroke="#2a3550"/><text x="487" y="36" text-anchor="middle" class="agm">pausa</text>
+    <rect x="527" y="8" width="146" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="600" y="36" text-anchor="middle" class="ag">Charla intermedia</text>
+    <rect x="677" y="8" width="296" height="44" rx="8" fill="rgba(245,185,66,.18)" stroke="#f5b942"/><text x="825" y="36" text-anchor="middle" class="ag">Laboratorio 3B · lógica con Z3</text>
+    <rect x="977" y="8" width="146" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="1050" y="36" text-anchor="middle" class="ag">Cierre</text>
+    <rect x="1127" y="8" width="73" height="44" rx="8" fill="rgba(167,139,250,.2)" stroke="#a78bfa"/><text x="1163" y="36" text-anchor="middle" class="ag">Club</text>
+    <text x="0" y="80" class="agm">0:00</text><text x="152" y="80" class="agm">0:30</text><text x="452" y="80" class="agm">1:30</text><text x="527" y="80" class="agm">1:45</text><text x="677" y="80" class="agm">2:15</text><text x="977" y="80" class="agm">3:15</text><text x="1127" y="80" class="agm">3:45</text>
+  </svg>
+  <aside class="notes">
+    <p>Esta es la definición que usaremos toda la unidad. Un solver es un motor que busca una solución que cumpla todas las restricciones, o demuestra que no hay ninguna. Un LLM razona escribiendo pasos intermedios, como hace una persona al explicar en voz alta. Lo que nos importa no es cuál es «más inteligente», sino qué garantías ofrece cada uno y cuánto cuesta.</p>
+    <p>La agenda alterna charla y práctica: dos laboratorios de una hora, uno de vibe coding, en el que una IA programa por ustedes un problema de asignación de tareas, y otro sobre lógica, y al final el club de lectura sobre AlphaGeometry, que combina las dos formas de razonar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · EL CASO ============================ -->
+<section data-min="2">
+  <div class="kicker">El caso de hoy · MantenIA</div>
+  <h2>Los turnos del equipo de mantenimiento</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/tecnicos_turno.jpg" alt="Dos electricistas reparan un generador en una central hidroeléctrica, con poca luz y una lámpara de trabajo">
+      <figcaption class="credit">Electricistas reparan un generador en la central de Wolf Creek, EE. UU. Foto: Mark Rankin, U.S. Army Corps of Engineers (2013), <a href="https://commons.wikimedia.org/wiki/File:Electricians_at_Wolf_Creek_Power_Plant_complete_fix_on_a_differential_(10019338204).jpg">Wikimedia Commons</a>, CC BY 2.0.</figcaption>
+    </figure>
+    <div>
+      <p style="font-size:26px">4 técnicos · 3 días · turno de día y de noche. ¿Quién trabaja cada turno?</p>
+      <table class="sched">
+<tr><th></th><th class="day-h" colspan="2">Lun</th><th class="day-h" colspan="2">Mar</th><th class="day-h" colspan="2">Mié</th></tr>
+<tr><th></th><th class="t-dia">día</th><th class="t-noche">noche</th><th class="t-dia">día</th><th class="t-noche">noche</th><th class="t-dia">día</th><th class="t-noche">noche</th></tr>
+<tr><td class="who">Ana<span class="cert">✓ cert.</span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+<tr><td class="who">Marta<span class="cert">✓ cert.</span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+<tr><td class="who">Luis<span class="nocert">cert. vencida</span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+<tr><td class="who">Jorge<span class="nocert">en formación</span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+</table>
+      <p class="muted" style="font-size:20px;margin-top:10px">Ana y Marta tienen la certificación vigente. La de Luis venció, como vimos en el Laboratorio 2C, y Jorge está en formación.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Seguimos con MantenIA, nuestra empresa ficticia de mantenimiento industrial. El supervisor tiene que armar los turnos de tres días para cuatro técnicos. Parece fácil con cuatro personas, pero cada regla que se agrega (descansos, certificaciones, preferencias, equidad) multiplica las combinaciones. Con 4 técnicos y 6 turnos hay 2<sup>24</sup>, más de 16 millones de formas de llenar la tabla.</p>
+    <p>Las personas son las mismas del Laboratorio 2C: Ana y Marta tienen la certificación vigente; la de Luis venció. Jorge es nuevo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · ANATOMÍA ============================ -->
+<section data-min="3">
+  <div class="kicker">Restricciones · el modelo</div>
+  <h2>Anatomía de un modelo de restricciones</h2>
+  <div class="cols-4 anat">
+    <div class="card accent fragment">
+      <h4>Variables</h4>
+      <p>Las preguntas que hay que responder</p>
+      <p class="mono">¿Ana trabaja el lunes de noche?</p>
+      <p class="muted">24 preguntas: 4 técnicos × 3 días × 2 turnos</p>
+    </div>
+    <div class="card fragment">
+      <h4>Dominios</h4>
+      <p>Las respuestas posibles de cada pregunta</p>
+      <p class="mono">sí (1) o no (0)</p>
+      <p class="muted">En otros problemas: horas, salas, montos</p>
+    </div>
+    <div class="card bad fragment">
+      <h4 class="bad">Restricciones</h4>
+      <p><strong>D1</strong> cada turno tiene al menos un técnico</p>
+      <p><strong>D2</strong> un solo turno por día</p>
+      <p><strong>D3</strong> quien trabaja de noche descansa al día siguiente</p>
+      <p><strong>D4</strong> cada noche, al menos un certificado</p>
+    </div>
+    <div class="card ok fragment">
+      <h4 class="ok">Objetivo</h4>
+      <p><strong>B1</strong> Marta pidió no trabajar el miércoles</p>
+      <p><strong>B2</strong> ningún turno de más</p>
+      <p><strong>B3</strong> repartir la carga lo más parejo posible</p>
+    </div>
+  </div>
+  <p class="fragment" style="font-size:25px;margin-top:20px">El modelo <strong>describe</strong> el problema; no dice <em>cómo</em> resolverlo. Eso lo hace el solver.</p>
+  <aside class="notes">
+    <p>Todo modelo de restricciones tiene cuatro partes. Las variables son las preguntas que el solver debe responder; aquí, para cada técnico, día y turno, si trabaja o no. El dominio es el conjunto de respuestas posibles. Las restricciones son las reglas que una respuesta debe cumplir. Y el objetivo dice qué solución preferimos cuando hay varias que cumplen.</p>
+    <p>Es la misma idea de la Sesión 2: en PDDL describíamos acciones y metas, y el planificador buscaba. Aquí describimos reglas y el solver busca. Quien modela no escribe el algoritmo, escribe el problema. Esta anatomía es también la mejor forma de pedirle un programa a una IA: en el Laboratorio 3A describirán así un problema de asignación de tareas para que un asistente lo programe.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · DURAS Y BLANDAS (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Restricciones · dos tipos</div>
+  <h2>Restricciones duras y blandas</h2>
+  <table class="compact" style="font-size:24px">
+    <tr><th></th><th>Duras</th><th>Blandas</th></tr>
+    <tr><td>Qué son</td><td>Reglas que se cumplen siempre</td><td>Preferencias, con un peso que dice cuánto importan</td></tr>
+    <tr><td>Si no se pueden cumplir</td><td>No hay solución: el solver lo demuestra</td><td>El solver las cumple tanto como pueda</td></tr>
+    <tr><td>En MantenIA</td><td>Descanso, certificación, cobertura</td><td>Marta (peso 10), turnos de más (3), carga pareja (2)</td></tr>
+    <tr><td>En otras organizaciones</td><td>Descanso legal, aforo de una sala, presupuesto máximo</td><td>Preferencias de horario, equidad, costo</td></tr>
+  </table>
+  <p class="muted" style="font-size:22px;margin-top:16px">Decidir qué es duro y qué es blando es una decisión de negocio, no técnica.</p>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta: la idea ya quedó en la diapositiva anterior. Una restricción dura no se negocia: si no se puede cumplir, no hay solución. Una blanda es una preferencia con un peso; el solver minimiza la suma de las penalizaciones. Los pesos los decide la organización: aquí, la cita médica de Marta pesa más que la equidad.</p>
+    <p>Un error común es volver duro lo que es preferencia: el modelo se vuelve imposible sin necesidad. Lo veremos en dos diapositivas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · BUSCAR Y PROPAGAR ============================ -->
+<section data-min="2">
+  <div class="kicker">Cómo resuelve un solver</div>
+  <h2>Buscar y propagar</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/sudoku.svg" alt="Tablero de sudoku de 9 por 9 con algunas casillas llenas: un problema clásico de satisfacción de restricciones">
+      <figcaption class="credit">Sudoku. Tim Stellmach, a partir de Lawrence Leonard Gilbert (2017), <a href="https://commons.wikimedia.org/wiki/File:Sudoku_Puzzle_by_L2G-20050714_standardized_layout.svg">Wikimedia Commons</a>, CC0.</figcaption>
+    </figure>
+    <ol class="steps">
+      <li class="fragment">Elegir un hueco y probar un valor</li>
+      <li class="fragment"><strong>Propagar</strong>: borrar de los otros huecos los valores que ya no caben</li>
+      <li class="fragment">Si un hueco se queda sin opciones, <strong>retroceder</strong> y probar otro valor</li>
+      <li class="fragment">CP-SAT combina esta idea con técnicas de los solvers lógicos, como <em>aprender de cada conflicto</em> para no repetirlo</li>
+    </ol>
+  </div>
+  <aside class="notes">
+    <p>El sudoku es el ejemplo clásico de un problema de satisfacción de restricciones: 81 huecos, valores del 1 al 9, y tres tipos de reglas (filas, columnas y cuadros). Quien lo resuelve a mano hace lo mismo que un solver: escribe un número y tacha las opciones que ya no caben en su fila, columna y cuadro. Eso es propagar. Si llega a un hueco sin opciones, borra y prueba otra cosa: eso es retroceder.</p>
+    <p>CP-SAT, el solver de Google que usaremos, hace esto mismo a gran escala y agrega técnicas de los solvers SAT, que veremos en la charla intermedia: cuando encuentra un conflicto, aprende una regla nueva para no volver a caer en él. No necesitamos saber más del algoritmo: nuestro trabajo es escribir bien el modelo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · QUÉ GARANTIZA CP-SAT ============================ -->
+<section data-min="2.5">
+  <div class="kicker">CP-SAT · el resultado</div>
+  <h2>Qué garantiza, y qué no</h2>
+  <div class="cols c64 mid">
+    <div>
+      <table class="sched">
+<tr><th></th><th class="day-h" colspan="2">Lun</th><th class="day-h" colspan="2">Mar</th><th class="day-h" colspan="2">Mié</th><th></th></tr>
+<tr><th></th><th class="t-dia">día</th><th class="t-noche">noche</th><th class="t-dia">día</th><th class="t-noche">noche</th><th class="t-dia">día</th><th class="t-noche">noche</th><th></th></tr>
+<tr><td class="who">Ana<span class="cert">✓ cert.</span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f d fragment" data-fragment-index="3"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n fragment" data-fragment-index="6"></span></span></td><td class="load fragment" data-fragment-index="7">2</td></tr>
+<tr><td class="who">Marta<span class="cert">✓ cert.</span></td><td><span class="c"></span></td><td><span class="c"><span class="f n fragment" data-fragment-index="2"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n fragment" data-fragment-index="4"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td class="load fragment" data-fragment-index="7">2</td></tr>
+<tr><td class="who">Luis<span class="nocert">cert. vencida</span></td><td><span class="c"><span class="f d fragment" data-fragment-index="1"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td class="load fragment" data-fragment-index="7">1</td></tr>
+<tr><td class="who">Jorge<span class="nocert">en formación</span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f d fragment" data-fragment-index="5"></span></span></td><td><span class="c"></span></td><td class="load fragment" data-fragment-index="7">1</td></tr>
+</table>
+      <div class="sched-legend"><span><i class="d"></i>turno de día</span><span><i class="n"></i>turno de noche</span><span>a la derecha: turnos de cada técnico</span></div>
+      <div class="verdict-row fragment" data-fragment-index="7"><span class="verdict unsat">OPTIMAL</span><span>6 turnos · Marta libre el miércoles · carga 2-2-1-1</span></div>
+    </div>
+    <div class="stack">
+      <div class="card ok fragment" data-fragment-index="8"><h4 class="ok">Garantiza</h4><p style="font-size:22px">Que la solución cumple todas las reglas duras y que es la mejor según el objetivo. O, si no hay solución, que de verdad no existe</p></div>
+      <div class="card bad fragment" data-fragment-index="9"><h4 class="bad">No garantiza</h4><p style="font-size:22px">Que el modelo refleje la realidad: una regla que olvidamos escribir, el solver la viola sin avisar</p></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Este es el resultado real de CP-SAT para el modelo de la diapositiva anterior; el código está en la carpeta ejemplos de la sesión. Los turnos aparecen uno a uno: Luis cubre el lunes de día, Marta las noches del lunes y el martes, Ana el martes de día y el miércoles de noche, y Jorge el miércoles de día. Se cumplen las cuatro reglas, Marta queda libre el miércoles, y se usan solo seis turnos.</p>
+    <p>La palabra OPTIMAL tiene un significado preciso: no existe otra asignación que cumpla las reglas con menor penalización. Eso es una garantía matemática. Pero la garantía es sobre el modelo, no sobre la realidad: si el reglamento exige algo que no escribimos, el solver no lo sabe. La responsabilidad de modelar bien sigue siendo nuestra.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · INFACTIBILIDAD ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Cuando las reglas chocan</div>
+  <h2>Infactibilidad y relajación</h2>
+  <div class="cols c46">
+    <div>
+      <div class="prule fragment prule-clash" data-fragment-index="2"><span class="id">D4'</span>Nueva regla de seguridad: cada noche, <strong>dos</strong> técnicos certificados</div>
+      <div class="prule fragment prule-clash" data-fragment-index="2"><span class="id">D5</span>Nueva regla de descanso: nadie trabaja dos noches seguidas</div>
+      <div class="cx fragment" data-fragment-index="1" style="margin-top:14px">
+        <div class="lbl">CP-SAT · INFEASIBLE</div>
+        <div class="val" style="font-family:var(--font);font-size:22px">No hay solución. Chocan D4' y D5: solo Ana y Marta están certificadas, así que las dos tendrían que trabajar todas las noches</div>
+      </div>
+    </div>
+    <div class="opt">
+      <p class="fragment" data-fragment-index="3" style="font-size:22px;margin-bottom:8px">Dos formas de <strong>relajar</strong>, y su costo:</p>
+      <div class="cols" style="gap:14px">
+        <div class="card fragment" data-fragment-index="3">
+          <h4>a · Volver a un certificado</h4>
+          <table class="sched mini">
+<tr><th></th><th class="day-h" colspan="2">Lun</th><th class="day-h" colspan="2">Mar</th><th class="day-h" colspan="2">Mié</th></tr>
+<tr><th></th><th class="t-dia">D</th><th class="t-noche">N</th><th class="t-dia">D</th><th class="t-noche">N</th><th class="t-dia">D</th><th class="t-noche">N</th></tr>
+<tr><td class="who">Ana</td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td></tr>
+<tr><td class="who">Marta</td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+<tr><td class="who">Luis</td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f d"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f d"></span></span></td><td><span class="c"></span></td></tr>
+<tr><td class="who">Jorge</td><td><span class="c"><span class="f d"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+</table>
+          <p>Hay turnos con 6 asignaciones, pero la regla de seguridad no se cumple</p>
+        </div>
+        <div class="card fragment" data-fragment-index="4">
+          <h4>b · Permitir noches seguidas</h4>
+          <table class="sched mini">
+<tr><th></th><th class="day-h" colspan="2">Lun</th><th class="day-h" colspan="2">Mar</th><th class="day-h" colspan="2">Mié</th></tr>
+<tr><th></th><th class="t-dia">D</th><th class="t-noche">N</th><th class="t-dia">D</th><th class="t-noche">N</th><th class="t-dia">D</th><th class="t-noche">N</th></tr>
+<tr><td class="who">Ana</td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td></tr>
+<tr><td class="who">Marta</td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f n"></span></span></td></tr>
+<tr><td class="who">Luis</td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"><span class="f d"></span></span></td><td><span class="c"></span></td><td><span class="c"><span class="f d"></span></span></td><td><span class="c"></span></td></tr>
+<tr><td class="who">Jorge</td><td><span class="c"><span class="f d"></span></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td><td><span class="c"></span></td></tr>
+</table>
+          <p>Ana y Marta trabajan tres noches seguidas: 9 asignaciones y más fatiga</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="fragment" data-fragment-index="5" style="font-size:24px;margin-top:14px">Relajar una regla es una <strong>decisión de negocio</strong>: el solver dice qué chocan; usted decide qué ceder.</p>
+  <aside class="notes">
+    <p>Ahora la gerencia agrega dos reglas razonables por separado: dos técnicos certificados cada noche, por seguridad, y nadie trabaja dos noches seguidas, por fatiga. CP-SAT responde que no hay solución, y no solo eso: identifica qué reglas chocan. Con solo dos personas certificadas, las dos tendrían que trabajar las tres noches, y eso viola la regla de descanso.</p>
+    <p>Hay que ceder algo. Opción a: volver a un certificado por noche; los turnos funcionan, pero se pierde la regla de seguridad. Opción b: permitir noches seguidas; se cumple la seguridad, pero Ana y Marta trabajan tres noches seguidas y la operación necesita nueve asignaciones. Una tercera opción, fuera del modelo, sería certificar a Luis o a Jorge. El solver no puede decidir esto por nosotros: muestra el conflicto con exactitud y la decisión es de la organización. En el laboratorio, el programa que escriba la IA también puede quedarse sin solución, y tendrán que decidir qué ceder.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · CASO REAL (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker">Caso real · Chile, desde 2005</div>
+  <h2>El calendario del fútbol chileno, con optimización</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/estadio_chile.jpg" alt="Hinchada de la Universidad de Chile en las graderías del Estadio Nacional durante un partido de la liga chilena en 2019">
+      <figcaption class="credit">Universidad de Chile frente a Unión Española, Estadio Nacional, 2019. Foto: Carlos Figueroa Rojas, <a href="https://commons.wikimedia.org/wiki/File:Universidad_de_Chile_-_Uni%C3%B3n_Espa%C3%B1ola_20190310_01.jpg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+    <ul style="font-size:23px">
+      <li>Desde 2005, la liga profesional programa sus partidos con un modelo de optimización (Universidad de Chile)</li>
+      <li class="fragment">Reglas: viajes, clásicos, equilibrio de local y visitante, televisión</li>
+      <li class="fragment">Apertura 2006 frente a 2004: +32 % de asistencia y +102 % de taquilla, aunque los autores advierten que influyen otros factores</li>
+      <li class="fragment">Hasta 2016: más de 50 torneos y un impacto estimado de US$59 millones</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Un caso latinoamericano con fuente primaria. Desde la temporada 2005, la Asociación Nacional de Fútbol Profesional de Chile programa el calendario con un modelo desarrollado por investigadores de la Universidad de Chile (Durán y coautores, Interfaces, 2007). Para el primer torneo encontraron una solución factible con programación con restricciones y luego la optimizaron con programación entera: las dos técnicas que hoy combina CP-SAT.</p>
+    <p>El artículo reporta que, en el torneo de apertura de 2006 frente al de 2004, la asistencia promedio subió 32 % y la taquilla 102 %; los propios autores advierten que hay factores externos difíciles de controlar. Un artículo de seguimiento (Alarcón y coautores, 2017) reporta más de 50 torneos programados así, incluidas eliminatorias sudamericanas al Mundial, con un impacto económico directo estimado de unos 59 millones de dólares. Según la universidad noruega de uno de los autores (NHH), el trabajo fue finalista del premio Franz Edelman de 2016, uno de los principales de la investigación de operaciones.</p>
+  </aside>
+</section>
+
+
+<!-- ============================ 10 · API, TOKENS Y COSTO ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Antes de comparar</div>
+  <h2>API, tokens y costo</h2>
+  <svg class="diagram" viewBox="0 0 1200 250" role="img" aria-label="Flujo de una llamada a un LLM: la instrucción se parte en tokens, viaja por la API al modelo en los servidores del proveedor, y vuelve una respuesta hecha de tokens de salida">
+    <defs>
+      <style>.t1{font-size:21px;fill:#e8ecf4;font-weight:600}.t2{font-size:17px;fill:#a3adc2}.tk{font-size:16px;fill:#c7f0ff;font-family:'JetBrains Mono',monospace}</style>
+      <marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+    </defs>
+    <rect x="0" y="40" width="250" height="120" rx="12" fill="#172033" stroke="#2a3550"/>
+    <text x="125" y="78" text-anchor="middle" class="t1">Su instrucción</text>
+    <text x="125" y="108" text-anchor="middle" class="t2">«Asigne los turnos</text><text x="125" y="130" text-anchor="middle" class="t2">de la semana…»</text>
+    <line x1="256" y1="100" x2="300" y2="100" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar1)"/>
+    <g class="fragment">
+      <rect x="306" y="40" width="300" height="120" rx="12" fill="#172033" stroke="#38bdf8"/>
+      <text x="456" y="72" text-anchor="middle" class="t1">Tokens de entrada</text>
+      <rect x="322" y="88" width="78" height="28" rx="6" fill="rgba(56,189,248,.18)" stroke="#38bdf8"/><text x="361" y="108" text-anchor="middle" class="tk">Asig</text>
+      <rect x="404" y="88" width="46" height="28" rx="6" fill="rgba(56,189,248,.18)" stroke="#38bdf8"/><text x="427" y="108" text-anchor="middle" class="tk">ne</text>
+      <rect x="454" y="88" width="58" height="28" rx="6" fill="rgba(56,189,248,.18)" stroke="#38bdf8"/><text x="483" y="108" text-anchor="middle" class="tk">los</text>
+      <rect x="516" y="88" width="78" height="28" rx="6" fill="rgba(56,189,248,.18)" stroke="#38bdf8"/><text x="555" y="108" text-anchor="middle" class="tk">turnos</text>
+      <text x="456" y="146" text-anchor="middle" class="t2">trozos de palabra · ilustrativo</text>
+      <line x1="612" y1="100" x2="656" y2="100" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar1)"/>
+    </g>
+    <g class="fragment">
+      <rect x="662" y="40" width="230" height="120" rx="12" fill="rgba(167,139,250,.12)" stroke="#a78bfa"/>
+      <text x="777" y="80" text-anchor="middle" class="t1">API</text>
+      <text x="777" y="108" text-anchor="middle" class="t2">el modelo corre en los</text><text x="777" y="130" text-anchor="middle" class="t2">servidores del proveedor</text>
+      <line x1="898" y1="100" x2="942" y2="100" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar1)"/>
+      <rect x="948" y="40" width="252" height="120" rx="12" fill="#172033" stroke="#f5b942"/>
+      <text x="1074" y="80" text-anchor="middle" class="t1">Respuesta</text>
+      <text x="1074" y="108" text-anchor="middle" class="t2">hecha de tokens</text><text x="1074" y="130" text-anchor="middle" class="t2">de salida</text>
+    </g>
+    <g class="fragment">
+      <text x="600" y="214" text-anchor="middle" style="font-size:24px;fill:#e8ecf4;font-weight:600">costo = tokens de entrada × precio de entrada + tokens de salida × precio de salida</text>
+    </g>
+  </svg>
+  <p class="fragment" style="font-size:23px;margin-top:6px">Un ejemplo real: en el Laboratorio 2B, las 14 llamadas a Claude Haiku 5.5 costaron <strong>US$0,0042</strong>. Los precios se dan por millón de tokens, y la salida cuesta más que la entrada.</p>
+  <aside class="notes">
+    <p>La mitad del grupo dijo en la encuesta que no conoce los LLMs por dentro; esta diapositiva es para que la comparación del laboratorio tenga sentido. Cuando usamos un LLM desde un programa, enviamos la instrucción por una API: un servicio en internet donde el modelo corre en los servidores del proveedor. El texto se parte en tokens, que son trozos de palabra; la división de la figura es solo ilustrativa, porque cada modelo parte el texto a su manera.</p>
+    <p>El proveedor cobra por tokens: los de entrada y los de salida, y los de salida cuestan más. En el Laboratorio 2B, una corrida completa de 14 llamadas a Claude Haiku 5.5 costó cuatro décimas de centavo de dólar. Parece nada, pero cada vez que en el laboratorio le pidan algo al asistente de IA se gastan tokens, y las conversaciones largas cuestan más.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · CADENA DE PENSAMIENTO ============================ -->
+<section data-min="2.5">
+  <div class="kicker violet">Cómo razona un LLM</div>
+  <h2>Cadena de pensamiento</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/wei2022_fig1.png" alt="Figura 1 de Wei et al.: con la instrucción estándar el modelo responde 27, incorrecto; con cadena de pensamiento escribe los pasos, 23 menos 20 es 3 y 3 más 6 es 9, y responde 9, correcto">
+      <figcaption class="credit">Respuesta directa frente a cadena de pensamiento. Wei et al. (2022), NeurIPS, Fig. 1, <a href="https://arxiv.org/abs/2201.11903">arXiv:2201.11903</a>, CC BY 4.0.</figcaption>
+    </figure>
+    <ul style="font-size:24px">
+      <li>Pedir, o mostrar con ejemplos, los <strong>pasos intermedios</strong> antes de la respuesta</li>
+      <li class="fragment">Con 8 ejemplos así, un modelo de 540 mil millones de parámetros alcanzó el mejor resultado de su momento en problemas matemáticos escritos (GSM8K)</li>
+      <li class="fragment">Los pasos se leen como un razonamiento, pero <strong>nadie los verifica</strong></li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Wei y sus coautores, en Google, mostraron en 2022 algo sencillo: si en lugar de pedir solo la respuesta se le muestran al modelo ejemplos que incluyen los pasos intermedios, el modelo también escribe sus pasos y acierta mucho más en problemas de varios pasos. Según el resumen del artículo, con solo ocho ejemplos así, un modelo de 540 mil millones de parámetros alcanzó el mejor resultado de entonces en GSM8K, un conjunto de problemas matemáticos escritos, superando incluso a un GPT-3 ajustado con un verificador.</p>
+    <p>La figura compara la respuesta directa, que se equivoca, con la cadena de pensamiento, que llega a la respuesta correcta. Pero fíjense en el último punto: esos pasos los escribe el mismo modelo y nadie comprueba que sean correctos. En la charla intermedia veremos que ni siquiera son siempre una explicación fiel de cómo llegó a la respuesta.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · MODELOS DE RAZONAMIENTO ============================ -->
+<section data-min="2">
+  <div class="kicker violet">Cómo razona un LLM</div>
+  <h2>Modelos de razonamiento: pensar más antes de responder</h2>
+  <svg class="diagram" viewBox="0 0 1200 230" role="img" aria-label="Comparación ilustrativa de tokens: un modelo sin razonamiento usa entrada y una salida corta; un modelo de razonamiento agrega una larga cadena de tokens de razonamiento antes de la respuesta">
+    <defs><style>.l1{font-size:21px;fill:#e8ecf4;font-weight:600}.l2{font-size:17px;fill:#0a0e17;font-weight:700}.l3{font-size:17px;fill:#a3adc2}</style></defs>
+    <text x="0" y="52" class="l1">Sin razonamiento</text>
+    <rect x="250" y="28" width="150" height="36" rx="6" fill="#a3adc2"/><text x="325" y="52" text-anchor="middle" class="l2">entrada</text>
+    <rect x="404" y="28" width="110" height="36" rx="6" fill="#f5b942"/><text x="459" y="52" text-anchor="middle" class="l2">respuesta</text>
+    <g class="fragment">
+      <text x="0" y="132" class="l1">Con razonamiento</text>
+      <rect x="250" y="108" width="150" height="36" rx="6" fill="#a3adc2"/><text x="325" y="132" text-anchor="middle" class="l2">entrada</text>
+      <rect x="404" y="108" width="660" height="36" rx="6" fill="#a78bfa"/><text x="734" y="132" text-anchor="middle" class="l2">tokens de razonamiento</text>
+      <rect x="1068" y="108" width="110" height="36" rx="6" fill="#f5b942"/><text x="1123" y="132" text-anchor="middle" class="l2">respuesta</text>
+    </g>
+    <text x="250" y="200" class="l3">Proporciones ilustrativas: las cifras reales dependen del modelo y del problema</text>
+  </svg>
+  <ul style="font-size:24px;margin-top:6px">
+    <li class="fragment">El modelo escribe una cadena larga, a veces oculta, antes de responder: <strong>más cómputo en el momento de usarlo</strong></li>
+    <li class="fragment">Esos tokens se cobran como tokens de salida y aumentan la espera</li>
+    <li class="fragment">Varias cadenas, árboles de pensamientos, cómo se entrenan y hasta dónde llegan: en la charla de cierre</li>
+  </ul>
+  <aside class="notes">
+    <p>Desde 2024 existen modelos que hacen la cadena de pensamiento por su cuenta, sin que se la pidamos: antes de responder, generan una cadena larga de razonamiento. En la Sesión 2 vimos su resultado en planificación; hoy vemos qué hacen. La idea central es gastar más cómputo en el momento de responder.</p>
+    <p>Eso tiene dos consecuencias prácticas. La primera es el costo: los proveedores cobran esos tokens de razonamiento como tokens de salida, aunque muchas veces no se muestran completos. La segunda es la espera: más tokens toman más tiempo. Cómo se entrena un modelo para razonar así lo vemos en la charla de cierre.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · VIBE CODING ============================ -->
+<section data-min="2.5">
+  <div class="kicker amber">Para el laboratorio</div>
+  <h2>Vibe coding: programar describiendo</h2>
+  <div class="cols c46 mid">
+    <div class="stack">
+      <div class="quote" style="font-size:25px">«Hay un nuevo tipo de programación que llamo <em>vibe coding</em>, en el que te entregas por completo a las vibras […] y olvidas que el código siquiera existe».<span class="src">Andrej Karpathy, 2 de febrero de 2025. Traducción propia.</span></div>
+      <p class="fragment" style="font-size:22px;margin-top:22px">Collins la eligió palabra del año 2025: usar inteligencia artificial, guiada con lenguaje natural, para escribir código.</p>
+    </div>
+    <div>
+      <svg class="diagram" viewBox="0 0 640 400" role="img" aria-label="El ciclo del vibe coding: describir el problema en español, la IA escribe el programa, ejecutarlo, revisar los resultados y ajustar la descripción. Olvidar el código no es olvidar verificar">
+        <defs>
+          <style>.v1{font-size:21px;fill:#e8ecf4;font-weight:600}.v2{font-size:16px;fill:#a3adc2}.v3{font-size:20px;font-weight:700}</style>
+          <marker id="arv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+        </defs>
+        <rect x="190" y="10" width="260" height="70" rx="12" fill="rgba(56,189,248,.14)" stroke="#38bdf8"/><text x="320" y="42" text-anchor="middle" class="v1">1 · Describir</text><text x="320" y="66" text-anchor="middle" class="v2">el problema, en español</text>
+        <rect x="400" y="150" width="235" height="70" rx="12" fill="rgba(167,139,250,.14)" stroke="#a78bfa"/><text x="517" y="182" text-anchor="middle" class="v1">2 · La IA programa</text><text x="517" y="206" text-anchor="middle" class="v2">escribe y corrige el código</text>
+        <rect x="190" y="290" width="260" height="70" rx="12" fill="#172033" stroke="#2a3550"/><text x="320" y="322" text-anchor="middle" class="v1">3 · Ejecutar</text><text x="320" y="346" text-anchor="middle" class="v2">con datos de prueba</text>
+        <rect x="5" y="150" width="235" height="70" rx="12" fill="rgba(74,222,128,.10)" stroke="#4ade80"/><text x="122" y="182" text-anchor="middle" class="v1">4 · Verificar</text><text x="122" y="206" text-anchor="middle" class="v2">¿cumple cada regla?</text>
+        <path d="M450,62 Q520,90 517,144" fill="none" stroke="#a3adc2" stroke-width="2" marker-end="url(#arv)"/>
+        <path d="M517,222 Q512,300 456,318" fill="none" stroke="#a3adc2" stroke-width="2" marker-end="url(#arv)"/>
+        <path d="M190,318 Q122,300 122,226" fill="none" stroke="#a3adc2" stroke-width="2" marker-end="url(#arv)"/>
+        <path d="M122,148 Q118,80 184,52" fill="none" stroke="#a3adc2" stroke-width="2" marker-end="url(#arv)"/>
+        <text x="320" y="190" text-anchor="middle" class="v2">sin escribir</text><text x="320" y="212" text-anchor="middle" class="v2">código a mano</text>
+        <g class="fragment"><text x="320" y="392" text-anchor="middle" class="v3" style="fill:#f5b942">Olvidar el código no es olvidar verificar</text></g>
+      </svg>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El laboratorio de hoy usa una forma de trabajar con IA que se volvió masiva en un año. El 2 de febrero de 2025, Andrej Karpathy, uno de los investigadores más conocidos del área, escribió que había un nuevo tipo de programación al que llamaba vibe coding: uno describe lo que quiere, deja que la IA escriba el código y casi se olvida de que el código existe. En noviembre de 2025, el diccionario Collins la eligió palabra del año y la definió como usar inteligencia artificial, guiada con lenguaje natural, para escribir código.</p>
+    <p>Para ustedes, que no son programadores, esto abre una puerta: pueden construir una herramienta pequeña describiéndola en español, con un asistente de IA en VS Code o con un chat. El ciclo es describir, dejar que la IA programe, ejecutar y verificar. Y la advertencia está en la frase de abajo: olvidar el código no es olvidar verificar. El programa lo escribe la IA, pero la responsabilidad de que cumpla las reglas sigue siendo de quien lo usa.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · CÓMO PEDIRLO Y VERIFICARLO ============================ -->
+<section data-min="2">
+  <div class="kicker amber">Para el laboratorio</div>
+  <h2>Cómo pedirle el programa, y cómo verificarlo</h2>
+  <div class="cols">
+    <div class="file">
+      <div class="bar"><i></i><i></i><i></i><span>instrucción para el asistente de IA</span></div>
+      <div class="body">Escribe un programa en Python que asigne
+los servicios de mi empresa al personal.
+<span class="md-t">Variables:</span> quién hace cada servicio y a qué hora.
+<span class="md-t">Reglas que siempre se cumplen:</span> …
+<span class="md-t">Preferencias, con su peso:</span> …
+<span class="md-t">Objetivo:</span> …
+Usa el solver CP-SAT. Al final, <span class="md-ok">revisa cada
+regla e imprime si se cumple</span>.</div>
+    </div>
+    <div>
+      <div class="panel-title">Antes de confiar en el programa</div>
+      <ul class="checklist">
+        <li class="fragment">Pídale que liste las reglas que programó y compárelas con las suyas</li>
+        <li class="fragment">Pruébelo con un caso pequeño que pueda revisar a mano</li>
+        <li class="fragment">Provoque un caso imposible: ¿lo detecta?</li>
+        <li class="fragment">Un programa que corre no es un programa correcto</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La instrucción de la izquierda es la anatomía de un modelo de restricciones, escrita para un asistente: variables, reglas duras, preferencias con su peso y objetivo. Pedir que use un solver como CP-SAT hace que el programa busque la mejor asignación en lugar de improvisarla, y pedir que al final revise cada regla deja una verificación a la vista.</p>
+    <p>Las cuatro comprobaciones de la derecha son las que harán en el laboratorio. La IA puede omitir una regla sin avisar, o cambiar un «menos de» por un «hasta», como veremos en la charla intermedia. Por eso se compara su lista de reglas con la nuestra, se prueba con un caso que se puede revisar a mano y se provoca un caso imposible: un buen programa debe decir que no hay solución, no inventar una.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · SÍNTESIS ============================ -->
+<section data-min="1">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de esta charla</h2>
+  <div class="flow4">
+    <div class="card accent"><h4>Modelo</h4><p class="small">variables, dominios, restricciones y objetivo</p></div>
+    <div class="card ok"><h4 class="ok">Solver</h4><p class="small">la mejor solución, o la prueba de que no hay</p></div>
+    <div class="card violet"><h4 class="violet">LLM</h4><p class="small">pasos en lenguaje natural, sin garantía; más pasos, más costo</p></div>
+    <div class="card amber"><h4>Juntos</h4><p class="small">la IA escribe el programa, el solver resuelve y usted verifica</p></div>
+  </div>
+  <aside class="notes">
+    <p>Cerrar con las cuatro ideas antes del laboratorio. Un modelo de restricciones describe el problema; el solver lo resuelve con garantías sobre ese modelo; el LLM razona en lenguaje natural sin garantías y con un costo que crece con los pasos; y juntos forman el patrón que ya conocen: uno propone y otro verifica. En el laboratorio, la IA escribe el programa, el solver lo resuelve y ustedes verifican.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · ANUNCIO DEL LABORATORIO 3A ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 60 min</div>
+  <h1>Laboratorio 3A · Vibe coding<br><span class="accent">La logística de una empresa de aseo</span></h1>
+  <p class="lead muted" style="font-size:28px">En parejas, describan a un asistente de IA el problema de programar los servicios de una pequeña empresa de aseo, pídanle un programa que lo resuelva con un solver y pónganlo a prueba con casos que puedan revisar a mano.</p>
+  <div class="lab-format"><span class="pill amber">60 minutos, en parejas</span><span class="pill ok">Sin escribir código a mano: se describe y se verifica</span><span class="pill">Asistente de IA en VS Code</span></div>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="charla2_verificar_con_logica.html">Charla intermedia →</a></p>
+  <aside class="notes">
+    <p>Dar paso al laboratorio de una hora. Insistir en que no tienen que escribir código a mano: describen el problema, el asistente programa y ellos verifican con casos que pueden revisar a mano. Lo importante es la descripción y la verificación, no el código. Después viene la pausa de 15 minutos y la charla intermedia, sobre lógica.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla inicial</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-compact">
+    <ol class="refs">
+      <li>Durán, G., Guajardo, M., Miranda, J., Sauré, D., Souyris, S., Weintraub, A. y Wolf, R. (2007). Scheduling the Chilean soccer league by integer programming. <em>Interfaces</em> 37(6), 539–552. DOI 10.1287/inte.1070.0318 · <a href="https://web.archive.org/web/20230426113340/https://pubsonline.informs.org/doi/10.1287/inte.1070.0318">INFORMS (copia en Wayback Machine)</a> · <a href="https://www.dii.uchile.cl/wp-content/uploads/2015/09/2007-Scheduling-the-Chilean-Soccer-League-by-integer-programming.pdf">PDF</a></li>
+      <li>Alarcón, F., Durán, G., Guajardo, M. et al. (2017). Operations research transforms the scheduling of Chilean soccer leagues and South American World Cup qualifiers. <em>Interfaces</em> 47(1), 52–69. DOI 10.1287/inte.2016.0861 · <a href="https://web.archive.org/web/20221102135608/http://pubsonline.informs.org/doi/10.1287/inte.2016.0861">INFORMS (copia en Wayback Machine)</a></li>
+      <li>Perron, L. y Didier, F. (2026). <em>CP-SAT</em>, OR-Tools v9.15. Google. <a href="https://developers.google.com/optimization/cp/cp_solver">developers.google.com/optimization</a></li>
+      <li>Rossi, F., van Beek, P. y Walsh, T. (eds.) (2006). <em>Handbook of Constraint Programming</em>. Elsevier. <a href="https://shop.elsevier.com/books/handbook-of-constraint-programming/rossi/978-0-444-52726-4">Editorial</a></li>
+      <li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em>, 4.ª ed., cap. 6, «Constraint Satisfaction Problems» (cap. 5 en la edición global). <a href="https://aima.cs.berkeley.edu/contents.html">Contenido</a></li>
+      <li>Poole, D. y Mackworth, A. (2023). <em>Artificial Intelligence: Foundations of Computational Agents</em>, 3.ª ed., cap. 4, «Reasoning with Constraints». <a href="https://artint.info/3e/html/ArtInt3e.Ch4.html">Texto abierto</a></li>
+      <li>Wei, J. et al. (2022). Chain-of-thought prompting elicits reasoning in large language models. <em>NeurIPS 2022</em>, 24824–24837. <a href="https://proceedings.neurips.cc/paper_files/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html">NeurIPS</a> · <a href="https://arxiv.org/abs/2201.11903">arXiv</a></li>
+      <li>Karpathy, A. (2025, 2 de febrero). «There's a new kind of coding I call "vibe coding"…». Publicación en X. <a href="https://x.com/karpathy/status/1886192184808149383">X</a> · <a href="https://web.archive.org/web/20251005055913/https://twitter.com/karpathy/status/1886192184808149383">copia en Wayback Machine</a></li>
+      <li>Collins (2025, 6 de noviembre). Collins' Word of the Year 2025: AI meets authenticity as society shifts. <a href="https://blog.collinsdictionary.com/language-lovers/collins-word-of-the-year-2025-ai-meets-authenticity-as-society-shifts/">Blog de Collins</a></li>
+      <li>Anthropic (2026). Pricing y Building with extended thinking. Documentación de la API de Claude, consultada el 26 de octubre de 2026. <a href="https://platform.claude.com/docs/en/about-claude/pricing">Precios</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/thinking">Razonamiento</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="charla2_verificar_con_logica.html">Charla intermedia →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 3 · Charla inicial · Dos formas de razonar</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

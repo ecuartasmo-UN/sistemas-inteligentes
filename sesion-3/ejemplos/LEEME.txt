@@ -1,0 +1,30 @@
+EJEMPLOS DE LA SESIÓN 3 · Sistemas Inteligentes
+=================================================
+
+Los resultados que muestran las charlas salen de estos dos programas. Son material
+para el docente: los estudiantes no los necesitan, porque los laboratorios 3A y 3B
+traen sus propios notebooks.
+
+Cómo ejecutarlos (en el entorno .venv del curso, o en cualquier Python 3.12 o 3.13):
+
+    pip install "ortools==9.15.*" z3-solver
+    python turnos_cpsat.py
+    python politica_z3.py
+
+1. turnos_cpsat.py  (charla inicial, diapositivas 7 y 8)
+   Turnos de 4 técnicos de MantenIA en 3 días, con turno de día y de noche.
+   - Escenario 1: reglas D1 a D4 y preferencias. CP-SAT da la asignación óptima:
+     6 turnos, Marta libre el miércoles, carga 2-2-1-1.
+   - Escenario 2: dos certificados por noche (D4') y nadie dos noches seguidas (D5).
+     No hay solución, y el programa reduce el conflicto a esas dos reglas.
+   - Escenario 3: dos formas de relajar el conflicto, con su costo
+     (volver a un certificado; o permitir noches seguidas, con 9 asignaciones).
+
+2. politica_z3.py  (charla intermedia, diapositiva 7)
+   Política de aprobación de compras de repuestos, con cinco reglas.
+   - Contradicción: compra de $999.999 a un proveedor no homologado
+     (R4 exige al gerente y R5 se lo prohíbe).
+   - Laguna: compra de exactamente $2.000.000 a un proveedor homologado.
+   - Política corregida: Z3 responde unsat a las dos preguntas.
+
+Verificados con ortools 9.15.6755 y z3-solver el 26 de octubre de 2026.

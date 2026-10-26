@@ -1,0 +1,5 @@
+# Laboratorio 3B · librerías (probadas con Python 3.12 y 3.13 el 26-oct-2026)
+z3-solver==5.3.2.0
+anthropic==2.1.0
+openai==3.36.0
+python-dotenv==1.2.4

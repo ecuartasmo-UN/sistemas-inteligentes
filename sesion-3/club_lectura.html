@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club de lectura · AlphaGeometry — Sesión 3 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .ficha { font-size: 22px; line-height: 1.35; }
+  .club-q li { font-size: 25px; margin-bottom: 18px; }
+  .club-q .lab { font-size: 19px; color: var(--muted); display: block; margin-top: 4px; }
+  .nums li { font-size: 23px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="15">
+
+<!-- ============================ 1 · FICHA Y PREGUNTA ============================ -->
+<section data-min="1">
+  <div class="kicker violet">Sesión 3 · Club de lectura</div>
+  <h2>¿Qué hace el modelo de lenguaje y qué hace el motor simbólico?</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/imo2015_clausura.jpg" alt="Ceremonia de clausura de la Olimpiada Internacional de Matemáticas de 2015 en Chiang Mai, Tailandia: estudiantes con banderas en el escenario frente al telón de la 56.ª olimpiada">
+      <figcaption class="credit">Clausura de la 56.ª Olimpiada Internacional de Matemáticas, Chiang Mai, 2015. Foto: Z3144228, <a href="https://commons.wikimedia.org/wiki/File:IMO_2015_closing_ceremony.jpg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+    <div class="card violet ficha">
+      <p><strong>Trinh, T. H., Wu, Y., Le, Q. V., He, H. y Luong, T. (2024).</strong> Solving olympiad geometry without human demonstrations. <em>Nature</em> 625, 476–482.</p>
+      <p class="muted" style="font-size:19px">Google DeepMind y Universidad de Nueva York · acceso abierto, CC BY 4.0</p>
+      <p style="margin-bottom:0">Un sistema que resuelve problemas de geometría de las olimpiadas de matemáticas combinando las dos formas de razonar de hoy.</p>
+    </div>
+  </div>
+  <p class="navlinks"><a href="charla3_cuando_confiar_y_cierre.html">← Charla de cierre</a><a href="index.html">Agenda</a></p>
+  <aside class="notes">
+    <p>Cerramos la sesión con la lectura, que ya conocen desde el cierre de la sesión 2. Ahora la leemos con lo que acabamos de hacer: un solver que encuentra o demuestra, y un LLM que propone en lenguaje. La pregunta guía es la misma de siempre: ¿quién genera y quién verifica?</p>
+    <p>La foto es de la olimpiada de 2015, cuyo problema 3 resuelve AlphaGeometry en el artículo. Un dato cercano: la olimpiada de 2013 se celebró en Colombia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · TESIS Y RESULTADO ============================ -->
+<section data-min="2.5">
+  <div class="kicker violet">La tesis</div>
+  <h2>Casi al nivel de un medallista de oro, sin demostraciones humanas</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/alphageometry_fig2.png" alt="Gráfico de barras: problemas resueltos de 30 en el conjunto IMO-AG-30. Método de Wu 10; medallista de bronce 19,3; plata 22,9; AlphaGeometry 25; medallista de oro 25,9">
+      <figcaption class="credit">Problemas resueltos de 30. Trinh et al. (2024), <em>Nature</em> 625, Fig. 2, <a href="https://www.nature.com/articles/s41586-023-06747-5">acceso abierto</a>, CC BY 4.0.</figcaption>
+    </figure>
+    <ul class="nums">
+      <li><strong>AlphaGeometry: 25</strong> de 30 problemas de geometría de las olimpiadas desde el año 2000</li>
+      <li class="fragment">Mejor método anterior: 10. Mejor referencia del artículo: 18</li>
+      <li class="fragment">GPT-4 escribiendo la prueba completa: <strong>0</strong></li>
+      <li class="fragment">Medallista de oro promedio: 25,9</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>El conjunto de prueba, IMO-AG-30, reúne 30 problemas de geometría de las olimpiadas desde el año 2000. AlphaGeometry resuelve 25. El mejor método anterior, el de Wu, que es algebraico, resuelve 10; la referencia más fuerte que construyeron los autores, con su motor simbólico y heurísticas diseñadas por humanos, resuelve 18. Un medallista de oro promedio obtiene el equivalente a 25,9, y uno de plata, 22,9.</p>
+    <p>Un dato para conectar con el laboratorio: GPT-4, pidiéndole la demostración completa en lenguaje natural, resolvió cero. Los autores aclaran que cometía errores de sintaxis y de razonamiento en casi toda la salida. El salto no viene de un modelo de lenguaje más grande, sino de la combinación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · CÓMO FUNCIONA ============================ -->
+<section data-min="2">
+  <div class="kicker violet">El sistema</div>
+  <h2>El motor deduce; el modelo propone construcciones</h2>
+  <figure class="figure mid">
+    <img src="assets/img/alphageometry_fig1.png" alt="Figura 1 de AlphaGeometry: el motor simbólico deduce a partir de las premisas; cuando no alcanza la conclusión, el modelo de lenguaje propone una construcción auxiliar, como el punto medio D de BC, y el motor vuelve a intentar; abajo, la solución del problema 3 de la IMO de 2015">
+    <figcaption class="credit">Trinh et al. (2024), <em>Nature</em> 625, Fig. 1, <a href="https://www.nature.com/articles/s41586-023-06747-5">acceso abierto</a>, CC BY 4.0.</figcaption>
+  </figure>
+  <ol style="font-size:22px;margin-top:8px" class="cols-3">
+    <li>El <strong>motor simbólico</strong> deduce todo lo que puede desde las premisas</li>
+    <li class="fragment">Si no llega a la conclusión, el <strong>modelo de lenguaje</strong> propone un punto auxiliar</li>
+    <li class="fragment">El motor vuelve a deducir; el ciclo sigue hasta encontrar la prueba</li>
+  </ol>
+  <aside class="notes">
+    <p>La figura ya la vimos al cierre de la sesión 2. Arriba, un problema sencillo: el motor simbólico deduce todo lo que puede y no llega; el modelo de lenguaje propone construir D, el punto medio de BC; con ese punto nuevo, el motor completa la prueba en dos pasos. Abajo, el problema 3 de la olimpiada de 2015, que necesitó tres puntos auxiliares.</p>
+    <p>El reparto de papeles es el de toda la sesión. El modelo de lenguaje aporta lo creativo, lo que no se puede deducir: qué construir. El motor simbólico aporta la garantía: cada paso de la prueba es una deducción correcta. Y el resultado es una prueba que una persona puede leer y verificar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · DATOS SINTÉTICOS (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker violet">El entrenamiento</div>
+  <h2>100 millones de teoremas sintéticos</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/alphageometry_fig3.png" alt="Figura 3 de AlphaGeometry: a, se muestrean premisas al azar; b, el motor simbólico deduce todo lo alcanzable y rastrea hacia atrás las premisas mínimas de cada conclusión; c, cada conclusión con su prueba se vuelve un problema sintético, y los puntos que sobran en la construcción se aprenden como construcciones auxiliares">
+      <figcaption class="credit">Trinh et al. (2024), <em>Nature</em> 625, Fig. 3, <a href="https://www.nature.com/articles/s41586-023-06747-5">acceso abierto</a>, CC BY 4.0.</figcaption>
+    </figure>
+    <ul style="font-size:22px">
+      <li>Casi 1000 millones de premisas al azar</li>
+      <li class="fragment">El motor simbólico deduce y guarda <strong>100 millones</strong> de teoremas con su prueba</li>
+      <li class="fragment">Unos 10 millones de pasos construyen puntos auxiliares: de ahí aprende el modelo</li>
+      <li class="fragment">Ni un problema ni una prueba escritos por personas</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. ¿Cómo aprendió el modelo a proponer construcciones sin ejemplos humanos? Los autores muestrearon casi mil millones de premisas geométricas al azar, dejaron que el motor simbólico dedujera todo lo posible y, para cada conclusión, rastrearon hacia atrás las premisas mínimas. Así obtuvieron 100 millones de teoremas sintéticos con su prueba. Cuando una prueba usaba puntos que no eran necesarios para enunciar el teorema, esos puntos se volvían ejemplos de construcción auxiliar: casi 10 millones de pasos.</p>
+    <p>Fíjense en la ironía: el verificador simbólico no solo revisa, también fabrica los datos con que se entrena el modelo. Es una idea que volverá en la Unidad 6 con el aprendizaje por refuerzo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · MATICES ============================ -->
+<section data-min="1.5">
+  <div class="kicker violet">Leer con cuidado</div>
+  <h2>Los matices que señala el propio artículo</h2>
+  <div class="cols-3">
+    <div class="card"><h4>La comparación con personas es aproximada</h4><p style="font-size:21px">El puntaje humano, de 0 a 7, se reescala; y las personas leen el enunciado, no una traducción a un lenguaje especial</p></div>
+    <div class="card fragment"><h4>No toda la geometría cabe</h4><p style="font-size:21px">Solo el 75 % de los problemas de geometría no combinatoria se pudo representar; las desigualdades quedan fuera</p></div>
+    <div class="card fragment"><h4>Pruebas legibles</h4><p style="font-size:21px">Expertos revisaron las soluciones, y el rastreo halló una versión más general de un problema de 2004</p></div>
+  </div>
+  <aside class="notes">
+    <p>Tres matices que los autores mismos declaran. Primero, comparar con humanos es aproximado: el puntaje de cada concursante, de 0 a 7, se convierte a una fracción de problema, y las personas trabajan con el enunciado en lenguaje natural, mientras AlphaGeometry recibe una traducción a un lenguaje geométrico especial. Segundo, el alcance: solo el 75 % de los problemas de geometría no combinatoria se pudo representar; desigualdades y geometría combinatoria quedan fuera. Tercero, a favor: las pruebas son legibles, un experto las calificó, y el rastreo descubrió que una premisa del problema 1 de 2004 sobraba, es decir, un teorema más general.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · PREGUNTAS ============================ -->
+<section data-min="6">
+  <div class="kicker violet">Discusión</div>
+  <h2>Preguntas para la discusión</h2>
+  <ol class="club-q">
+    <li>En AlphaGeometry, ¿quién genera y quién verifica? ¿Y quién generaba y quién verificaba en su sesión de vibe coding del Laboratorio 3A?<span class="lab">Conecta con el Laboratorio 3A</span></li>
+    <li class="fragment">El sistema se entrenó sin una sola demostración humana. ¿Qué hizo posible fabricar 100 millones de ejemplos correctos? ¿Se podría hacer algo así con las políticas del Laboratorio 3B?<span class="lab">Conecta con el Laboratorio 3B</span></li>
+    <li class="fragment">Con la guía de decisión de la charla de cierre: ¿en qué problema de su organización tendría sentido un sistema que combine las dos formas de razonar, y dónde sería excesivo?<span class="lab">Conecta con el proyecto integrador</span></li>
+  </ol>
+  <aside class="notes">
+    <p>Seis minutos de discusión; una pregunta cada dos minutos aproximadamente. En la primera, esperar que reconozcan el mismo reparto: el modelo de lenguaje propone y el motor verifica. En el Laboratorio 3A la IA generaba el programa, y la verificación fue de ellos: con casos revisados a mano y con la revisión de reglas que imprimía el propio programa. En la segunda, la clave es que el verificador garantiza que cada ejemplo sintético es correcto; con las políticas, Z3 podría generar casos y contraejemplos etiquetados sin trabajo humano. En la tercera, pedir ejemplos concretos de su organización y que usen los criterios de la guía: validez, costo, explicabilidad y tamaño del problema.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · PARA LA PRÓXIMA ============================ -->
+<section data-min="0.5">
+  <div class="kicker amber">Para la próxima</div>
+  <h2>Hasta la sesión 4</h2>
+  <p style="font-size:28px">Lectura: <strong>Radford et al. (2021)</strong>, CLIP. Trabajos independientes y paso del proyecto: <strong>al inicio de la semana 3</strong>.</p>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a></p>
+  <aside class="notes">
+    <p>Despedida. Recordar la lectura de la sesión 4 y la fecha de entrega, sin repetir lo que ya se explicó en la charla de cierre.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del club de lectura</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-compact">
+    <ol class="refs">
+      <li>Trinh, T. H., Wu, Y., Le, Q. V., He, H. y Luong, T. (2024). Solving olympiad geometry without human demonstrations. <em>Nature</em> 625, 476–482. <a href="https://doi.org/10.1038/s41586-023-06747-5">DOI: 10.1038/s41586-023-06747-5</a> · acceso abierto, CC BY 4.0</li>
+      <li>Google DeepMind. Código y modelo de AlphaGeometry. <a href="https://github.com/google-deepmind/alphageometry">github.com/google-deepmind/alphageometry</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="charla3_cuando_confiar_y_cierre.html">← Charla de cierre</a><a href="index.html">Volver a la agenda</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 3 · Club de lectura · AlphaGeometry</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

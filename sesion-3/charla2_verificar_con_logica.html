@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla intermedia · Verificar con lógica — Sesión 3 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .pol .prule { font-size: 22px; padding: 7px 12px; margin-bottom: 7px; }
+  .tr3 .card { padding: 12px 16px; }
+  .tr3 .card p { font-size: 22px; margin: 0; }
+  .tr3 .lbl { font-size: 16px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .q3 .card h4 { font-size: 26px; }
+  .q3 .card p { font-size: 22px; margin: 0 0 8px; }
+  .q3 .card .ask { font-size: 20px; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 10px; }
+  .fix .prule { font-size: 20px; padding: 6px 12px; }
+  .smt .card p { font-size: 20px !important; }
+  .smt .card h4 { font-size: 26px; }
+  .smt .code { font-size: 18px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 3 · Unidad 3 · Charla intermedia</div>
+  <h1>Verificar con lógica</h1>
+  <p class="lead muted">SAT, SMT y Z3: preguntarle a una política si se contradice</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla1_dos_formas_de_razonar.html">← Charla inicial</a><a href="index.html">Agenda</a><a href="charla3_cuando_confiar_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes">
+    <p>Después de la pausa. En el Laboratorio 3A una IA escribió por ustedes un programa que asigna tareas con un solver. Ahora usamos un solver para algo distinto y muy común en las organizaciones: revisar si un conjunto de reglas está bien escrito. Esta charla prepara el Laboratorio 3B.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LA POLÍTICA ============================ -->
+<section data-min="2">
+  <div class="kicker">El caso · MantenIA</div>
+  <h2>La política de compras de repuestos</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/almacen_repuestos.jpg" alt="Almacén de repuestos con estanterías de cajas azules rotuladas por fila y personal en el pasillo">
+      <figcaption class="credit">Almacén de repuestos de aviación. Foto: Alexandria Lee, U.S. Air Force (2018), <a href="https://commons.wikimedia.org/wiki/File:Aircraft_parts_store-_No_one_flies_without_supplies_(4654657).jpg">Wikimedia Commons</a>, dominio público.</figcaption>
+    </figure>
+    <div class="pol">
+      <div class="prule"><span class="id">R1</span>Las compras a proveedores homologados de <strong>menos de $2.000.000</strong> las aprueba el supervisor</div>
+      <div class="prule"><span class="id">R2</span>Las compras a proveedores homologados de <strong>más de $2.000.000</strong> y hasta $10.000.000 las aprueba el jefe de planta</div>
+      <div class="prule"><span class="id">R3</span>Las compras de más de $10.000.000 las aprueba el gerente</div>
+      <div class="prule"><span class="id">R4</span>Las compras a proveedores no homologados las aprueba el gerente</div>
+      <div class="prule"><span class="id">R5</span>El gerente no aprueba compras de menos de $1.000.000</div>
+      <p class="fragment" style="font-size:24px;margin-top:10px">Cinco reglas razonables. ¿Está bien escrita la política?</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Una política típica de cualquier organización: quién aprueba una compra según el monto y según si el proveedor está homologado, es decir, evaluado y aprobado por la empresa. Cada regla, leída sola, es razonable. La pregunta es si juntas funcionan: ¿hay compras que nadie puede aprobar?, ¿hay compras que ninguna regla cubre?</p>
+    <p>Lean despacio. Algunos ya habrán visto un problema; la idea es que un solver lo encuentre por nosotros, con certeza, aunque la política tenga cincuenta reglas y no cinco.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · DE LA POLÍTICA A REGLAS ============================ -->
+<section data-min="3">
+  <div class="kicker">La lógica como lenguaje</div>
+  <h2>De la política escrita a reglas que se pueden verificar</h2>
+  <div class="cols c46 mid">
+    <div class="imgrow">
+      <figure class="figure">
+        <img src="assets/img/boole_retrato.jpg" alt="Retrato grabado de George Boole">
+        <figcaption class="credit">George Boole. <em>The Illustrated London News</em> (1865), <a href="https://commons.wikimedia.org/wiki/File:Portrait_of_George_Boole.png">Wikimedia Commons</a>, dominio público.</figcaption>
+      </figure>
+      <figure class="figure">
+        <img src="assets/img/boole_laws_of_thought.jpg" alt="Portada del libro An Investigation of the Laws of Thought, de George Boole, publicado en Londres en 1854">
+        <figcaption class="credit">Boole (1854), portada. <a href="https://commons.wikimedia.org/wiki/File:Boole_Laws_of_Thought_1854.png">Wikimedia Commons</a>, dominio público.</figcaption>
+      </figure>
+    </div>
+    <div class="stack tr3">
+      <div class="card"><div class="lbl">Texto de la política</div><p>«Las compras a proveedores homologados de menos de $2.000.000 las aprueba el supervisor»</p></div>
+      <div class="card fragment"><div class="lbl">Regla si… entonces…</div><p><strong>si</strong> el proveedor está homologado <strong>y</strong> el monto es menor que 2.000.000, <strong>entonces</strong> el aprobador es el supervisor</p></div>
+      <div class="card accent fragment"><div class="lbl">Fórmula</div><p class="mono" style="font-size:21px">(homologado ∧ monto &lt; 2.000.000) → aprobador = supervisor</p></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>George Boole propuso en 1854 tratar el razonamiento como un álgebra: las afirmaciones son verdaderas o falsas y se combinan con «y», «o» y «no». Sobre esa idea se construye toda la lógica que usan hoy los computadores.</p>
+    <p>Para verificar una política hay que llevarla a ese lenguaje, en tres pasos: el texto, una regla «si… entonces…» sin ambigüedades, y una fórmula. El símbolo ∧ significa «y» y la flecha significa «entonces». No necesitan escribir fórmulas en el laboratorio: las reglas vienen en una tabla que se edita. Pero sí conviene ver que cada palabra de la política se vuelve una condición precisa, y que ahí, en la traducción, aparecen los problemas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · SATISFACIBILIDAD ============================ -->
+<section data-min="2">
+  <div class="kicker">La pregunta de un solver lógico</div>
+  <h2>¿Existe un caso que cumpla todas las reglas?</h2>
+  <svg class="diagram" viewBox="0 0 1200 300" role="img" aria-label="Las reglas y una pregunta entran al solver. Si responde sat, existe un caso y lo muestra como ejemplo. Si responde unsat, no existe ningún caso, y eso queda demostrado">
+    <defs>
+      <style>.s1{font-size:22px;fill:#e8ecf4;font-weight:600}.s2{font-size:18px;fill:#a3adc2}.s3{font-size:20px;font-family:'JetBrains Mono',monospace;font-weight:600}</style>
+      <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+    </defs>
+    <rect x="0" y="60" width="290" height="150" rx="12" fill="#172033" stroke="#2a3550"/>
+    <text x="145" y="102" text-anchor="middle" class="s1">Reglas R1 a R5</text>
+    <text x="145" y="134" text-anchor="middle" class="s2">+ una pregunta:</text>
+    <text x="145" y="160" text-anchor="middle" class="s2">«¿existe una compra que…?»</text>
+    <line x1="296" y1="135" x2="370" y2="135" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar2)"/>
+    <rect x="376" y="85" width="220" height="100" rx="12" fill="rgba(56,189,248,.14)" stroke="#38bdf8"/>
+    <text x="486" y="128" text-anchor="middle" class="s1">Solver lógico</text><text x="486" y="156" text-anchor="middle" class="s2">(Z3)</text>
+    <g class="fragment">
+      <line x1="602" y1="118" x2="690" y2="70" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar2)"/>
+      <rect x="696" y="20" width="504" height="100" rx="12" fill="rgba(248,113,113,.10)" stroke="#f87171"/>
+      <text x="720" y="58" class="s3" fill="#f87171">sat</text><text x="770" y="58" class="s1">sí existe, y aquí está:</text>
+      <text x="720" y="94" class="s2">un caso concreto que se puede revisar a mano</text>
+    </g>
+    <g class="fragment">
+      <line x1="602" y1="152" x2="690" y2="200" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar2)"/>
+      <rect x="696" y="150" width="504" height="100" rx="12" fill="rgba(74,222,128,.10)" stroke="#4ade80"/>
+      <text x="720" y="188" class="s3" fill="#4ade80">unsat</text><text x="800" y="188" class="s1">no existe ninguno</text>
+      <text x="720" y="224" class="s2">no es que no lo encontró: demostró que no lo hay</text>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>Un solver lógico responde una sola pregunta: ¿existe una asignación de valores que haga verdaderas todas las fórmulas a la vez? Si existe, la respuesta es «satisfacible», sat, y el solver muestra un ejemplo. Si no existe, la respuesta es «insatisfacible», unsat.</p>
+    <p>La segunda respuesta es la poderosa. Cuando una persona revisa una política con cien casos de prueba y no encuentra errores, solo sabe que esos cien funcionan. Cuando el solver responde unsat, sabe que no hay ningún caso, entre los infinitos posibles, que rompa la propiedad. Para verificar, el truco es preguntar por el error: «¿existe una compra que nadie pueda aprobar?». Si la respuesta es unsat, la política está libre de ese error.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · SAT Y SMT ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Solvers lógicos</div>
+  <h2>SAT y SMT: qué responde Z3</h2>
+  <div class="cols c46 mid smt">
+    <div class="stack">
+      <div class="card"><h4>SAT</h4><p style="font-size:23px;margin:0">Solo variables de sí o no, combinadas con «y», «o» y «no». ¿Hay alguna combinación que haga verdadera la fórmula?</p></div>
+      <div class="card accent fragment"><h4>SMT: SAT con teorías</h4><p style="font-size:23px;margin:0">Agrega números, comparaciones y otros tipos de datos: <span class="mono">monto &lt; 2.000.000</span>. Así se escriben las reglas de negocio</p></div>
+      <div class="card ok fragment"><h4 class="ok">Z3</h4><p style="font-size:23px;margin:0">Solver SMT de Microsoft Research (de Moura y Bjørner, 2008), gratuito y de código abierto. Es el que usa el Laboratorio 3B</p></div>
+    </div>
+    <div>
+      <div class="panel-title">Así se ve en Z3 (Python)</div>
+<pre class="code sm"><span class="vr">monto</span> = Int(<span class="pr">"monto"</span>)
+<span class="vr">homologado</span> = Bool(<span class="pr">"homologado"</span>)
+<span class="vr">aprobador</span> = Int(<span class="pr">"aprobador"</span>)   <span class="cm"># 2 = gerente</span>
+s = Solver()
+s.add(Implies(Not(<span class="vr">homologado</span>), <span class="vr">aprobador</span> == 2))   <span class="cm"># R4</span>
+s.add(Implies(<span class="vr">monto</span> &lt; 1_000_000, <span class="vr">aprobador</span> != 2)) <span class="cm"># R5</span>
+s.add(Not(<span class="vr">homologado</span>), <span class="vr">monto</span> == 500_000)    <span class="cm"># el caso</span>
+s.check()   <span class="cm"># →</span> <span class="hl">unsat</span><span class="cm">: nadie puede aprobarla</span></pre>
+      <p class="credit">Fragmento verificado con z3-solver. El programa completo está en <code>ejemplos/politica_z3.py</code>. En el laboratorio no se escribe código: las reglas se editan en una tabla.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>SAT, de satisfacibilidad, es el problema más básico: variables que solo valen verdadero o falso. Los solvers SAT actuales resuelven fórmulas con millones de variables, y son la base de los demás. Pero las reglas de negocio hablan de montos, fechas y cantidades. Para eso existe SMT, satisfacibilidad módulo teorías: SAT más aritmética y otros tipos de datos.</p>
+    <p>Z3, desarrollado en Microsoft Research y publicado en 2008, es uno de los solvers SMT más usados en la industria y la investigación. Es gratuito y se usa desde Python. En el Laboratorio 3B no escribirán código de Z3: las reglas están en una tabla que el notebook traduce.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · TRES PREGUNTAS ============================ -->
+<section data-min="3.5">
+  <div class="kicker">Verificación formal de una política</div>
+  <h2>Tres preguntas que se le hacen a una política</h2>
+  <div class="cols-3 q3">
+    <div class="card bad fragment">
+      <h4 class="bad">¿Se contradice?</h4>
+      <p>Dos reglas exigen cosas incompatibles para el mismo caso</p>
+      <p class="ask">¿Existe una compra que ningún aprobador puede aprobar sin romper una regla?</p>
+    </div>
+    <div class="card amber fragment">
+      <h4>¿Tiene lagunas?</h4>
+      <p>Hay casos que ninguna regla cubre</p>
+      <p class="ask">¿Existe una compra para la que ninguna regla dice quién aprueba?</p>
+    </div>
+    <div class="card accent fragment">
+      <h4>¿Y los casos límite?</h4>
+      <p>Los bordes de cada regla: «menos de», «más de», «hasta»</p>
+      <p class="ask">¿Qué pasa exactamente en $1.000.000 y en $2.000.000?</p>
+    </div>
+  </div>
+  <p class="fragment" style="font-size:24px;margin-top:20px">Cada pregunta busca el error. Si el solver responde <span class="verdict unsat">unsat</span>, la política está libre de él.</p>
+  <aside class="notes">
+    <p>Estas son las tres preguntas clásicas de la verificación de reglas. La contradicción: dos reglas que, para un mismo caso, piden cosas incompatibles. La laguna: casos que ninguna regla contempla, donde cada quien decide a su manera. Y los casos límite, que es donde suelen esconderse los dos problemas anteriores: las palabras «menos de», «más de» y «hasta» definen bordes, y un borde mal escrito deja un hueco o un traslape.</p>
+    <p>Fíjense en cómo se formula cada pregunta: siempre como la búsqueda de un error. Si existe, el solver lo muestra; si no existe, lo demuestra. Ahora se las hacemos a la política de MantenIA.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · EL CONTRAEJEMPLO ============================ -->
+<section data-min="4">
+  <div class="kicker">Lo que encontró Z3</div>
+  <h2>El contraejemplo como explicación</h2>
+  <svg class="diagram" viewBox="0 0 1200 260" role="img" aria-label="Mapa de la política: en el eje horizontal el monto de la compra hasta 14 millones; una fila para proveedores homologados y otra para no homologados. Z3 encuentra una contradicción en las compras de menos de un millón a proveedores no homologados, y una laguna en exactamente dos millones para proveedores homologados">
+    <defs><style>.m1{font-size:18px;fill:#e8ecf4;font-weight:600}.m2{font-size:16px;fill:#a3adc2}.m3{font-size:16px;fill:#0a0e17;font-weight:700}</style>
+      <pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="rgba(248,113,113,.25)"/><line x1="0" y1="0" x2="0" y2="10" stroke="#f87171" stroke-width="4"/></pattern>
+    </defs>
+    <!-- escala: x = 170 + 70 px por millón -->
+    <text x="0" y="62" class="m1">Homologado</text>
+    <rect x="170" y="38" width="140" height="40" rx="5" fill="#38bdf8"/><text x="240" y="64" text-anchor="middle" class="m3">R1 supervisor</text>
+    <rect x="310" y="38" width="560" height="40" rx="5" fill="#f5b942"/><text x="590" y="64" text-anchor="middle" class="m3">R2 jefe de planta</text>
+    <rect x="870" y="38" width="280" height="40" rx="5" fill="#a78bfa"/><text x="1010" y="64" text-anchor="middle" class="m3">R3 gerente</text>
+    <text x="0" y="132" class="m1">No homologado</text>
+    <rect x="170" y="108" width="980" height="40" rx="5" fill="#a78bfa"/><text x="660" y="134" text-anchor="middle" class="m3">R4 gerente</text>
+    <line x1="170" y1="168" x2="1150" y2="168" stroke="#2a3550" stroke-width="2"/>
+    <text x="170" y="190" text-anchor="middle" class="m2">$0</text><text x="240" y="190" text-anchor="middle" class="m2">$1 M</text><text x="310" y="190" text-anchor="middle" class="m2">$2 M</text><text x="870" y="190" text-anchor="middle" class="m2">$10 M</text><text x="1150" y="190" text-anchor="middle" class="m2">$14 M</text>
+    <g class="fragment" data-fragment-index="1">
+      <rect x="170" y="104" width="70" height="48" rx="5" fill="url(#hatch)" stroke="#f87171" stroke-width="3"/>
+      <text x="250" y="226" class="m1" fill="#f87171" style="fill:#f87171">▲ Contradicción: R4 exige al gerente y R5 se lo prohíbe</text>
+    </g>
+    <g class="fragment" data-fragment-index="2">
+      <line x1="310" y1="28" x2="310" y2="88" stroke="#f87171" stroke-width="5"/>
+      <circle cx="310" cy="24" r="7" fill="#f87171"/>
+      <text x="330" y="250" class="m1" style="fill:#f87171">▲ Laguna: «menos de» y «más de» dejan fuera exactamente $2.000.000</text>
+    </g>
+  </svg>
+  <div class="cols" style="gap:18px;margin-top:4px">
+    <div class="cx fragment" data-fragment-index="1"><div class="lbl">Pregunta 1 · Z3: sat</div><div class="val">compra de $999.999 a un proveedor no homologado</div></div>
+    <div class="cx fragment" data-fragment-index="2"><div class="lbl">Pregunta 2 · Z3: sat</div><div class="val">compra de $2.000.000 a un proveedor homologado</div></div>
+  </div>
+  <div class="cx ok fragment" data-fragment-index="3" style="margin-top:12px"><div class="lbl">Política corregida · Z3: unsat en las dos preguntas</div><div class="val" style="font-family:var(--font);font-size:21px">R1 dice «hasta $2.000.000» y R5 se aplica solo a proveedores homologados: ya no existe ninguna compra con esos problemas</div></div>
+  <aside class="notes">
+    <p>Este es el resultado real de Z3 sobre las cinco reglas; el código está en la carpeta ejemplos. Cada punto del mapa es una compra posible. Primera pregunta: ¿hay una compra que nadie pueda aprobar? Z3 responde sat y muestra una: $999.999 a un proveedor no homologado. R4 dice que la aprueba el gerente; R5 dice que el gerente no aprueba compras de menos de un millón. Le pedimos a Z3 el monto más alto con ese problema, para que el ejemplo sea realista; todo el rango por debajo de un millón está afectado.</p>
+    <p>Segunda pregunta: ¿hay una compra que ninguna regla cubra? Sí: exactamente $2.000.000. R1 dice «menos de» y R2 dice «más de», y el borde quedó sin dueño. Es un solo valor, el tipo de error que una revisión humana casi nunca ve.</p>
+    <p>Lo valioso es que el contraejemplo es la explicación: un caso concreto que cualquier persona puede revisar y entender. Corregimos dos palabras, volvemos a preguntar, y Z3 responde unsat a las dos preguntas: ahora está demostrado que no queda ninguna compra con esos problemas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · CASO REAL (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Caso real · Amazon Web Services</div>
+  <h2>Verificar millones de políticas de acceso al día</h2>
+  <div class="cols c46 mid">
+    <div>
+      <div class="file">
+        <div class="bar"><i></i><i></i><i></i><span>política de acceso (simplificada)</span></div>
+        <div class="body">{
+  "Effect": "Allow",
+  "Principal": <span class="md-bad">"*"</span>,
+  "Action": "s3:GetObject",
+  "Resource": "…:informes/*"
+}</div>
+      </div>
+      <div class="cx fragment" data-fragment-index="1" style="margin-top:12px"><div class="lbl">Pregunta al solver</div><div class="val" style="font-family:var(--font);font-size:21px">¿Puede cualquier persona de internet leer estos informes? <strong>Sí</strong>: el asterisco lo permite</div></div>
+    </div>
+    <ul style="font-size:22px">
+      <li>Zelkova traduce las políticas a fórmulas SMT y responde preguntas sobre ellas</li>
+      <li class="fragment" data-fragment-index="1">Corre Z3 y otros solvers en paralelo: el 99 % de las preguntas, en menos de 160 ms (2018)</li>
+      <li class="fragment" data-fragment-index="2">De millones de consultas al día en 2018 a mil millones en 2022</li>
+      <li class="fragment" data-fragment-index="3">Desde 2025, AWS verifica también respuestas de LLMs contra una política formalizada</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. La verificación formal de políticas no es teoría: Amazon Web Services la usa a escala. Zelkova (Backes y coautores, FMCAD 2018) traduce las políticas de acceso de AWS a fórmulas SMT y responde preguntas como «¿este recurso es accesible para cualquier persona?» o «¿puede un usuario cualquiera escribir aquí?». La política del ejemplo, simplificada, tiene un asterisco en el campo Principal: deja leer los informes a cualquiera en internet, un error de configuración clásico.</p>
+    <p>Según el artículo, Zelkova corre Z3, una extensión propia de Z3 y CVC4 en paralelo, responde el 99 % de las preguntas en menos de 160 milisegundos y se invocaba entre unos millones y decenas de millones de veces al día. En 2022, Neha Rungta reportó mil millones de consultas SMT diarias. Y desde agosto de 2025, el servicio Automated Reasoning checks de Amazon Bedrock aplica la misma idea a los LLMs: formaliza una política y verifica las respuestas del modelo contra ella. Su documentación reconoce algo que veremos en dos diapositivas: casi siempre, cuando falla, el problema está en la traducción del lenguaje natural a la lógica, no en la verificación.</p>
+  </aside>
+</section>
+
+
+<!-- ============================ 9 · EL LLM COMO FORMALIZADOR ============================ -->
+<section data-min="3.5">
+  <div class="kicker violet">LLMs y solvers</div>
+  <h2>El LLM traduce, el solver deduce</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/logiclm_fig1.png" alt="Figura 1 de Logic-LM: el problema y la meta entran a un formulador que produce una formulación simbólica; un razonador simbólico la resuelve y un intérprete da la respuesta; un ciclo de autorrefinamiento devuelve los errores al formulador">
+      <figcaption class="credit">Pan et al. (2023), Findings of EMNLP, Fig. 1, <a href="https://aclanthology.org/2023.findings-emnlp.248/">ACL Anthology</a>, CC BY 4.0.</figcaption>
+    </figure>
+    <ol style="font-size:23px">
+      <li>El LLM <strong>traduce</strong> el problema en lenguaje natural a un lenguaje formal</li>
+      <li class="fragment">Un solver <strong>deduce</strong> la respuesta, sin adivinar</li>
+      <li class="fragment">Si el solver rechaza la traducción, el mensaje de error <strong>vuelve al LLM</strong> para corregirla</li>
+      <li class="fragment">En cinco conjuntos de problemas lógicos: +39,2 % frente al LLM solo y +18,4 % frente a la cadena de pensamiento</li>
+    </ol>
+  </div>
+  <aside class="notes">
+    <p>Logic-LM, de Pan y coautores (2023), formaliza una idea que ya vimos con PDDL en la Sesión 2: el LLM es bueno para entender lenguaje natural y malo para deducir con exactitud; el solver es exactamente lo contrario. Entonces el LLM traduce el problema a fórmulas, el solver deduce, y si la traducción tiene errores de forma, el solver se queja y su mensaje vuelve al LLM para que corrija.</p>
+    <p>Según el resumen del artículo, en promedio sobre cinco conjuntos de problemas de razonamiento lógico, este esquema mejoró 39,2 % frente a usar el LLM solo y 18,4 % frente a la cadena de pensamiento. Es el mismo patrón generar y verificar, con el solver en el papel del verificador.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · LA TRADUCCIÓN TAMBIÉN SE REVISA ============================ -->
+<section data-min="2.5">
+  <div class="kicker violet">LLMs y solvers</div>
+  <h2>La traducción también se revisa</h2>
+  <div class="ba">
+    <div class="card"><h4>Lo que dice la política</h4><p>R1: «compras de <strong>menos de</strong> $2.000.000»</p><p class="mono" style="margin-top:8px">monto &lt; 2.000.000</p></div>
+    <div class="card bad fragment"><h4>Lo que tradujo un LLM</h4><p>Escribió, sin avisar:</p><p class="mono" style="margin-top:8px">monto ≤ 2.000.000</p></div>
+  </div>
+  <div class="cx fragment" style="margin-top:18px"><div class="lbl">Consecuencia</div><div class="val" style="font-family:var(--font);font-size:22px">Z3 responde unsat a la pregunta de la laguna, y es correcto… sobre la traducción. La política escrita sigue teniendo la laguna de $2.000.000</div></div>
+  <p class="fragment" style="font-size:24px;margin-top:16px">El solver garantiza lo que se le dio. <strong>Alguien</strong> debe comprobar que la traducción dice lo mismo que el texto.</p>
+  <aside class="notes">
+    <p>Un caso sutil y muy realista. Un LLM, al traducir R1, «corrige» sin querer el borde y escribe menor o igual en lugar de menor. Z3 trabaja sobre esa traducción y responde, con razón, que no hay laguna. La prueba es impecable, pero es una prueba sobre otra política: la que está publicada sigue teniendo el hueco.</p>
+    <p>Es la misma lección del dominio mal traducido de la Sesión 2: un verificador correcto sobre un modelo equivocado da una falsa seguridad. En el Laboratorio 3B, el LLM traducirá la política y ustedes revisarán la tabla de reglas antes de confiar en lo que diga Z3.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · TRAZAS NO FIELES (OPCIONAL) ============================ -->
+<section data-min="2.5" data-opcional>
+  <div class="kicker violet">LLMs y explicaciones</div>
+  <h2>Una traza convincente no es una explicación fiel</h2>
+  <div class="cols c64 mid">
+    <div>
+      <div class="card" style="padding:12px 16px">
+        <p style="font-size:19px;margin:0 0 8px">¿Es plausible la frase «Wayne Rooney disparó desde fuera del dieciocho»? (A) no es plausible · (B) es plausible</p>
+        <p style="font-size:18px;margin:0 0 6px"><strong class="ok">Ejemplos normales:</strong> «Rooney es futbolista; disparar desde fuera del área de 18 yardas es parte del fútbol». → <strong class="ok">(B) ✓</strong></p>
+        <p style="font-size:18px;margin:0"><strong class="bad">Ejemplos donde la correcta siempre era (A):</strong> «“fuera del dieciocho” no es una expresión común en el fútbol; probablemente se refiere a una yarda del fútbol americano o del golf». → <strong class="bad">(A) ✗</strong></p>
+      </div>
+      <p class="credit">Respuestas de Claude 1.0, traducidas de Turpin et al. (2023), Tabla 1, <a href="https://arxiv.org/abs/2305.04388">arXiv:2305.04388</a>, CC BY 4.0.</p>
+    </div>
+    <ul style="font-size:23px">
+      <li>En los ejemplos, la respuesta correcta siempre era la «(A)»</li>
+      <li class="fragment">Los modelos empezaron a elegir «(A)», y su cadena de pensamiento <strong>justificaba</strong> esa elección sin mencionar el patrón</li>
+      <li class="fragment">La exactitud cayó hasta 36 % en 13 tareas (GPT-3.5 y Claude 1.0)</li>
+      <li class="fragment">El contraejemplo de Z3 se puede comprobar; la traza de un LLM, no siempre</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Turpin y coautores (2023) hicieron un experimento revelador: en los ejemplos que se le dan al modelo, la respuesta correcta siempre era la opción A. Los modelos aprendieron el patrón y empezaron a elegir A también cuando era incorrecta, y su cadena de pensamiento construía una justificación razonable sin mencionar nunca el verdadero motivo. Según el resumen del artículo, la exactitud cayó hasta 36 % en 13 tareas de BIG-Bench Hard, con GPT-3.5 y Claude 1.0.</p>
+    <p>La tarjeta es un caso del artículo, traducido. Con ejemplos normales, Claude 1.0 razona bien: disparar desde fuera del área es parte del fútbol. Con ejemplos en los que la correcta siempre era la A, elige la A y construye una justificación que suena razonable, que «el dieciocho» sería una yarda del fútbol americano o del golf, sin mencionar jamás que siguió el patrón de los ejemplos.</p>
+    <p>La lección para una organización: la explicación de un LLM puede ser plausible y aun así engañosa. El contraejemplo de un solver es otra cosa: un caso concreto que se comprueba contra las reglas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · SÍNTESIS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Síntesis</div>
+  <h2>Lo que nos llevamos de esta charla</h2>
+  <div class="flow4">
+    <div class="card accent"><h4>Lógica</h4><p class="small">la política se vuelve reglas precisas</p></div>
+    <div class="card ok"><h4 class="ok">Solver</h4><p class="small">sat con un contraejemplo, o unsat como prueba</p></div>
+    <div class="card violet"><h4 class="violet">LLM</h4><p class="small">traduce rápido, pero la traducción se revisa</p></div>
+    <div class="card amber"><h4>Explicación</h4><p class="small">la del solver se comprueba; la del LLM no siempre es fiel</p></div>
+  </div>
+  <aside class="notes">
+    <p>Cuatro ideas antes del laboratorio: la lógica convierte una política en reglas precisas; el solver encuentra el error con un contraejemplo o demuestra que no existe; el LLM sirve para traducir el lenguaje natural a reglas, pero esa traducción se revisa; y no toda explicación vale lo mismo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · ANUNCIO DEL LABORATORIO 3B ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 60 min</div>
+  <h1>Laboratorio 3B<br><span class="accent">Verificar una política de negocio con Z3</span></h1>
+  <p class="lead muted" style="font-size:28px">Cargue la política de MantenIA en una tabla de reglas, cambie umbrales y excepciones, y deje que Z3 encuentre contradicciones y lagunas. Después, un LLM traduce la política y Z3 la verifica, frente a un LLM que razona solo sobre los mismos casos.</p>
+  <div class="lab-format"><span class="pill amber">60 minutos, en parejas</span><span class="pill ok">Sin escribir código: se editan reglas en una tabla</span><span class="pill">Notebook autocontenido en VS Code</span></div>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="charla3_cuando_confiar_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes">
+    <p>Dar paso al laboratorio de una hora. Recordar que las reglas se editan en una tabla y que lo importante es leer los contraejemplos y comparar la explicación del LLM con la del solver. Después viene la charla de cierre y, al final, el club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla intermedia</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-compact">
+    <ol class="refs">
+      <li>Boole, G. (1854). <em>An Investigation of the Laws of Thought</em>. Walton and Maberly. <a href="https://archive.org/details/investigationofl00boolrich">Internet Archive</a></li>
+      <li>de Moura, L. y Bjørner, N. (2008). Z3: An efficient SMT solver. <em>TACAS 2008</em>, LNCS 4963, 337–340. <a href="https://doi.org/10.1007/978-3-540-78800-3_24">DOI</a></li>
+      <li>Biere, A., Heule, M., van Maaren, H. y Walsh, T. (eds.) (2021). <em>Handbook of Satisfiability</em>, 2.ª ed. IOS Press. <a href="https://www.iospress.com/catalog/books/handbook-of-satisfiability-2">Editorial</a></li>
+      <li>Russell y Norvig (2021), cap. 7, «Logical Agents»; Poole y Mackworth (2023), cap. 5, <a href="https://artint.info/3e/html/ArtInt3e.Ch5.html">«Propositions and Inference»</a></li>
+      <li>Backes, J. et al. (2018). Semantic-based automated reasoning for AWS access policies using SMT. <em>FMCAD 2018</em>, 206–214. <a href="https://cs.utexas.edu/~hunt/FMCAD/FMCAD18/papers/paper3.pdf">PDF</a></li>
+      <li>Rungta, N. (2022). A billion SMT queries a day. <em>CAV 2022</em>, LNCS 13371, 3–18. <a href="https://doi.org/10.1007/978-3-031-13185-1_1">DOI</a> · <a href="https://www.amazon.science/blog/a-billion-smt-queries-a-day">Divulgación</a></li>
+      <li>Amazon Web Services (2025). Automated Reasoning checks in Amazon Bedrock Guardrails. <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-automated-reasoning-checks.html">Documentación</a></li>
+      <li>Pan, L., Albalak, A., Wang, X. y Wang, W. Y. (2023). Logic-LM: Empowering large language models with symbolic solvers for faithful logical reasoning. <em>Findings of EMNLP 2023</em>, 3806–3824. <a href="https://aclanthology.org/2023.findings-emnlp.248/">ACL Anthology</a></li>
+      <li>Turpin, M., Michael, J., Perez, E. y Bowman, S. R. (2023). Language models don't always say what they think: Unfaithful explanations in chain-of-thought prompting. <em>NeurIPS 2023</em>, 74952–74965. <a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/ed3fea9033a80fea1376299fa7863f4a-Abstract-Conference.html">NeurIPS</a> · <a href="https://arxiv.org/abs/2305.04388">arXiv</a></li>
+      <li>Microsoft Research. <em>Online Z3 Guide</em>: Z3 en el navegador. <a href="https://microsoft.github.io/z3guide/">microsoft.github.io/z3guide</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="charla1_dos_formas_de_razonar.html">← Charla inicial</a><a href="index.html">Volver a la agenda</a><a href="charla3_cuando_confiar_y_cierre.html">Charla de cierre →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 3 · Charla intermedia · Verificar con lógica</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

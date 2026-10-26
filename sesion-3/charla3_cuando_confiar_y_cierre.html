@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla de cierre · Cuándo confiar en cada uno — Sesión 3 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .guide td, .guide th { font-size: 20px; padding: 8px 10px; }
+  .guide th { font-size: 17px; }
+  .guide td:nth-child(2) { white-space: nowrap; }
+  .recap .card h4 { font-size: 26px; }
+  .recap .card p { font-size: 21px; margin: 0 0 6px; }
+  .tiq .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .tiq .card p { font-size: 20px; margin: 0 0 6px; line-height: 1.3; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 3 · Unidad 3 · Charla de cierre</div>
+  <h1>Cuándo confiar en cada uno</h1>
+  <p class="lead muted">Límites de los LLMs, modelos de razonamiento y sistemas que combinan las dos formas de razonar</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla2_verificar_con_logica.html">← Charla intermedia</a><a href="index.html">Agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes">
+    <p>Después de los dos laboratorios. Esta charla junta las piezas: qué dice la evidencia sobre los límites de los LLMs cuando el problema crece, cómo se construyen los modelos de razonamiento y, sobre todo, cuándo usar un solver, cuándo un LLM y cuándo los dos. Al final, el paso del proyecto y los trabajos; y después, el club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LO QUE VIMOS ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Lo que vimos hoy</div>
+  <h2>Dos laboratorios, un mismo patrón</h2>
+  <div class="cols recap">
+    <div class="card accent">
+      <h4>Laboratorio 3A · vibe coding</h4>
+      <p>Una IA escribió el programa de la empresa de aseo a partir de su descripción, y un solver encontró la asignación</p>
+      <p>Ustedes verificaron que cumpliera cada regla, con casos revisados a mano y un caso imposible</p>
+    </div>
+    <div class="card violet fragment">
+      <h4 class="violet">Laboratorio 3B · lógica</h4>
+      <p>Z3 encontró contradicciones y lagunas con un contraejemplo, o demostró que no las había</p>
+      <p>El LLM tradujo la política a reglas; su traducción y sus explicaciones también se revisaron</p>
+    </div>
+  </div>
+  <p class="fragment" style="font-size:25px;margin-top:20px">En los dos casos: <strong>la IA propone y algo externo verifica</strong>, el solver o ustedes. Ahora, ¿cuándo conviene cada uno?</p>
+  <aside class="notes">
+    <p>Recapitular sin repetir el laboratorio: en 3A, la IA escribió el programa y un solver lo resolvió, pero la verificación fue de ustedes; en 3B, Z3 revisaba una política con contraejemplos y el LLM traducía. En los dos, el patrón fue el mismo: la IA propone y algo externo verifica. La pregunta de esta charla es práctica: con un problema real de su organización, ¿cuál usar?</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · ZEBRALOGIC ============================ -->
+<section data-min="3">
+  <div class="kicker">Evidencia · el límite de los LLMs</div>
+  <h2>Cuando el problema crece, el LLM se cae</h2>
+  <div class="cols c64 mid">
+    <div>
+      <svg class="diagram" viewBox="0 0 760 420" role="img" aria-label="Exactitud en acertijos lógicos según el tamaño del espacio de búsqueda. GPT-4o: 80, 19,6, 2,5 y 0,5 %. Claude 3.5 Sonnet: 84,7, 28,9, 4 y 1 %. DeepSeek-R1: 98,4, 95,7, 73,5 y 28,5 %. o1: 97,2, 92,1, 78 y 42,5 %">
+        <defs><style>.ax{font-size:16px;fill:#a3adc2}.axc{font-size:17px;fill:#e8ecf4;font-weight:600}.lb{font-size:17px;font-weight:700}</style></defs>
+        <!-- y = 330 - 3 × exactitud; x por categoría: 130, 300, 470, 640 -->
+        <g stroke="#2a3550" stroke-width="1"><line x1="80" y1="30" x2="700" y2="30"/><line x1="80" y1="105" x2="700" y2="105"/><line x1="80" y1="180" x2="700" y2="180"/><line x1="80" y1="255" x2="700" y2="255"/><line x1="80" y1="330" x2="700" y2="330" stroke-width="2"/></g>
+        <text x="70" y="36" text-anchor="end" class="ax">100 %</text><text x="70" y="111" text-anchor="end" class="ax">75</text><text x="70" y="186" text-anchor="end" class="ax">50</text><text x="70" y="261" text-anchor="end" class="ax">25</text><text x="70" y="336" text-anchor="end" class="ax">0</text>
+        <text x="130" y="356" text-anchor="middle" class="axc">Pequeño</text><text x="300" y="356" text-anchor="middle" class="axc">Mediano</text><text x="470" y="356" text-anchor="middle" class="axc">Grande</text><text x="640" y="356" text-anchor="middle" class="axc">Muy grande</text>
+        <text x="130" y="376" text-anchor="middle" class="ax">&lt; 10³</text><text x="300" y="376" text-anchor="middle" class="ax">10³ – 10⁶</text><text x="470" y="376" text-anchor="middle" class="ax">10⁶ – 10¹⁰</text><text x="640" y="376" text-anchor="middle" class="ax">≥ 10¹⁰</text>
+        <text x="390" y="406" text-anchor="middle" class="ax">tamaño del espacio de búsqueda (combinaciones posibles)</text>
+        <g class="fragment" data-fragment-index="1">
+          <polyline points="130,90 300,271.2 470,322.5 640,328.5" fill="none" stroke="#38bdf8" stroke-width="4"/>
+          <polyline points="130,75.9 300,243.3 470,318 640,327" fill="none" stroke="#7dd3fc" stroke-width="4" stroke-dasharray="8 6"/>
+          <text x="312" y="236" class="lb" style="fill:#7dd3fc">Claude 3.5 Sonnet 28,9</text>
+          <text x="150" y="318" class="lb" style="fill:#38bdf8">GPT-4o 19,6</text>
+          <text x="560" y="314" class="lb" style="fill:#38bdf8">≈ 1 %</text>
+        </g>
+        <g class="fragment" data-fragment-index="2">
+          <polyline points="130,38.4 300,53.7 470,96 640,202.5" fill="none" stroke="#a78bfa" stroke-width="4"/>
+          <polyline points="130,34.8 300,42.9 470,109.5 640,244.5" fill="none" stroke="#f5b942" stroke-width="4"/>
+          <text x="652" y="200" class="lb" style="fill:#a78bfa">o1 42,5</text>
+          <text x="652" y="248" class="lb" style="fill:#f5b942">R1 28,5</text>
+        </g>
+      </svg>
+      <p class="credit">Exactitud por acertijo completo (%). Redibujado de Lin et al. (2025), ZebraLogic, ICML, Tabla 1, <a href="https://arxiv.org/abs/2502.01100">arXiv:2502.01100</a>, CC BY 4.0. o1 se corrió tres veces y se tomó el mejor resultado.</p>
+    </div>
+    <ul style="font-size:22px">
+      <li>1000 acertijos lógicos como el de la cebra, de 2×2 a 6×6 casas y atributos</li>
+      <li class="fragment" data-fragment-index="1">Sin razonamiento: de 80 % a casi 0</li>
+      <li class="fragment" data-fragment-index="2">Con razonamiento resisten más, pero también caen</li>
+      <li class="fragment" data-fragment-index="3">Los autores lo llaman <em>la maldición de la complejidad</em></li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>ZebraLogic, presentado en ICML 2025, evalúa a los LLMs con 1000 acertijos lógicos del tipo «acertijo de la cebra»: quién vive en qué casa, con qué mascota y qué bebida, a partir de pistas. Lo interesante es que se puede controlar el tamaño: de 2 casas con 2 atributos hasta 6 por 6. El eje horizontal agrupa los acertijos por el número de combinaciones posibles.</p>
+    <p>Los modelos sin razonamiento, como GPT-4o, aciertan 80 % en los pequeños y caen casi a cero en los grandes. Los modelos de razonamiento, o1 y DeepSeek-R1, resisten mucho más, pero también caen: en los más grandes, 42,5 % y 28,5 %. Los autores lo llaman la maldición de la complejidad, y según ellos persiste aun con modelos más grandes y más cómputo en la inferencia; la mayoría de los modelos falla cuando el espacio supera unos 10 millones de posibilidades. Un solver, en cambio, explora ese espacio de forma sistemática: los propios autores usan Z3 para medir la dificultad de cada acertijo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · VARIAS CADENAS Y ÁRBOL DE PENSAMIENTOS ============================ -->
+<section data-min="2.5">
+  <div class="kicker violet">Razonamiento en LLMs</div>
+  <h2>De varias cadenas a un árbol de pensamientos</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/yao2023_tot_fig1.svg" alt="Figura 1 de Tree of Thoughts: entrada y salida directas; cadena de pensamiento; varias cadenas con voto; y árbol de pensamientos, que explora ramas, evalúa los pasos parciales y descarta las que no prometen">
+      <figcaption class="credit">Yao et al. (2023), NeurIPS, Fig. 1, <a href="https://arxiv.org/abs/2305.10601">arXiv:2305.10601</a>, CC BY 4.0. En el original, la cadena de pensamiento aparece rotulada «(c)», como la siguiente; debería ser «(b)».</figcaption>
+    </figure>
+    <ul style="font-size:22px">
+      <li><strong>Autoconsistencia</strong> (c): varias cadenas y un voto. En GSM8K mejoró la cadena de pensamiento en 17,9 %</li>
+      <li class="fragment"><strong>Árbol de pensamientos</strong> (d): explora ramas, evalúa los pasos parciales y retrocede, como A* en la Sesión 1</li>
+      <li class="fragment">Juego del 24: GPT-4 con cadena de pensamiento resolvió el 4 %; con árbol de pensamientos, el 74 %</li>
+      <li class="fragment">Más cadenas y más ramas: <em>más llamadas y más costo</em></li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>La figura resume la progresión: respuesta directa, cadena de pensamiento, varias cadenas con voto y árbol de pensamientos. La autoconsistencia (Wang y coautores, ICLR 2023) parte de una intuición: un problema difícil se puede pensar de varias maneras, pero la respuesta correcta es una sola. Se piden varias cadenas distintas y gana la respuesta que más se repite; según el resumen del artículo, esto mejoró la cadena de pensamiento en 17,9 % en GSM8K. Una variante más fuerte reemplaza el voto por un verificador, como un solver. El árbol de pensamientos de Yao y coautores (NeurIPS 2023) va más allá. El árbol hace algo que la cadena no hace: explora alternativas, evalúa cada paso parcial con el propio modelo y retrocede cuando una rama no promete. Es exactamente la búsqueda de la Sesión 1, con A* y heurísticas, solo que cada nodo es un pensamiento escrito.</p>
+    <p>Según el resumen del artículo, en el Juego del 24 (combinar cuatro números con operaciones para obtener 24), GPT-4 con cadena de pensamiento resolvió el 4 % de los problemas y con árbol de pensamientos el 74 %. El precio es que cada nodo es una llamada al modelo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · CÓMPUTO EN LA INFERENCIA (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker violet">Razonamiento en LLMs</div>
+  <h2>Pensar más al responder, en vez de un modelo más grande</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/snell2024_fig1.svg" alt="Figura 1 de Snell et al.: exactitud en problemas de matemáticas frente al presupuesto de generación; la estrategia que reparte el cómputo según la dificultad supera a elegir la mejor de N respuestas, y a la derecha la comparación con un modelo más grande a igual cómputo total">
+      <figcaption class="credit">Snell, Lee, Xu y Kumar (2024), Fig. 1 (fila superior), <a href="https://arxiv.org/abs/2408.03314">arXiv:2408.03314</a>, CC BY 4.0. Publicado en ICLR 2025.</figcaption>
+    </figure>
+    <ul style="font-size:22px">
+      <li>Gastar cómputo al responder: revisar la respuesta, o buscar con un verificador</li>
+      <li class="fragment">Repartirlo según la dificultad fue más de 4 veces más eficiente que elegir la mejor de N</li>
+      <li class="fragment">Con el mismo cómputo total, superó a un modelo 14 veces mayor en problemas donde el pequeño ya acertaba algo</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Snell y coautores (2024, publicado en ICLR 2025) preguntaron si conviene gastar cómputo en un modelo más grande o en pensar más al responder. Probaron dos formas: que el modelo revise iterativamente su propia respuesta, y buscar entre muchas respuestas con un verificador que califica cada paso. Según el resumen, asignar el cómputo según la dificultad de cada pregunta fue más de cuatro veces más eficiente que simplemente generar N respuestas y quedarse con la mejor; y, con el mismo cómputo total, un modelo pequeño superó a uno 14 veces mayor, pero solo en problemas donde el pequeño ya tenía algo de éxito.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · DEEPSEEK-R1 ============================ -->
+<section data-min="2">
+  <div class="kicker violet">Modelos de razonamiento</div>
+  <h2>Aprender a razonar con recompensas verificables</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/deepseek_r1_fig1.png" alt="Figura 1 de DeepSeek-R1: a, la exactitud en AIME sube durante el entrenamiento por refuerzo y supera el promedio de los participantes humanos; b, la longitud media de las respuestas crece durante el entrenamiento">
+      <figcaption class="credit">Guo, D. et al. (2025), DeepSeek-R1, <em>Nature</em> 645, Fig. 1, <a href="https://doi.org/10.1038/s41586-025-09422-z">acceso abierto</a>, CC BY 4.0.</figcaption>
+    </figure>
+    <ul style="font-size:22px">
+      <li>Recompensa por reglas: ¿la respuesta es correcta? ¿tiene el formato pedido? Nadie le muestra cómo razonar</li>
+      <li class="fragment">En AIME 2024 pasó de 15,6 % a 77,9 %, y sus respuestas se alargaron solas</li>
+      <li class="fragment">Funciona donde la respuesta se puede verificar: matemáticas, código</li>
+      <li class="fragment">El aprendizaje por refuerzo se estudia en la Unidad 6</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    <p>¿Cómo se fabrica un modelo de razonamiento? DeepSeek publicó en Nature en 2025 una respuesta abierta. A DeepSeek-R1-Zero no le mostraron ejemplos de razonamiento humano: lo entrenaron por refuerzo con una recompensa calculada por reglas, que solo revisa si la respuesta final es correcta y si tiene el formato pedido. Según el artículo, su exactitud media en AIME 2024, un examen de matemáticas, pasó de 15,6 % a 77,9 % durante el entrenamiento, y el modelo aprendió solo a escribir respuestas más largas: a pensar más.</p>
+    <p>Fíjense en la palabra verificable: el método funciona porque un verificador automático decide si la respuesta es correcta. Los autores advierten que cuando la recompensa la asigna otro modelo, y no reglas, el sistema aprende a hacer trampa. Es otra vez el verificador en el centro. Lo retomamos en la Unidad 6.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · COSTO (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker violet">Modelos de razonamiento · costo</div>
+  <h2>Cuánto cuesta razonar</h2>
+  <div class="cols c46">
+    <div class="stack">
+      <div class="card"><p style="font-size:22px;margin:0">Anthropic, OpenAI y Google cobran los tokens de razonamiento <strong>como tokens de salida</strong>, aunque no se muestren completos</p></div>
+      <div class="card fragment"><p style="font-size:22px;margin:0">Según OpenAI, un problema puede generar desde unos cientos hasta <strong>decenas de miles</strong> de tokens de razonamiento</p></div>
+    </div>
+    <div class="card amber fragment">
+      <h4>Cálculo con un mismo modelo</h4>
+      <p style="font-size:21px">Claude Sonnet 5.5 cobra US$10 por millón de tokens de salida. Una respuesta de 500 tokens:</p>
+      <p class="mono" style="font-size:19px">sin razonamiento:   500 × US$10 / millón = US$0,005</p>
+      <p class="mono" style="font-size:19px">+10 000 razonando: 10 500 × US$10 / millón = US$0,105</p>
+      <p style="font-size:22px;margin:8px 0 0"><strong>21 veces más</strong>, y más tiempo de espera</p>
+    </div>
+  </div>
+  <p class="credit" style="margin-top:14px">Cálculo ilustrativo; solo tokens de salida. Precios oficiales consultados el 26 de octubre de 2026: <a href="https://platform.claude.com/docs/en/about-claude/pricing">Anthropic</a> · <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI</a> · <a href="https://ai.google.dev/gemini-api/docs/thinking">Google</a>.</p>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Los tres grandes proveedores documentan lo mismo: los tokens que el modelo gasta razonando se cobran como tokens de salida, aunque la respuesta no los muestre completos o solo muestre un resumen. OpenAI indica que, según la complejidad, pueden ser desde unos cientos hasta decenas de miles.</p>
+    <p>El cálculo usa un mismo modelo para aislar el efecto: con el precio de salida de Claude Sonnet 5.5, una respuesta de 500 tokens cuesta medio centavo; si antes razona 10 000 tokens, cuesta 21 veces más. Para una consulta suelta es poco; para miles de consultas al día, es la diferencia entre un proyecto viable y uno que no lo es. Los precios cambian: estos se consultaron el 26 de octubre de 2026.</p>
+  </aside>
+</section>
+
+
+<!-- ============================ 8 · PATRÓN NEUROSIMBÓLICO ============================ -->
+<section data-min="2.5">
+  <div class="kicker">La síntesis</div>
+  <h2>El patrón neurosimbólico</h2>
+  <svg class="diagram" viewBox="0 0 1200 330" role="img" aria-label="El patrón: el componente neuronal, un LLM, propone, formaliza o traduce; el componente simbólico, un solver o motor de deducción, verifica, deduce o demuestra; el error vuelve al LLM. Ejemplos: LLM-Modulo con VAL en la Sesión 2, el Laboratorio 3A, con un programa escrito por la IA que resuelve CP-SAT, Logic-LM y el Laboratorio 3B con Z3, y AlphaGeometry">
+    <defs>
+      <style>.n1{font-size:24px;font-weight:700}.n2{font-size:19px;fill:#e8ecf4}.n3{font-size:17px;fill:#a3adc2}</style>
+      <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+    </defs>
+    <rect x="40" y="20" width="430" height="150" rx="14" fill="rgba(167,139,250,.12)" stroke="#a78bfa" stroke-width="2"/>
+    <text x="255" y="62" text-anchor="middle" class="n1" style="fill:#a78bfa">Neuronal · LLM</text>
+    <text x="255" y="100" text-anchor="middle" class="n2">propone, formaliza, traduce</text>
+    <text x="255" y="132" text-anchor="middle" class="n3">flexible con el lenguaje, sin garantía</text>
+    <rect x="730" y="20" width="430" height="150" rx="14" fill="rgba(74,222,128,.10)" stroke="#4ade80" stroke-width="2"/>
+    <text x="945" y="62" text-anchor="middle" class="n1" style="fill:#4ade80">Simbólico · solver</text>
+    <text x="945" y="100" text-anchor="middle" class="n2">verifica, deduce, demuestra</text>
+    <text x="945" y="132" text-anchor="middle" class="n3">exacto, pero solo con lo formalizado</text>
+    <line x1="476" y1="70" x2="722" y2="70" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#ar3)"/>
+    <text x="600" y="58" text-anchor="middle" class="n3">propuesta</text>
+    <line x1="722" y1="124" x2="476" y2="124" stroke="#f87171" stroke-width="2.5" marker-end="url(#ar3)"/>
+    <text x="600" y="150" text-anchor="middle" class="n3" style="fill:#f87171">error o contraejemplo</text>
+    <g class="fragment">
+      <rect x="40" y="200" width="262" height="110" rx="12" fill="#172033" stroke="#2a3550"/><text x="171" y="236" text-anchor="middle" class="n2">LLM-Modulo</text><text x="171" y="266" text-anchor="middle" class="n3">plan del LLM → VAL</text><text x="171" y="290" text-anchor="middle" class="n3">Sesión 2</text>
+      <rect x="320" y="200" width="262" height="110" rx="12" fill="#172033" stroke="#2a3550"/><text x="451" y="236" text-anchor="middle" class="n2">Laboratorio 3A</text><text x="451" y="266" text-anchor="middle" class="n3">programa de la IA → CP-SAT</text><text x="451" y="290" text-anchor="middle" class="n3">hoy</text>
+      <rect x="600" y="200" width="262" height="110" rx="12" fill="#172033" stroke="#2a3550"/><text x="731" y="236" text-anchor="middle" class="n2">Logic-LM · Lab 3B</text><text x="731" y="266" text-anchor="middle" class="n3">reglas del LLM → Z3</text><text x="731" y="290" text-anchor="middle" class="n3">hoy</text>
+      <rect x="880" y="200" width="280" height="110" rx="12" fill="rgba(167,139,250,.10)" stroke="#a78bfa"/><text x="1020" y="236" text-anchor="middle" class="n2">AlphaGeometry</text><text x="1020" y="266" text-anchor="middle" class="n3">construcción → motor deductivo</text><text x="1020" y="290" text-anchor="middle" class="n3" style="fill:#a78bfa">el club, a continuación</text>
+    </g>
+  </svg>
+  <aside class="notes">
+    <p>Esta es la idea que une las dos unidades. Un componente neuronal, el LLM, aporta lo que los solvers no tienen: entender lenguaje natural, proponer, traducir. Un componente simbólico, el solver, aporta lo que los LLMs no tienen: exactitud y garantías. Cuando el solver encuentra un error, lo devuelve al LLM. Lo vimos con el validador de planes en la Sesión 2, y hoy con el programa que escribió la IA en el Laboratorio 3A y con Z3. AlphaGeometry, la lectura del club que viene enseguida, es el mismo patrón llevado a la geometría de olimpiada: no lo explico ahora, lo discutimos en el club.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · GUÍA DE DECISIÓN ============================ -->
+<section data-min="3">
+  <div class="kicker amber">Para su proyecto</div>
+  <h2>Guía de decisión: solver, LLM o los dos</h2>
+  <table class="guide compact">
+    <tr><th>Si el problema…</th><th>Use</th><th>Por qué</th><th>En MantenIA</th></tr>
+    <tr class="fragment"><td>Tiene reglas precisas y el error es costoso (dinero, seguridad, normas)</td><td class="ok">Solver</td><td>Garantía, y un contraejemplo cuando falla</td><td>Turnos con certificación; aprobación de compras</td></tr>
+    <tr class="fragment"><td>Llega en lenguaje natural, pero se puede formalizar</td><td class="amber">LLM + solver</td><td>El LLM traduce y el solver verifica; la traducción se revisa</td><td>Convertir una política escrita en reglas</td></tr>
+    <tr class="fragment"><td>Crece de forma combinatoria</td><td class="ok">Solver</td><td>El LLM se degrada con el tamaño (ZebraLogic)</td><td>Turnos de 40 técnicos en un mes</td></tr>
+    <tr class="fragment"><td>Es abierto, sin regla precisa, y el error es barato</td><td class="violet">LLM</td><td>Rápido y flexible; una persona revisa</td><td>Redactar el aviso de turnos al equipo</td></tr>
+  </table>
+  <p class="fragment" style="font-size:22px;margin-top:14px">Y en todos los casos, compare el <strong>costo</strong>: tokens de una estrategia frente al tiempo de modelar una vez.</p>
+  <aside class="notes">
+    <p>Esta tabla es la que se llevan para el proyecto. Cuatro situaciones típicas. Si hay reglas precisas y un error cuesta dinero, seguridad o una sanción, use un solver: da garantías y explica las fallas con contraejemplos. Si la entrada está en lenguaje natural pero se puede formalizar, combine: el LLM traduce, el solver verifica, y una persona revisa la traducción, como vimos en la charla intermedia. Si el problema crece de forma combinatoria, el solver gana: es lo que mostró ZebraLogic. Y si el problema es abierto y un error es barato, como redactar un mensaje, el LLM solo, con revisión humana, es lo más práctico.</p>
+    <p>El último criterio es el costo: modelar un problema para un solver toma tiempo una vez; un LLM con razonamiento cobra tokens cada vez que se usa. En el paso del proyecto de esta semana van a aplicar esta tabla a su caso.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · MAPA DE LA UNIDAD ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Mapa de la unidad</div>
+  <h2>Restricciones, lógica y razonamiento en LLMs</h2>
+  <svg class="diagram" viewBox="0 0 1200 330" role="img" aria-label="Mapa de la Unidad 3: restricciones con CP-SAT, lógica con SAT, SMT y Z3, y razonamiento en LLMs con cadena de pensamiento, autoconsistencia, árbol de pensamientos y modelos de razonamiento, unidos en el centro por el patrón generar y verificar, que viene de la Unidad 2 y llega a la hackatón">
+    <defs><style>.u1{font-size:24px;font-weight:700}.u2{font-size:18px;fill:#e8ecf4}.u3{font-size:16px;fill:#a3adc2}</style></defs>
+    <rect x="20" y="20" width="350" height="140" rx="14" fill="rgba(56,189,248,.12)" stroke="#38bdf8" stroke-width="2"/>
+    <text x="195" y="58" text-anchor="middle" class="u1" style="fill:#38bdf8">Restricciones</text>
+    <text x="195" y="92" text-anchor="middle" class="u2">variables, dominios, objetivo</text><text x="195" y="120" text-anchor="middle" class="u2">CP-SAT · infactibilidad</text>
+    <rect x="425" y="20" width="350" height="140" rx="14" fill="rgba(74,222,128,.10)" stroke="#4ade80" stroke-width="2"/>
+    <text x="600" y="58" text-anchor="middle" class="u1" style="fill:#4ade80">Lógica</text>
+    <text x="600" y="92" text-anchor="middle" class="u2">SAT y SMT · Z3</text><text x="600" y="120" text-anchor="middle" class="u2">contraejemplos · verificación</text>
+    <rect x="830" y="20" width="350" height="140" rx="14" fill="rgba(167,139,250,.12)" stroke="#a78bfa" stroke-width="2"/>
+    <text x="1005" y="58" text-anchor="middle" class="u1" style="fill:#a78bfa">Razonamiento en LLMs</text>
+    <text x="1005" y="92" text-anchor="middle" class="u2">cadena, autoconsistencia, árbol</text><text x="1005" y="120" text-anchor="middle" class="u2">modelos de razonamiento</text>
+    <line x1="195" y1="160" x2="560" y2="225" stroke="#a3adc2" stroke-width="2"/><line x1="600" y1="160" x2="600" y2="220" stroke="#a3adc2" stroke-width="2"/><line x1="1005" y1="160" x2="640" y2="225" stroke="#a3adc2" stroke-width="2"/>
+    <rect x="400" y="222" width="400" height="64" rx="14" fill="rgba(245,185,66,.14)" stroke="#f5b942" stroke-width="2"/>
+    <text x="600" y="262" text-anchor="middle" class="u1" style="fill:#f5b942">generar y verificar</text>
+    <text x="250" y="262" text-anchor="middle" class="u3">← Unidad 2: LLM-Modulo</text>
+    <text x="960" y="262" text-anchor="middle" class="u3">Unidad 8: reto 2 de la hackatón →</text>
+    <text x="600" y="316" text-anchor="middle" class="u3">la garantía viene del verificador, no del que propone</text>
+  </svg>
+  <aside class="notes">
+    <p>El mapa de la unidad: tres formas de razonar, restricciones, lógica y razonamiento en LLMs, unidas por un patrón que ya conocían de la Unidad 2 y que volverá en el reto 2 de la hackatón, donde un LLM traduce un cambio de último minuto y una técnica clásica lo verifica. La frase de abajo resume la unidad: la garantía viene del verificador, no del que propone.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · PROYECTO INTEGRADOR ============================ -->
+<section data-min="5">
+  <div class="kicker amber">Proyecto integrador · paso de esta unidad</div>
+  <h2>Qué se garantiza en su caso, y cómo</h2>
+  <div class="cols c64">
+    <div class="file">
+      <div class="bar"><i></i><i></i><i></i><span>plan.md del proyecto · pasos nuevos</span></div>
+      <div class="body"><span class="md-h">## Pasos</span>
+<span class="md-box">- [ ]</span> Identificar las <span class="md-t">restricciones duras y blandas</span> del caso → Resultado: lista de reglas · Verificación: el equipo la revisa con el dueño del proceso
+<div class="fragment"><span class="md-box">- [ ]</span> Decidir <span class="md-t">cómo se verifica</span> cada regla: solver, validador o revisión humana → Resultado: tabla regla-verificador</div><div class="fragment"><span class="md-box">- [ ]</span> Elegir qué razonamiento se <span class="md-t">delega a un LLM</span> y quién lo verifica, con la guía de decisión → Resultado: decisión justificada</div></div>
+    </div>
+    <div class="ti-meta card">
+      <div><span class="label">Quién</span>cada equipo</div>
+      <div><span class="label">Tiempo</span>unos 60 min, en casa</div>
+      <div><span class="label">Entregable</span>plan.md actualizado y revisado con la lista de chequeo (J.6)</div>
+      <div><span class="label">Entrega</span>inicio de la semana 3</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Este es el paso del proyecto de la Unidad 3; ya no hay laboratorio de proyecto en clase, así que se hace en casa, en equipo, en unos 60 minutos. Tres pasos nuevos en el plan.md. Primero, listar las restricciones duras y blandas de su caso, confirmándolas con quien conoce el proceso. Segundo, decidir cómo se verifica cada una: algunas con un solver, otras con un validador o con una revisión humana. Tercero, con la guía de decisión, elegir qué parte del razonamiento podría hacer un LLM y quién lo verificaría.</p>
+    <p>El plan.md se revisa con la misma lista de chequeo de la Sesión 2, la J.6. Se entrega al inicio de la semana 3.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · TRABAJOS INDEPENDIENTES ============================ -->
+<section data-min="2.5">
+  <div class="kicker amber">Trabajo independiente</div>
+  <h2>Dos trabajos prácticos, sin programar</h2>
+  <div class="cols tiq">
+    <div class="card amber">
+      <h4>TI-1 · Su problema de asignación como modelo de restricciones</h4>
+      <p>Describa un problema de turnos, horarios o asignación de su organización; pídale una solución a un LLM y verifíquela regla por regla</p>
+      <p class="muted">65 min · PDF de 1 a 2 páginas</p>
+    </div>
+    <div class="card amber fragment">
+      <h4>TI-2 · Ponga a prueba una política de su organización</h4>
+      <p>Escriba una política real como reglas «si… entonces…»; compare lo que encuentra un LLM con lo que encuentra Z3 en el notebook del Laboratorio 3B</p>
+      <p class="muted">70 min · PDF de 1 a 2 páginas</p>
+    </div>
+  </div>
+  <p style="font-size:22px;margin-top:16px">Entrega: <strong>inicio de la semana 3</strong>. Enunciados completos en <a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-3/trabajo_independiente.md"><code>trabajo_independiente.md</code></a>.</p>
+  <aside class="notes">
+    <p>Dos trabajos individuales, unas dos horas y cuarto en total, más el paso del proyecto en equipo. Ninguno pide programar: el primero se hace con un LLM y papel o una hoja de cálculo; el segundo usa el notebook del Laboratorio 3B, cambiando las reglas en su tabla de configuración. Recordar no escribir en un LLM datos confidenciales de la organización.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · PRÓXIMA SESIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Próxima sesión · Unidad 4</div>
+  <h2>Lectura: CLIP, imágenes y lenguaje en un mismo espacio</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/clip_fig1.png" alt="Diagrama de CLIP: un codificador de texto y uno de imágenes se entrenan juntos para emparejar cada imagen con su descripción; después, las etiquetas de un problema se convierten en frases y el modelo clasifica imágenes sin entrenamiento adicional">
+      <figcaption class="credit">Diagrama del enfoque de CLIP. OpenAI (2021), <a href="https://github.com/openai/CLIP">github.com/openai/CLIP</a>, licencia MIT.</figcaption>
+    </figure>
+    <div>
+      <p style="font-size:22px"><strong>Radford, A. et al. (2021).</strong> Learning transferable visual models from natural language supervision. <em>ICML 2021</em>, PMLR 139, 8748–8763.</p>
+      <p style="font-size:22px" class="fragment">Unidad 4: de razonar sobre reglas y datos a <strong>percibir</strong> el mundo con imágenes.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La lectura de la sesión 4 es el artículo de CLIP, de OpenAI, presentado en ICML 2021. Se asignan la introducción, el enfoque y la discusión de limitaciones. CLIP aprende a poner imágenes y textos en un mismo espacio, y con eso puede clasificar imágenes que nunca vio con solo escribir las etiquetas. Es el puente hacia la Unidad 4, sobre visión por computador: pasamos de razonar sobre reglas a percibir.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · AL CLUB ============================ -->
+<section class="transition-slide" data-min="0.5">
+  <div class="big-arrow">A continuación · 15 min</div>
+  <h1>Club de lectura<br><span class="violet">AlphaGeometry</span></h1>
+  <p class="lead muted" style="font-size:28px">Un sistema que combina las dos formas de razonar de hoy para resolver geometría de olimpiada.</p>
+  <p class="navlinks"><a href="club_lectura.html">Club de lectura →</a><a href="index.html">Volver a la agenda</a></p>
+  <aside class="notes">
+    <p>Dar paso al club de lectura, que cierra la sesión.</p>
+  </aside>
+</section>
+
+<!-- ============================ REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla de cierre</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-compact">
+    <ol class="refs">
+      <li>Lin, B. Y., Le Bras, R., Richardson, K., Sabharwal, A., Poovendran, R., Clark, P. y Choi, Y. (2025). ZebraLogic: On the scaling limits of LLMs for logical reasoning. <em>ICML 2025</em>, PMLR 267, 37889–37905. <a href="https://proceedings.mlr.press/v267/lin25i.html">PMLR</a> · <a href="https://arxiv.org/abs/2502.01100">arXiv</a></li>
+      <li>Yao, S. et al. (2023). Tree of thoughts: Deliberate problem solving with large language models. <em>NeurIPS 2023</em>, 11809–11822. <a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/271db9922b8d1f4dd7aaef84ed5ac703-Abstract-Conference.html">NeurIPS</a> · <a href="https://arxiv.org/abs/2305.10601">arXiv</a></li>
+      <li>Wang, X. et al. (2023). Self-consistency improves chain of thought reasoning in language models. <em>ICLR 2023</em>. <a href="https://iclr.cc/virtual/2023/poster/11718">ICLR</a> · <a href="https://arxiv.org/abs/2203.11171">arXiv</a></li>
+      <li>Snell, C., Lee, J., Xu, K. y Kumar, A. (2025). Scaling LLM test-time compute optimally can be more effective than scaling parameters for reasoning. <em>ICLR 2025</em>, 10131–10165. <a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b623663fd9b874366f3ce019fdfdd44-Abstract-Conference.html">ICLR</a> · <a href="https://arxiv.org/abs/2408.03314">arXiv</a></li>
+      <li>Guo, D., Yang, D., Zhang, H. et al. (2025). DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning. <em>Nature</em> 645, 633–638. <a href="https://doi.org/10.1038/s41586-025-09422-z">DOI</a> · acceso abierto</li>
+      <li>Documentación oficial sobre el cobro de los tokens de razonamiento, consultada el 26 de octubre de 2026: <a href="https://platform.claude.com/docs/en/about-claude/pricing">Anthropic</a> · <a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI</a> · <a href="https://ai.google.dev/gemini-api/docs/thinking">Google</a></li>
+      <li>Kambhampati, S. et al. (2024). Position: LLMs can't plan, but can help planning in LLM-Modulo frameworks. <em>ICML 2024</em>. <a href="https://proceedings.mlr.press/v235/kambhampati24a.html">PMLR</a></li>
+      <li>Radford, A. et al. (2021). Learning transferable visual models from natural language supervision. <em>ICML 2021</em>, PMLR 139, 8748–8763. <a href="https://proceedings.mlr.press/v139/radford21a.html">PMLR</a> · <a href="https://arxiv.org/abs/2103.00020">arXiv</a></li>
+    </ol>
+  </div>
+  <p class="navlinks"><a href="charla2_verificar_con_logica.html">← Charla intermedia</a><a href="index.html">Volver a la agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 3 · Charla de cierre · Cuándo confiar en cada uno</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>
