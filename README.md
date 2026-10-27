@@ -11,6 +11,7 @@ Las diapositivas se abren en el navegador desde **https://ecuartasmo-un.github.i
 - [Sesión 1](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-1/): IA, sistemas expertos, agentes y sistemas multiagente
 - [Sesión 2](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-2/): planificación automática, LLMs y planificación, plan.md
 - [Sesión 3](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-3/): razonamiento automático: solvers, restricciones, lógica y razonamiento en LLMs
+- [Sesión 4](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-4/): visión por computador: procesamiento digital de imágenes, CLIP, YOLO y LLMs multimodales
 
 También funcionan sin internet: descargue el repositorio y abra `sesion-N/index.html` con doble clic. Use las flechas del teclado para avanzar.
 
@@ -28,6 +29,7 @@ También funcionan sin internet: descargue el repositorio y abra `sesion-N/index
 | [`sesion-3/`](sesion-3/) | Diapositivas de la sesión 3 (con el club de lectura), trabajo independiente y ejemplos de CP-SAT y Z3 |
 | [`sesion-3/labs/lab_3A_vibe_coding.md`](sesion-3/labs/lab_3A_vibe_coding.md) | Laboratorio 3A · Vibe coding: la logística de una empresa de aseo. Un archivo con el problema y el prompt para su asistente de IA |
 | [`sesion-3/labs/lab_3B_politicas_z3/`](sesion-3/labs/lab_3B_politicas_z3/) | Laboratorio 3B · Verificar una política de negocio con Z3 |
+| [`sesion-4/`](sesion-4/) | Diapositivas de la sesión 4 (con el club de lectura), trabajo independiente y ejemplos con OpenCV. La charla inicial rediseña la clase «Procesamiento Digital de Imágenes» (2007); con la flecha ↓ se ve el contenido completo del original |
 
 Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación está dentro del notebook. Se trabajan en parejas, en VS Code, en su propio computador. Cada uno tiene su propio `README.md` con el tiempo, el modo de trabajo y lo que se entrega. La excepción es el 3A: un solo archivo Markdown con el problema y el prompt, que se usa con su asistente de IA (Claude o Gemini), en VS Code o en el navegador.
 

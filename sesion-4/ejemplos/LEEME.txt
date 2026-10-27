@@ -1,0 +1,27 @@
+Ejemplos de la Sesión 4 · Material para el docente
+====================================================
+
+Estos scripts generan las imágenes de las diapositivas que muestran el pipeline clásico.
+Parten de una fotografía del caso 1 de Clase2.ppt: el patrón de calibración de la
+diapositiva 27 (assets/img/c2_d027_d.jpg), con 60 cuadros negros sobre papel blanco.
+
+Requisitos: Python 3.12 o 3.13 con opencv-python, numpy y matplotlib.
+  python -m pip install opencv-python numpy matplotlib
+
+pipeline_clasico.py
+  Charla inicial, diapositivas «Una imagen es una tabla de números» e «Histograma, umbral y morfología».
+  gris → histograma → umbral de Otsu → apertura morfológica → componentes conectados → conteo.
+  Resultado esperado: umbral 87 y 62 regiones contadas. El patrón tiene 60 cuadros: las dos regiones
+  de más son las franjas negras de la base de madera. Es la razón para comparar con un conteo a mano.
+  El área de los cuadros va de unos 2470 a unos 5210 píxeles: en píxeles, la perspectiva cambia la medida.
+
+iluminacion.py
+  Charla de cierre, diapositiva «Cuando cambia la luz».
+  Oscurece la imagen con un gradiente (del 22 % a la izquierda al 100 % a la derecha) y compara:
+  - umbral global de Otsu: 36 cuadros contados de 60;
+  - umbral adaptativo: 59 regiones, con dos cuadros perdidos en el borde izquierdo y una franja de la base.
+
+Uso, desde esta carpeta:
+  python pipeline_clasico.py
+  python iluminacion.py
+Las imágenes se escriben en ../assets/img/ con el prefijo ej_.

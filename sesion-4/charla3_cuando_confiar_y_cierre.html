@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla de cierre · Cuándo confiar en lo que ve una máquina — Sesión 4 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<section data-min="1" class="title-slide">
+<div class="kicker">Sesión 4 · Unidad 4 · Charla de cierre</div>
+<h1>¿Cuándo confiar en lo que ve una máquina?</h1>
+<p class="lead muted">Límites, riesgos y una guía para decidir, y el cierre de la sesión</p>
+<p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+<p class="navlinks"><a href="charla2_del_pipeline_a_los_modelos.html">← Charla intermedia</a><a href="index.html">Agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+<aside class="notes"><p>Después del Laboratorio 4B. Ya construyeron un pipeline clásico y compararon modelos preentrenados. La pregunta de esta charla es cuándo confiar en lo que ve una máquina: dónde fallan los sistemas de visión, qué riesgos traen, y una guía para decidir qué usar en su organización. Al final, el cierre de la sesión.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Límite 1 · la adquisición</div>
+<h2>Cuando cambia la luz</h2>
+<div class="imgrow r3">
+  <figure class="figure"><img src="assets/img/ej_luz_desigual.jpg" alt="El patrón de calibración con luz desigual: el lado izquierdo muy oscuro y el derecho iluminado" width="380" height="285" class="dark" style="max-height:none;"><figcaption class="credit">La misma escena, con una lámpara a un lado (simulada).</figcaption></figure>
+  <div class="fragment"><figure class="figure"><img src="assets/img/ej_conteo_global.jpg" alt="Conteo con umbral global sobre la imagen con luz desigual: solo se marcan los cuadros del lado iluminado, 36 de 60" width="380" height="285" class="dark" style="max-height:none;"><figcaption class="credit">Umbral global: <strong>36 de 60</strong> cuadros.</figcaption></figure></div>
+  <div class="fragment"><figure class="figure"><img src="assets/img/ej_conteo_adaptativo.jpg" alt="Conteo con umbral adaptativo sobre la imagen con luz desigual: casi todos los cuadros marcados, con dos perdidos y una franja de la base" width="380" height="285" class="dark" style="max-height:none;"><figcaption class="credit">Umbral adaptativo: 59 regiones (pierde 2 cuadros y cuenta la base).</figcaption></figure></div>
+</div>
+<p class="fragment small" style="margin-top:8px">El pipeline de la mañana, con otra luz. Generado con <code>ejemplos/iluminacion.py</code>.</p>
+<aside class="notes"><p>Empiezo con el pipeline de esta mañana: el mismo patrón de calibración, ahora con una lámpara a un lado, simulada. Con el umbral global que usamos, el conteo cae de 62 a 36: todo el lado oscuro desaparece. Un umbral adaptativo, que decide píxel por píxel según su vecindario, recupera casi todo: 59 regiones, aunque pierde dos cuadros y vuelve a contar la base.</p><p>Es la conclusión de los casos de la charla inicial: la iluminación influye de forma determinante. Un pipeline clásico es tan bueno como el control que se tiene sobre la adquisición.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Un caso real · Cenicafé</div>
+<h2>Café brocado: del laboratorio a la planta</h2>
+<div class="cols">
+  <div class="card ok"><h4>2017 · el laboratorio</h4>
+    <p>Las clasificadoras electrónicas separaban como mucho el 70 % de los granos con puntos de broca. El problema terminaba en una banda con separación a mano.</p>
+    <p class="fragment">Un pipeline clásico: cámara industrial, luz LED controlada, umbral de Otsu y una máscara que busca la perforación. <strong>Eficacia superior al 90 %.</strong></p></div>
+  <div class="card amber fragment"><h4>2025 · la planta</h4>
+    <p>La máquina se instaló en la unidad de beneficio de semillas de Cenicafé…</p>
+    <p class="fragment">…y empezó «una nueva fase de calibraciones» para <strong>reducir el efecto de la luz ambiente</strong> en el nuevo lugar.</p></div>
+</div>
+<p class="credit" style="margin-top:12px">Castrillón, Sanz y Ramos (2017), <em>Revista Cenicafé</em> 68(2), 7–19. Cenicafé, <em>Informe anual 2025</em>, «Poscosecha».</p>
+<aside class="notes"><p>Un caso real y local: Cenicafé, el centro de investigación de la Federación Nacional de Cafeteros. El problema: separar el café dañado por la broca, una plaga que perfora el grano. Las clasificadoras electrónicas de las trilladoras separaban como máximo el 70 % de los granos con puntos de broca, y el resto exigía separación manual en una banda, con alto costo de mano de obra.</p><p>En 2017 publicaron un pipeline clásico, muy parecido al del Laboratorio 4A: cámara industrial, luz LED controlada dentro de una campana, umbral de Otsu y una máscara que busca la perforación. Más del 90 % de eficacia.</p><p>Y el informe de 2025 cuenta qué pasó al llevarlo a la planta: al instalarlo en otro lugar empezó una nueva fase de calibraciones para reducir el efecto de la luz ambiente. Es exactamente la diapositiva anterior, en una operación real.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Límite 2 · el cambio de distribución</div>
+<h2>Imágenes nuevas, el mismo protocolo: de 11 a 14 puntos menos</h2>
+<svg class="diagram" viewBox="0 0 1100 420" style="max-height:390px" role="img" aria-label="Exactitud de ocho modelos en ImageNet y en un conjunto de prueba nuevo construido con el mismo protocolo: todos pierden entre 10 y 13 puntos; por ejemplo, ResNet-152 baja de 78,3 a 67,0 % y AlexNet de 56,5 a 44,0 %">
+<style>.rt{font-size:17px;fill:#e8ecf4}.rs{font-size:15px;fill:#a3adc2}</style><circle cx="250" cy="14" r="8" fill="#38bdf8"/><text x="264" y="20" class="rs">ImageNet original</text><circle cx="470" cy="14" r="8" fill="#f87171"/><text x="484" y="20" class="rs">ImageNetV2: imágenes nuevas, mismo protocolo</text><line x1="382" y1="28" x2="382" y2="360" stroke="#2a3550"/><text x="382" y="384" text-anchor="middle" class="rs">20 %</text><line x1="534" y1="28" x2="534" y2="360" stroke="#2a3550"/><text x="534" y="384" text-anchor="middle" class="rs">40 %</text><line x1="686" y1="28" x2="686" y2="360" stroke="#2a3550"/><text x="686" y="384" text-anchor="middle" class="rs">60 %</text><line x1="838" y1="28" x2="838" y2="360" stroke="#2a3550"/><text x="838" y="384" text-anchor="middle" class="rs">80 %</text><line x1="990" y1="28" x2="990" y2="360" stroke="#2a3550"/><text x="990" y="384" text-anchor="middle" class="rs">100 %</text><text x="216" y="56" text-anchor="end" class="rt">PNASNet-large</text><line x1="779" y1="50" x2="860" y2="50" stroke="#a3adc2" stroke-width="3"/><circle cx="860" cy="50" r="9" fill="#38bdf8"/><circle class="fragment" cx="779" cy="50" r="9" fill="#f87171"/><text x="876" y="56" class="rs">−10,7</text><text x="216" y="96" text-anchor="end" class="rt">NASNet-large</text><line x1="779" y1="90" x2="857" y2="90" stroke="#a3adc2" stroke-width="3"/><circle cx="857" cy="90" r="9" fill="#38bdf8"/><circle class="fragment" cx="779" cy="90" r="9" fill="#f87171"/><text x="873" y="96" class="rs">−10,3</text><text x="216" y="136" text-anchor="end" class="rt">ResNet-152</text><line x1="739" y1="130" x2="825" y2="130" stroke="#a3adc2" stroke-width="3"/><circle cx="825" cy="130" r="9" fill="#38bdf8"/><circle class="fragment" cx="739" cy="130" r="9" fill="#f87171"/><text x="841" y="136" class="rs">−11,3</text><text x="216" y="176" text-anchor="end" class="rt">Inception v3</text><line x1="732" y1="170" x2="823" y2="170" stroke="#a3adc2" stroke-width="3"/><circle cx="823" cy="170" r="9" fill="#38bdf8"/><circle class="fragment" cx="732" cy="170" r="9" fill="#f87171"/><text x="839" y="176" class="rs">−11,9</text><text x="216" y="216" text-anchor="end" class="rt">DenseNet-161</text><line x1="726" y1="210" x2="816" y2="210" stroke="#a3adc2" stroke-width="3"/><circle cx="816" cy="210" r="9" fill="#38bdf8"/><circle class="fragment" cx="726" cy="210" r="9" fill="#f87171"/><text x="832" y="216" class="rs">−11,8</text><text x="216" y="256" text-anchor="end" class="rt">VGG-19 (BN)</text><line x1="700" y1="250" x2="794" y2="250" stroke="#a3adc2" stroke-width="3"/><circle cx="794" cy="250" r="9" fill="#38bdf8"/><circle class="fragment" cx="700" cy="250" r="9" fill="#f87171"/><text x="810" y="256" class="rs">−12,3</text><text x="216" y="296" text-anchor="end" class="rt">AlexNet</text><line x1="564" y1="290" x2="659" y2="290" stroke="#a3adc2" stroke-width="3"/><circle cx="659" cy="290" r="9" fill="#38bdf8"/><circle class="fragment" cx="564" cy="290" r="9" fill="#f87171"/><text x="675" y="296" class="rs">−12,5</text><text x="216" y="336" text-anchor="end" class="rt">Fisher vectors</text><line x1="413" y1="330" x2="497" y2="330" stroke="#a3adc2" stroke-width="3"/><circle cx="497" cy="330" r="9" fill="#38bdf8"/><circle class="fragment" cx="413" cy="330" r="9" fill="#f87171"/><text x="513" y="336" class="rs">−11</text></svg>
+<p class="small muted">Recht et ál. (2019), tabla 1, exactitud top-1. Engstrom et ál. (2020) atribuyen parte de la caída a sesgos al replicar el conjunto.</p>
+<aside class="notes"><p>El cambio de distribución afecta también a los modelos aprendidos. En 2019, Recht y colegas construyeron un conjunto de prueba nuevo para ImageNet, siguiendo el mismo protocolo que el original. Los mismos modelos perdieron entre 11 y 14 puntos de exactitud: ResNet-152, por ejemplo, bajó de 78 a 67 %. Imágenes que a nosotros nos parecen iguales, para el modelo no lo son.</p><p>Un matiz honesto: un trabajo de 2020 mostró que parte de esa caída se explica por sesgos estadísticos al replicar el conjunto. Pero el mensaje práctico se mantiene: la exactitud medida en las imágenes de prueba no es la exactitud en su planta.</p></aside>
+</section>
+
+<section data-min="2" data-opcional>
+<div class="kicker">Límite 3 · correlaciones espurias</div>
+<h2>¿Qué miró el modelo?</h2>
+<figure class="figure"><img src="assets/img/zech2018_fig2.png" alt="Radiografía de tórax con un mapa de calor que muestra que la red se fija en una ficha metálica de la esquina de la imagen, no en el pulmón" width="1010" height="330" class="dark" style="max-height:none;"><figcaption class="credit">Zech et ál. (2018), <em>PLOS Medicine</em>, figura 2, <a href="https://doi.org/10.1371/journal.pmed.1002683">DOI</a>, CC BY 4.0.</figcaption></figure>
+<p class="fragment">Una red para detectar neumonía aprendió a reconocer el <strong>hospital</strong> (99,95 % de aciertos) por una ficha metálica en la esquina. En otro hospital, rindió menos.</p>
+<aside class="notes"><p>Un ejemplo de medicina, pero la lección es general. Una red para detectar neumonía en radiografías aprendió a reconocer el hospital de origen con un 99,95 % de aciertos, por señales como una ficha metálica que los técnicos ponen en la esquina. Como la proporción de neumonía era muy distinta entre hospitales, saber el hospital ayudaba a acertar. Evaluada en un hospital distinto, la red rindió menos que en los suyos.</p><p>En inspección industrial el equivalente es una etiqueta, el fondo o la marca de la máquina que tomó la foto. Opcional si el tiempo aprieta.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Límite 4 · el texto en la imagen</div>
+<h2>Una manzana con un papel que dice «iPod»</h2>
+<div class="cols c46 mid">
+  <div class="imgrow">
+    <figure class="figure"><img src="assets/img/distill_apple_blank.jpg" alt="Una manzana verde sobre una mesa" width="240" height="240" class="dark" style="max-height:none;"><figcaption class="credit">Granny Smith: <strong>85,6 %</strong></figcaption></figure>
+    <div class="fragment"><figure class="figure"><img src="assets/img/distill_apple_ipod.jpg" alt="La misma manzana con un papel pegado que dice iPod" width="240" height="240" class="dark" style="max-height:none;"><figcaption class="credit">iPod: <strong>99,7 %</strong></figcaption></figure></div>
+  </div>
+  <div>
+    <p>CLIP clasifica sin entrenamiento… y lee.</p>
+    <p class="fragment">Un papel escrito a mano cambia la etiqueta: el texto pesa más que la manzana.</p>
+    <p class="fragment small muted">Los LLMs multimodales actuales siguen siendo vulnerables a texto en la imagen (Westerhoff et ál., 2025).</p>
+  </div>
+</div>
+<p class="credit">Goh et ál. (2021), «Multimodal Neurons in Artificial Neural Networks», <a href="https://distill.pub/2021/multimodal-neurons/">Distill</a>, figura 14, CLIP RN50-4x sin entrenamiento previo, CC BY 4.0.</p>
+<aside class="notes"><p>El ataque más sencillo del mundo. Una manzana: CLIP, sin entrenamiento previo, dice Granny Smith con 85,6 %. Le pegamos un papel escrito a mano que dice iPod: ahora dice iPod con 99,7 %. CLIP aprendió de imágenes con texto, y el texto escrito en la imagen pesa más que el objeto.</p><p>Un matiz: el mismo artículo muestra que si sobre CLIP se entrena un clasificador con ejemplos, el ataque deja de funcionar en este caso. Y estudios de 2025 muestran que los LLMs multimodales actuales siguen siendo vulnerables a texto en la imagen. En inspección, una etiqueta o una marca en la pieza puede engañar al modelo.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Riesgo · sesgo en el análisis de rostros</div>
+<h2><em>Gender Shades</em>: el error no es igual para todos</h2>
+<div class="cols c64 mid">
+  <svg class="diagram" viewBox="0 0 820 330" role="img" aria-label="Error de tres sistemas comerciales al clasificar el género: en mujeres de piel oscura, 20,8 % para Microsoft, 34,5 % para Face++ y 34,7 % para IBM; en hombres de piel clara, 0,0, 0,8 y 0,3 %">
+<style>.gt{font-size:20px;fill:#e8ecf4;font-weight:700}.gv{font-size:17px;fill:#e8ecf4}.gl{font-size:16px;fill:#a3adc2}</style>
+<rect x="170" y="8" width="18" height="18" fill="#f87171"/><text x="196" y="23" class="gl">mujeres de piel oscura</text>
+<rect x="420" y="8" width="18" height="18" fill="#38bdf8"/><text x="446" y="23" class="gl">hombres de piel clara</text><text x="150" y="80" text-anchor="end" class="gt">Microsoft</text><rect x="170" y="50" width="333" height="30" rx="4" fill="#f87171"/><text x="513" y="72" class="gv">20,8 %</text><rect x="170" y="86" width="3" height="30" rx="4" fill="#38bdf8"/><text x="183" y="108" class="gv">0 %</text><text x="150" y="170" text-anchor="end" class="gt">Face++</text><rect x="170" y="140" width="552" height="30" rx="4" fill="#f87171"/><text x="732" y="162" class="gv">34,5 %</text><rect x="170" y="176" width="13" height="30" rx="4" fill="#38bdf8"/><text x="193" y="198" class="gv">0,8 %</text><text x="150" y="260" text-anchor="end" class="gt">IBM</text><rect x="170" y="230" width="555" height="30" rx="4" fill="#f87171"/><text x="735" y="252" class="gv">34,7 %</text><rect x="170" y="266" width="5" height="30" rx="4" fill="#38bdf8"/><text x="185" y="288" class="gv">0,3 %</text></svg>
+  <div>
+    <p>Tres sistemas comerciales clasificando el género de 1270 personas.</p>
+    <p class="fragment">Error de hasta <strong>34,7 %</strong> en mujeres de piel oscura; máximo <strong>0,8 %</strong> en hombres de piel clara.</p>
+    <p class="fragment small muted">Las bases de prueba usadas antes tenían de 79,6 % a 86,2 % de personas de piel clara.</p>
+  </div>
+</div>
+<p class="credit">Buolamwini y Gebru (2018), <em>PMLR</em> 81, 77–91, tabla 4 (redibujada).</p>
+<aside class="notes"><p>Un riesgo distinto: el sesgo. En 2018, Joy Buolamwini y Timnit Gebru evaluaron tres sistemas comerciales de análisis facial al clasificar el género de 1270 personas. El error en hombres de piel clara fue como máximo de 0,8 %; en mujeres de piel oscura llegó a 34,7 %. Una razón: las bases con que se evaluaban esos sistemas tenían entre 80 y 86 % de personas de piel clara.</p><p>La exactitud promedio esconde para quién falla el sistema. Por eso, al evaluar un modelo hay que mirar el error por grupos, no solo el total. Un año después, las empresas auditadas redujeron mucho esas diferencias.</p></aside>
+</section>
+
+<section data-min="2">
+<div class="kicker">Riesgo · datos personales</div>
+<h2>Rostros, menores y la Ley 1581 de 2012</h2>
+<div class="cols">
+  <div>
+    <p>Los datos <strong>biométricos</strong> son datos sensibles (art. 5): su tratamiento está prohibido salvo, entre otras, autorización explícita (art. 6).</p>
+    <p class="fragment">Los datos de <strong>niños, niñas y adolescentes</strong> tienen protección reforzada (art. 7): la Corte Constitucional (C-748/11) exige que respondan a su interés superior.</p>
+  </div>
+  <div class="fragment">
+    <div class="card amber"><h4>Para un proyecto de visión</h4><p>Finalidad clara, autorización, mínimo de datos y evaluación de impacto si el riesgo es alto (SIC, Circular Externa 002 de 2024, sobre IA).</p></div>
+    <p class="small muted" style="margin-top:10px">En 2025, la SIC multó a Mercado Libre por exigir reconocimiento facial para entrar a las cuentas.</p>
+  </div>
+</div>
+<aside class="notes"><p>Los casos 2 y 3 de la charla inicial trabajaron con fotografías de niños, en proyectos de salud y antropometría de hace casi veinte años. Hoy, en Colombia, un proyecto así tiene que cumplir la Ley 1581 de 2012. Los datos biométricos, como un rostro usado para identificar, son datos sensibles: su tratamiento está prohibido salvo excepciones como la autorización explícita. Y los datos de niños, niñas y adolescentes tienen protección reforzada: la Corte Constitucional exige que el tratamiento responda a su interés superior.</p><p>En 2024, la Superintendencia de Industria y Comercio aplicó estas reglas a la inteligencia artificial: finalidad clara, autorización, el mínimo de datos y un estudio de impacto si el riesgo es alto. Y en 2025 multó a Mercado Libre por exigir reconocimiento facial para acceder a las cuentas. El marco regulatorio general de la IA se estudia en otra unidad; aquí basta saber que una cámara que mira personas es un tratamiento de datos sensibles.</p></aside>
+</section>
+
+<section data-min="1.5" data-opcional>
+<div class="kicker">Explicabilidad</div>
+<h2>Mapas de calor: útiles, pero no prueban nada</h2>
+<div class="cols">
+  <div class="card accent"><h4>Grad-CAM</h4><p>Marca las regiones de la imagen que más pesaron en la predicción. Ayudó a descubrir que un clasificador de «médico» y «enfermera» miraba el rostro y el peinado.</p></div>
+  <div class="card amber fragment"><h4>Con cautela</h4><p>Algunos métodos de saliencia producen mapas convincentes aunque el modelo no haya aprendido nada: la inspección visual sola puede engañar.</p></div>
+</div>
+<p class="credit" style="margin-top:12px">Selvaraju et ál. (2017), ICCV; Adebayo et ál. (2018), NeurIPS.</p>
+<aside class="notes"><p>¿Cómo saber qué miró un modelo? Los mapas de calor, como Grad-CAM, marcan las regiones que más pesaron en la predicción. Con ellos se descubrió, por ejemplo, que un clasificador de médico y enfermera miraba el rostro y el peinado, porque en los datos casi todos los médicos eran hombres y casi todas las enfermeras, mujeres.</p><p>Pero con cautela: otro estudio mostró que algunos métodos producen mapas convincentes incluso con un modelo que no aprendió nada. Un mapa de calor es una pista, no una prueba. Opcional si el tiempo aprieta.</p></aside>
+</section>
+
+<section data-min="3">
+<div class="kicker">Guía de decisión</div>
+<h2>¿Qué usar para su problema de visión?</h2>
+<table class="tbl"><thead><tr><th>Si…</th><th>Pipeline clásico</th><th>Modelo preentrenado (CLIP, YOLO)</th><th>LLM multimodal</th><th>Modelo propio</th></tr></thead><tbody>
+<tr><td>controla la luz y el montaje</td><td class="hi">sí</td><td>sí</td><td>sí</td><td>sí</td></tr>
+<tr><td>no tiene ejemplos etiquetados</td><td>sí, si se puede medir</td><td class="hi">sí (CLIP)</td><td class="hi">sí</td><td>no</td></tr>
+<tr><td>tiene miles de imágenes etiquetadas</td><td>—</td><td>ajustar YOLO</td><td>—</td><td class="hi">sí (electiva)</td></tr>
+<tr><td>procesa muchas imágenes por hora</td><td class="hi">sí</td><td class="hi">sí, en el equipo</td><td>costo por imagen</td><td>sí</td></tr>
+<tr><td>debe explicar cada decisión</td><td class="hi">sí</td><td>en parte</td><td>texto a verificar</td><td>en parte</td></tr>
+<tr><td>trabaja con personas</td><td colspan="4">datos sensibles: autorización, mínimo de datos y evaluación de impacto; las imágenes no salen sin permiso</td></tr>
+</tbody></table>
+<p class="fragment" style="margin-top:10px">Siempre: <strong>medir con sus imágenes</strong> y comparar con un conteo a mano.</p>
+<aside class="notes"><p>La guía de decisión, para aplicar a su proyecto. Si controla la luz y el montaje, todo es posible, y el pipeline clásico suele bastar. Si no tiene ejemplos etiquetados, CLIP o un LLM multimodal le permiten empezar escribiendo las clases. Si tiene miles de imágenes etiquetadas, puede ajustar un detector como YOLO o entrenar un modelo propio, que es tema de la electiva. Si procesa muchas imágenes por hora, el costo por imagen de un LLM en la nube pesa, y lo que corre en el propio equipo gana. Si debe explicar cada decisión, el pipeline clásico es el más auditable. Y si trabaja con personas, son datos sensibles.</p><p>Y una regla para todos los casos: medir con sus propias imágenes, no con las del artículo, y comparar con un conteo hecho a mano.</p></aside>
+</section>
+
+<section data-min="2">
+<div class="kicker">Cierre de la sesión</div>
+<h2>Mapa de la unidad</h2>
+<svg class="diagram" viewBox="0 0 1200 330" role="img" aria-label="Mapa de la unidad: sensor, imagen, procesamiento, análisis, reconocimiento y decisión, con las técnicas de cada etapa">
+<defs><marker id="mu" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker>
+<style>.mt{font-size:21px;fill:#e8ecf4;font-weight:700}.ms{font-size:15px;fill:#a3adc2}</style></defs>
+<g><rect x="10" y="30" width="180" height="70" rx="12" fill="rgba(23,32,51,.92)" stroke="#38bdf8" stroke-width="2"/><text x="100" y="72" text-anchor="middle" class="mt">Sensor</text><line x1="192" y1="65" x2="206" y2="65" stroke="#f5b942" stroke-width="3" marker-end="url(#mu)"/><text x="100" y="135" text-anchor="middle" class="ms">CCD o CMOS</text><text x="100" y="159" text-anchor="middle" class="ms">luz y montaje</text><text x="100" y="183" text-anchor="middle" class="ms">filtro de Bayer</text></g><g class="fragment"><rect x="210" y="30" width="180" height="70" rx="12" fill="rgba(23,32,51,.92)" stroke="#38bdf8" stroke-width="2"/><text x="300" y="72" text-anchor="middle" class="mt">Imagen</text><line x1="392" y1="65" x2="406" y2="65" stroke="#f5b942" stroke-width="3" marker-end="url(#mu)"/><text x="300" y="135" text-anchor="middle" class="ms">tabla de números</text><text x="300" y="159" text-anchor="middle" class="ms">un canal por color</text></g><g class="fragment"><rect x="410" y="30" width="180" height="70" rx="12" fill="rgba(23,32,51,.92)" stroke="#f5b942" stroke-width="2"/><text x="500" y="72" text-anchor="middle" class="mt">Procesamiento</text><line x1="592" y1="65" x2="606" y2="65" stroke="#f5b942" stroke-width="3" marker-end="url(#mu)"/><text x="500" y="135" text-anchor="middle" class="ms">histograma, filtros</text><text x="500" y="159" text-anchor="middle" class="ms">ecualización</text></g><g class="fragment"><rect x="610" y="30" width="180" height="70" rx="12" fill="rgba(23,32,51,.92)" stroke="#f5b942" stroke-width="2"/><text x="700" y="72" text-anchor="middle" class="mt">Análisis</text><line x1="792" y1="65" x2="806" y2="65" stroke="#f5b942" stroke-width="3" marker-end="url(#mu)"/><text x="700" y="135" text-anchor="middle" class="ms">umbral, morfología</text><text x="700" y="159" text-anchor="middle" class="ms">segmentación</text><text x="700" y="183" text-anchor="middle" class="ms">medición</text></g><g class="fragment"><rect x="810" y="30" width="180" height="70" rx="12" fill="rgba(23,32,51,.92)" stroke="#a78bfa" stroke-width="2"/><text x="900" y="72" text-anchor="middle" class="mt">Reconocimiento</text><line x1="992" y1="65" x2="1006" y2="65" stroke="#f5b942" stroke-width="3" marker-end="url(#mu)"/><text x="900" y="135" text-anchor="middle" class="ms">características</text><text x="900" y="159" text-anchor="middle" class="ms">redes convolucionales</text><text x="900" y="183" text-anchor="middle" class="ms">CLIP, YOLO, LLM</text></g><g class="fragment"><rect x="1010" y="30" width="180" height="70" rx="12" fill="rgba(23,32,51,.92)" stroke="#4ade80" stroke-width="2"/><text x="1100" y="72" text-anchor="middle" class="mt">Decisión</text><text x="1100" y="135" text-anchor="middle" class="ms">guía de decisión</text><text x="1100" y="159" text-anchor="middle" class="ms">verificar contra</text><text x="1100" y="183" text-anchor="middle" class="ms">un conteo a mano</text></g>
+<text x="600" y="300" text-anchor="middle" class="ms">El mismo camino de la primera diapositiva de la sesión, ahora con sus técnicas.</text>
+</svg>
+<aside class="notes"><p>El mapa de la unidad: del sensor a la decisión. El sensor y la luz; la imagen como tabla de números; el procesamiento con histogramas y filtros; el análisis con umbral, morfología, segmentación y medición; el reconocimiento con características diseñadas, redes, CLIP, YOLO o un LLM; y la decisión, que siempre se verifica contra la realidad.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Proyecto integrador · paso de la unidad</div>
+<h2>¿Su caso tiene un componente perceptual?</h2>
+<div class="cols">
+  <ul>
+    <li>¿Hay <strong>imágenes</strong>, documentos escaneados o sensores en su caso?</li>
+    <li class="fragment">¿Qué <strong>etapa</strong> del pipeline o qué <strong>modelo</strong> usaría, según la guía de decisión?</li>
+    <li class="fragment">¿Qué restricciones de <strong>datos</strong> y de <strong>privacidad</strong> tiene?</li>
+  </ul>
+  <div class="card amber fragment"><h4>En casa · unos 60 min</h4><p>Actualice el plan.md del equipo y revíselo con la lista de chequeo (J.6). Si su caso no tiene un componente perceptual, explique por qué.</p><p><strong>Entrega:</strong> al inicio de la semana 3.</p></div>
+</div>
+<aside class="notes"><p>El paso del proyecto integrador para esta unidad. En casa, cada equipo se pregunta si su caso tiene un componente perceptual: imágenes, documentos escaneados o sensores. Si lo tiene, qué etapa del pipeline o qué modelo usaría, con la guía de decisión, y qué restricciones de datos y de privacidad tiene. Si no lo tiene, que lo expliquen: también es una respuesta válida.</p><p>Actualizan el plan.md del equipo y lo revisan con la lista de chequeo J.6. La entrega es al inicio de la semana 3.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Trabajo independiente</div>
+<h2>Dos trabajos, sobre su organización</h2>
+<div class="cols">
+  <div class="card"><h4>TI-1 · Diseñe una inspección visual</h4><p>Fotografíe un proceso de su organización, diseñe su pipeline por etapas y pruébelo en el notebook del Laboratorio 4A. Unos 70 min.</p></div>
+  <div class="card"><h4>TI-2 · ¿Ven lo mismo CLIP y un LLM?</h4><p>Clasifique de 10 a 20 imágenes propias con CLIP y con un LLM multimodal, y compare aciertos, errores y costo. Unos 70 min.</p></div>
+</div>
+<p style="margin-top:14px">Sin personas ni datos personales en las imágenes. Entrega al inicio de la semana 3. Detalles en <code>trabajo_independiente.md</code>.</p>
+<aside class="notes"><p>Dos trabajos independientes, los dos sobre su organización y sin escribir código. En el primero diseñan una inspección visual: fotografían un proceso, diseñan el pipeline por etapas y lo prueban con sus fotos en el notebook del Laboratorio 4A. En el segundo clasifican de 10 a 20 imágenes propias con CLIP y con un LLM multimodal, y comparan aciertos, errores y costo.</p><p>Una regla: sus imágenes no deben mostrar personas ni datos personales. La entrega es al inicio de la semana 3.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Próxima sesión · Unidad 5</div>
+<h2>De usar redes preentrenadas a entender cómo aprenden</h2>
+<div class="cols c64 mid">
+  <div><p><strong>Lectura de la sesión 5:</strong> Alammar, J. (2018). <a href="https://jalammar.github.io/illustrated-transformer/"><em>The Illustrated Transformer</em></a>.</p>
+  <p class="fragment">Hoy usamos CLIP, YOLO y LLMs sin abrirlos. La Unidad 5 abre la caja: neuronas, entrenamiento y la arquitectura transformer.</p></div>
+  <div class="card violet fragment"><h4>A continuación</h4><p>Club de lectura: el artículo de CLIP.</p></div>
+</div>
+<aside class="notes"><p>La lectura de la sesión 5 es The Illustrated Transformer, de Jay Alammar: una explicación visual de la arquitectura que está detrás de los LLMs y también de CLIP.</p><p>El puente: hoy usamos redes preentrenadas sin abrirlas. La Unidad 5 abre la caja: cómo es una neurona artificial, cómo aprende una red y cómo funciona un transformer.</p></aside>
+</section>
+
+<section data-min="0.5" class="transition-slide">
+<div class="kicker amber">A continuación · 15 min</div>
+<h1 style="font-size:60px">Club de lectura</h1>
+<p class="lead">Radford et ál. (2021), <em>Learning Transferable Visual Models From Natural Language Supervision</em> (CLIP).</p>
+<p><a href="club_lectura.html">Ir al club de lectura →</a></p>
+<aside class="notes"><p>Pasamos al club de lectura, que cierra la sesión.</p></aside>
+</section>
+
+<section data-min="0">
+<div class="kicker">Referencias de la charla de cierre</div>
+<h2>Para profundizar</h2>
+<div class="refs-tight"><ol class="refs"><li>Recht, B., Roelofs, R., Schmidt, L. y Shankar, V. (2019). Do ImageNet classifiers generalize to ImageNet? <em>ICML 2019</em>, PMLR 97, 5389–5400. <a href="https://proceedings.mlr.press/v97/recht19a.html">PMLR</a> · Engstrom, L. et ál. (2020). <a href="https://proceedings.mlr.press/v119/engstrom20a.html">Identifying statistical bias in dataset replication</a>, <em>ICML 2020</em></li><li>Castrillón, Sanz y Ramos (2017). Visión artificial para identificar café lavado afectado por la broca. <em>Revista Cenicafé</em> 68(2), 7–19. <a href="https://biblioteca.cenicafe.org/bitstream/10778/1081/1/arc068%2802%297-19.pdf">PDF</a> · Cenicafé (2025). <a href="https://publicaciones.cenicafe.org/index.php/infanual/article/view/4892">Informe anual 2025, Poscosecha</a></li><li>Zech, J. R. et ál. (2018). Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs. <em>PLOS Medicine</em> 15(11), e1002683. <a href="https://doi.org/10.1371/journal.pmed.1002683">DOI</a></li><li>Goh, G. et ál. (2021). Multimodal neurons in artificial neural networks. <em>Distill</em>. <a href="https://distill.pub/2021/multimodal-neurons/">distill.pub</a> · Westerhoff, J. et ál. (2025). <a href="https://arxiv.org/abs/2504.04893">SCAM: a real-world typographic robustness evaluation</a></li><li>Buolamwini, J. y Gebru, T. (2018). Gender shades: intersectional accuracy disparities in commercial gender classification. <em>PMLR</em> 81, 77–91. <a href="https://proceedings.mlr.press/v81/buolamwini18a.html">PMLR</a> · Raji, I. D. y Buolamwini, J. (2019). <a href="https://dspace.mit.edu/handle/1721.1/123456">Actionable auditing</a>, AIES</li><li>Congreso de Colombia (2012). Ley Estatutaria 1581, protección de datos personales. <a href="http://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html">Secretaría del Senado</a> · SIC (2024). <a href="https://sedeelectronica.sic.gov.co/sites/default/files/normativa/Circular%20Externa%20No.%20002%20del%2021%20de%20agosto%20de%202024.pdf">Circular Externa 002</a> · SIC (2025). <a href="https://sedeelectronica.sic.gov.co/noticias/214-millones-de-multa-mercado-libre-por-exigir-sus-usuarios-reconocimiento-facial-para-acceder-sus-cuentas">Multa a Mercado Libre</a></li><li>Selvaraju, R. R. et ál. (2017). Grad-CAM: visual explanations from deep networks via gradient-based localization. <em>ICCV 2017</em>. <a href="https://openaccess.thecvf.com/content_iccv_2017/html/Selvaraju_Grad-CAM_Visual_Explanations_ICCV_2017_paper.html">CVF</a> · Adebayo, J. et ál. (2018). <a href="https://proceedings.neurips.cc/paper/2018/hash/294a8ed24b1ad22ec2e7efea049b8737-Abstract.html">Sanity checks for saliency maps</a>, <em>NeurIPS</em></li><li>Alammar, J. (2018). <em>The Illustrated Transformer</em>. <a href="https://jalammar.github.io/illustrated-transformer/">jalammar.github.io</a></li></ol></div>
+<p class="navlinks"><a href="charla2_del_pipeline_a_los_modelos.html">← Charla intermedia</a><a href="index.html">Volver a la agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+<aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 4 · Charla de cierre · Cuándo confiar</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

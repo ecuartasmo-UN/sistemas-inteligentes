@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla inicial · Procesamiento digital de imágenes — Sesión 4 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<section data-min="0.5" class="title-slide">
+<div class="kicker">Sesión 4 · Unidad 4 · Charla inicial</div>
+<h1>Procesamiento digital de imágenes</h1>
+<p class="lead muted">Del sensor a la interpretación: cómo ve una máquina</p>
+<p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+<p class="meta" style="margin-top:6px">Rediseño de la clase de Ernesto Cuartas Morales, <em>Curso Dirigido de Implementación</em> (2007). Debajo de cada bloque, con la flecha ↓, está el detalle completo del original.</p>
+<p class="navlinks"><a href="index.html">Agenda</a><a href="charla2_del_pipeline_a_los_modelos.html">Charla intermedia →</a></p>
+<aside class="notes"><p>Bienvenida a la Unidad 4, sobre visión por computador. Esta charla es el rediseño de una clase que preparé hace años, con los mismos contenidos: cómo vemos las personas, cómo forma una cámara la imagen, cuáles son las etapas del procesamiento y cinco casos de investigación hechos aquí en Manizales.</p><p>La presentación tiene dos dimensiones. Hacia la derecha va el recorrido de clase, de 30 minutos. Hacia abajo, en cada bloque, está el detalle completo del original: ecuaciones, pasos y resultados de cada caso. No lo recorremos en clase; queda como material de consulta.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">La pregunta de la unidad</div>
+<h2>¿Cómo percibe una máquina?</h2>
+<svg class="diagram" viewBox="0 0 1200 170" role="img" aria-label="Del sensor al percepto: la luz llega a un sensor, que la convierte en números; el procesamiento los transforma, el análisis extrae lo que importa, la interpretación les da significado y el sistema decide">
+  <defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker>
+  <style>.fb{fill:rgba(23,32,51,.9);stroke:#2a3550;stroke-width:2}.ft{font-size:22px;fill:#e8ecf4;font-weight:700}.fs{font-size:16px;fill:#a3adc2}</style></defs>
+  <g class="fragment" data-fragment-index="1"><rect class="fb" x="0" y="20" width="170" height="110" rx="12"/><text x="85" y="66" text-anchor="middle" class="ft">Luz</text><text x="85" y="94" text-anchor="middle" class="fs">la escena</text></g>
+  <g class="fragment" data-fragment-index="1"><line x1="174" y1="75" x2="200" y2="75" stroke="#f5b942" stroke-width="3" marker-end="url(#fl)"/><rect class="fb" x="206" y="20" width="170" height="110" rx="12" style="stroke:#38bdf8"/><text x="291" y="66" text-anchor="middle" class="ft">Sensor</text><text x="291" y="94" text-anchor="middle" class="fs">fotones → carga</text></g>
+  <g class="fragment" data-fragment-index="2"><line x1="380" y1="75" x2="406" y2="75" stroke="#f5b942" stroke-width="3" marker-end="url(#fl)"/><rect class="fb" x="412" y="20" width="170" height="110" rx="12" style="stroke:#38bdf8"/><text x="497" y="66" text-anchor="middle" class="ft">Números</text><text x="497" y="94" text-anchor="middle" class="fs">la imagen digital</text></g>
+  <g class="fragment" data-fragment-index="3"><line x1="586" y1="75" x2="612" y2="75" stroke="#f5b942" stroke-width="3" marker-end="url(#fl)"/><rect class="fb" x="618" y="20" width="170" height="110" rx="12" style="stroke:#f5b942"/><text x="703" y="66" text-anchor="middle" class="ft">Procesar</text><text x="703" y="94" text-anchor="middle" class="fs">mejorar, segmentar</text></g>
+  <g class="fragment" data-fragment-index="4"><line x1="792" y1="75" x2="818" y2="75" stroke="#f5b942" stroke-width="3" marker-end="url(#fl)"/><rect class="fb" x="824" y="20" width="170" height="110" rx="12" style="stroke:#a78bfa"/><text x="909" y="66" text-anchor="middle" class="ft">Interpretar</text><text x="909" y="94" text-anchor="middle" class="fs">qué hay y cuánto</text></g>
+  <g class="fragment" data-fragment-index="5"><line x1="998" y1="75" x2="1024" y2="75" stroke="#f5b942" stroke-width="3" marker-end="url(#fl)"/><rect class="fb" x="1030" y="20" width="170" height="110" rx="12" style="stroke:#4ade80"/><text x="1115" y="66" text-anchor="middle" class="ft">Decidir</text><text x="1115" y="94" text-anchor="middle" class="fs">aceptar, rechazar</text></g>
+  <text x="600" y="162" text-anchor="middle" class="fs">del sensor al percepto: el camino de esta charla</text>
+</svg>
+<svg class="diagram" viewBox="0 0 1200 96" role="img" aria-label="Agenda de la sesión: charla inicial 30 minutos, Laboratorio 4A de procesamiento clásico 60, pausa 15, charla intermedia 30, Laboratorio 4B de modelos preentrenados 60, charla de cierre 30 y club de lectura 15" style="margin-top:18px">
+    <defs><style>.ag{font-size:17px;fill:#e8ecf4;font-weight:600}.agm{font-size:15px;fill:#a3adc2}</style></defs>
+    <rect x="0" y="8" width="148" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="74" y="36" text-anchor="middle" class="ag">Charla inicial</text>
+    <rect x="152" y="8" width="296" height="44" rx="8" fill="rgba(245,185,66,.18)" stroke="#f5b942"/><text x="300" y="36" text-anchor="middle" class="ag">Laboratorio 4A · pipeline clásico</text>
+    <rect x="452" y="8" width="71" height="44" rx="8" fill="rgba(163,173,194,.10)" stroke="#2a3550"/><text x="487" y="36" text-anchor="middle" class="agm">pausa</text>
+    <rect x="527" y="8" width="146" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="600" y="36" text-anchor="middle" class="ag">Charla intermedia</text>
+    <rect x="677" y="8" width="296" height="44" rx="8" fill="rgba(245,185,66,.18)" stroke="#f5b942"/><text x="825" y="36" text-anchor="middle" class="ag">Laboratorio 4B · preentrenados</text>
+    <rect x="977" y="8" width="146" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="1050" y="36" text-anchor="middle" class="ag">Cierre</text>
+    <rect x="1127" y="8" width="73" height="44" rx="8" fill="rgba(167,139,250,.2)" stroke="#a78bfa"/><text x="1163" y="36" text-anchor="middle" class="ag">Club</text>
+    <text x="0" y="80" class="agm">0:00</text><text x="152" y="80" class="agm">0:30</text><text x="452" y="80" class="agm">1:30</text><text x="527" y="80" class="agm">1:45</text><text x="677" y="80" class="agm">2:15</text><text x="977" y="80" class="agm">3:15</text><text x="1127" y="80" class="agm">3:45</text>
+  </svg>
+<aside class="notes"><p>La pregunta de la unidad: ¿cómo percibe una máquina? Las sesiones anteriores razonaban sobre reglas y datos que alguien ya había escrito. Ahora el dato es una imagen: hay que pasar de la luz a una decisión. El camino tiene seis pasos: la luz de la escena, el sensor que la convierte en carga eléctrica, los números de la imagen digital, el procesamiento, la interpretación y la decisión, por ejemplo aceptar o rechazar una pieza.</p><p>La agenda: esta charla y el Laboratorio 4A, con un pipeline clásico de inspección; después de la pausa, la charla intermedia sobre modelos preentrenados y el Laboratorio 4B; al final, la charla de cierre y el club de lectura sobre CLIP.</p></aside>
+</section>
+
+<section>
+<section data-min="1.5">
+<div class="kicker">Percepción · el modelo biológico</div>
+<h2>El sistema visual humano</h2>
+<div class="cols c64 mid">
+  <figure class="figure"><img src="assets/img/commons_ojo_es.jpg" alt="Corte esquemático del ojo humano rotulado en español: córnea, pupila, iris, cristalino, humor vítreo, retina, mácula, fóvea, disco óptico y nervio óptico" width="450" height="440" style="max-height:none;"><figcaption class="credit">Delta G y Jmarchn, «Schematic diagram of the human eye», <a href="https://commons.wikimedia.org/wiki/File:Schematic_diagram_of_the_human_eye-es.svg">Wikimedia Commons</a>, CC BY-SA 3.0.</figcaption></figure>
+  <div>
+    <p>La <strong>retina</strong> convierte la luz en señales nerviosas.</p>
+    <p class="fragment">Solo la <strong>fóvea</strong>, en el centro, ve con detalle.</p>
+    <p class="fragment">El cerebro <strong>reconstruye</strong> la escena: lo que «vemos» es una interpretación.</p>
+    <p class="godown">Detalle: la retina y la fóvea</p>
+  </div>
+</div>
+<aside class="notes"><p>Empezamos por el sistema que queremos imitar. La retina es una capa de células nerviosas con receptores sensibles a la luz. La claridad no es pareja: solo la fóvea, una región pequeña en el centro, ve con detalle; el resto de la escena el cerebro lo completa.</p><p>La idea que nos llevamos: ver no es copiar la escena, es interpretarla. Una máquina también tendrá que interpretar, y sus errores, como los nuestros, dependerán de qué supone sobre el mundo.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 3</div><div class="kicker">Sistema de visión humano</div><h3>El ojo humano</h3>
+<div class="cols c64 mid">
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Corte del ojo humano con sus partes rotuladas: córnea, cristalino, iris, retina, fóvea, nervio óptico y vasos sanguíneos</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 3.</figcaption></figure>
+<p class="dense">El esquema del ojo de la diapositiva 3 del original. En el recorrido de clase se usa un esquema equivalente, rotulado en español y con licencia libre.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 3 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 4</div><div class="kicker">Sistema de visión humano</div><h3>La retina y la fóvea</h3>
+<div class="cols c64 mid"><div class="dense"><p>La retina es una capa compleja compuesta sobre todo por células nerviosas. Las células receptoras sensibles a la luz se encuentran en su superficie exterior detrás de una capa de tejido pigmentado.</p><p>Debido a la estructura nerviosa de la retina, los ojos ven con una claridad mayor sólo en la región de la fóvea.</p><p>La reconstrucción generada por el cerebro de una imagen capturada por los lentes oculares es una proyección residual del entorno en la cual la información solo se encuentra detallada en el centro de visión.</p></div>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Esquema del enfoque normal del ojo: los rayos de luz convergen sobre la retina</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 4.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 4 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1.5">
+<div class="kicker">Percepción · interpretar no es medir</div>
+<h2>La percepción interpreta</h2>
+<div class="illus"><div class="card"><svg viewBox="0 0 200 200" role="img" aria-label="Ilusión de Müller-Lyer: dos segmentos horizontales iguales, uno con puntas de flecha hacia adentro y otro hacia afuera"><g stroke="#e8ecf4" stroke-width="3" fill="none"><line x1="40" y1="60" x2="160" y2="60"/><polyline points="58,42 40,60 58,78"/><polyline points="142,42 160,60 142,78"/><line x1="40" y1="140" x2="160" y2="140"/><polyline points="22,122 40,140 22,158"/><polyline points="178,122 160,140 178,158"/></g></svg><div class="ans fragment">Müller-Lyer: los dos segmentos miden lo mismo</div></div><div class="card"><svg viewBox="0 0 200 200" role="img" aria-label="Ilusión de Zöllner: cuatro líneas verticales paralelas cruzadas por trazos cortos inclinados en direcciones alternas"><g stroke="#e8ecf4" stroke-width="3"><line x1="30" y1="20" x2="30" y2="180"/><line x1="70" y1="20" x2="70" y2="180"/><line x1="110" y1="20" x2="110" y2="180"/><line x1="150" y1="20" x2="150" y2="180"/><line x1="20" y1="30" x2="40" y2="42" stroke-width="2"/><line x1="20" y1="54" x2="40" y2="66" stroke-width="2"/><line x1="20" y1="78" x2="40" y2="90" stroke-width="2"/><line x1="20" y1="102" x2="40" y2="114" stroke-width="2"/><line x1="20" y1="126" x2="40" y2="138" stroke-width="2"/><line x1="20" y1="150" x2="40" y2="162" stroke-width="2"/><line x1="60" y1="42" x2="80" y2="30" stroke-width="2"/><line x1="60" y1="66" x2="80" y2="54" stroke-width="2"/><line x1="60" y1="90" x2="80" y2="78" stroke-width="2"/><line x1="60" y1="114" x2="80" y2="102" stroke-width="2"/><line x1="60" y1="138" x2="80" y2="126" stroke-width="2"/><line x1="60" y1="162" x2="80" y2="150" stroke-width="2"/><line x1="100" y1="30" x2="120" y2="42" stroke-width="2"/><line x1="100" y1="54" x2="120" y2="66" stroke-width="2"/><line x1="100" y1="78" x2="120" y2="90" stroke-width="2"/><line x1="100" y1="102" x2="120" y2="114" stroke-width="2"/><line x1="100" y1="126" x2="120" y2="138" stroke-width="2"/><line x1="100" y1="150" x2="120" y2="162" stroke-width="2"/><line x1="140" y1="42" x2="160" y2="30" stroke-width="2"/><line x1="140" y1="66" x2="160" y2="54" stroke-width="2"/><line x1="140" y1="90" x2="160" y2="78" stroke-width="2"/><line x1="140" y1="114" x2="160" y2="102" stroke-width="2"/><line x1="140" y1="138" x2="160" y2="126" stroke-width="2"/><line x1="140" y1="162" x2="160" y2="150" stroke-width="2"/></g></svg><div class="ans fragment">Zöllner: las líneas largas son paralelas</div></div><div class="card"><svg viewBox="0 0 200 200" role="img" aria-label="Triángulo de Kanizsa: tres círculos con una muesca que sugieren un triángulo que no está dibujado"><g fill="#e8ecf4"><path d="M100,22 m-26,0 a26,26 0 1,0 52,0 a26,26 0 1,0 -52,0" /><path d="M38,150 m-26,0 a26,26 0 1,0 52,0 a26,26 0 1,0 -52,0"/><path d="M162,150 m-26,0 a26,26 0 1,0 52,0 a26,26 0 1,0 -52,0"/></g><polygon points="100,22 38,150 162,150" fill="#0f1626"/></svg><div class="ans fragment">Kanizsa: no hay ningún triángulo dibujado</div></div><div class="card"><svg viewBox="0 0 200 200" role="img" aria-label="Contraste simultáneo: dos cuadrados del mismo gris, uno sobre fondo oscuro y otro sobre fondo claro"><rect x="10" y="40" width="85" height="120" fill="#20242c"/><rect x="105" y="40" width="85" height="120" fill="#e8ecf4"/><rect x="35" y="82" width="36" height="36" fill="#7a7f8a"/><rect x="130" y="82" width="36" height="36" fill="#7a7f8a"/></svg><div class="ans fragment">Contraste simultáneo: los dos cuadrados tienen el mismo gris</div></div></div>
+<p class="godown">Detalle: ¿es la misma figura?</p>
+<aside class="notes"><p>Cuatro ilusiones clásicas, las mismas del original, redibujadas. Las muestro primero sin explicación y después aparece qué está pasando.</p><p>Müller-Lyer: los segmentos miden lo mismo; las puntas cambian lo que creemos ver. Zöllner: las líneas son paralelas. Kanizsa: no hay ningún triángulo dibujado, el cerebro lo completa. Contraste simultáneo: el gris es el mismo; el fondo cambia cómo lo percibimos.</p><p>Para una máquina la lección es doble: medir píxeles no es interpretar, y el contexto, como el fondo o la iluminación, cambia lo que un sistema cree ver.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 5</div><div class="kicker">Sistema de visión humano</div><h3>¿Es la misma figura?</h3>
+<div class="cols c64 mid">
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Nueve figuras tridimensionales hechas de cubos, vistas en distintas rotaciones; algunas son la misma figura girada y otras su imagen especular</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 5.</figcaption></figure>
+<div class="dense"><p>Para decidir si dos de estas figuras son la misma, la mente las «gira»: es la rotación mental que estudiaron Shepard y Metzler (1971).</p><p>Una máquina necesita, igual, una representación que no cambie con la rotación: los momentos invariantes del caso 3 son un ejemplo.</p></div></div>
+<aside class="notes"><p>Diapositiva 5 del original: figuras de cubos en distintas rotaciones. La pregunta del original era «¿es la misma figura?».</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 6</div><div class="kicker">Sistema de visión humano</div><h3>Las ilusiones del original</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ilusión de Müller-Lyer, en el original</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>a</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ilusión de Zöllner, en el original</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>b</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Triángulo de Kanizsa, en el original</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>c</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Contraste simultáneo, en el original</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>d</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 6. En el recorrido de clase están redibujadas en SVG.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 6 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1.5" data-opcional>
+<div class="kicker">Visión artificial · visión aumentada</div>
+<h2>Ver lo que el ojo no ve</h2>
+<div class="imgrow r3">
+  <figure class="figure"><img src="assets/img/nasa_olympus_mons.jpg" alt="El Monte Olimpo de Marte visto desde arriba: un volcán enorme con su caldera en el centro y un acantilado en el borde" width="322" height="300" class="dark" style="max-height:none;"><figcaption class="credit">Monte Olimpo, Marte: mosaico de imágenes del orbitador Viking. NASA, <a href="https://commons.wikimedia.org/wiki/File:Olympus_Mons_alt.jpg">Wikimedia Commons</a>, dominio público.</figcaption></figure>
+  <figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Reconstrucción tridimensional de una superficie obtenida a partir de ultrasonido</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Reconstrucción de superficies a partir de un sonograma. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 7.</figcaption></figure>
+  <figure class="figure"><img src="assets/img/wellcome_difraccion_oro.jpg" alt="Placa fotográfica con anillos concéntricos oscuros: el patrón de difracción de electrones en una lámina de oro" width="296" height="300" class="dark" style="max-height:none;"><figcaption class="credit">Difracción de electrones en oro batido. Fotografía de J. J. Trillat, Wellcome Collection, <a href="https://commons.wikimedia.org/wiki/File:Diffraction_of_electrons_on_microcrystallitic_crystals_or_po_Wellcome_V0018969ETR.jpg">Wikimedia Commons</a>, CC BY 4.0.</figcaption></figure>
+</div>
+<p class="fragment">Una máquina puede «ver» en escalas, distancias y señales que el ojo no alcanza.</p>
+<aside class="notes"><p>La visión artificial no se limita a imitar el ojo: también lo amplía. A la izquierda, una montaña de otro planeta fotografiada desde órbita; en el centro, una superficie reconstruida a partir de una señal que no es luz visible; a la derecha, un patrón de difracción que revela la estructura de la materia.</p><p>Si el tiempo aprieta, esta diapositiva se puede saltar: amplía la idea, pero no prepara el laboratorio.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 7</div><div class="kicker">Visión artificial</div><h3>Visión aumentada, en el original</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>El Monte Olimpo de Marte visto desde órbita, con el borde del planeta y el Sol al fondo</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Monte Olimpo, Marte</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Patrón de difracción de electrones de oro: anillos concéntricos brillantes sobre fondo oscuro</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Difracción de un átomo de oro</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 7. En el recorrido de clase se usan imágenes equivalentes con licencia libre.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 7 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="2">
+<div class="kicker">Visión artificial · fotografía digital</div>
+<h2>Del fotón al número: el sensor CCD</h2>
+<div class="cols c46 mid">
+  <figure class="figure"><img src="assets/img/commons_ccd_nasm.jpg" alt="Un chip CCD cuadrado de silicio montado sobre una placa con terminales dorados, dentro de su estuche" width="480" height="360" class="dark" style="max-height:none;"><figcaption class="credit">Un sensor CCD. Smithsonian National Air and Space Museum, vía NSF NOIRLab, <a href="https://commons.wikimedia.org/wiki/File:Charge-Coupled_Device_(NASM-A20000697000cp02-CC).jpg">Wikimedia Commons</a>, CC BY 4.0.</figcaption></figure>
+  <div>
+    <p>Un <strong>fotón</strong> libera <strong>electrones</strong> en el silicio: la carga de cada píxel es proporcional a la luz.</p>
+    <p class="fragment">Las cargas se desplazan fila por fila hasta la salida, donde se convierten en <strong>números</strong>.</p>
+    <p class="fragment small muted">CCD: Boyle y Smith, Laboratorios Bell, 1969 (Nobel de Física 2009). Se apoya en el efecto fotoeléctrico que explicó Einstein en 1905.</p>
+    <p class="godown">Detalle: fotografía digital y el CCD</p>
+  </div>
+</div>
+<aside class="notes"><p>Ahora la máquina. La foto es un CCD real, del museo del aire y del espacio del Smithsonian: el cuadrado gris del centro es el arreglo de píxeles. El sensor CCD convierte la luz en carga eléctrica: cada fotón que choca contra el silicio puede liberar electrones, y la carga acumulada en cada píxel es proporcional a la luz recibida. Después las cargas se desplazan, como en una banda transportadora, hasta un amplificador que las convierte en números.</p><p>Lo inventaron Willard Boyle y George Smith en los Laboratorios Bell en 1969, y recibieron el Nobel de Física en 2009. Una corrección al original: el efecto fotoeléctrico lo explicó Einstein en 1905; el Nobel que recibió por esa explicación es de 1921. Y los fotones no tienen carga: lo que liberan son electrones.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 8</div><div class="kicker">Visión artificial · fotografía digital</div><h3>Cómo se leen las cargas</h3>
+<div class="cols c64 mid">
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Esquema de un sensor CCD: columnas de píxeles con registros de desplazamiento vertical que descargan en un registro horizontal y en una etapa de salida</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 8.</figcaption></figure>
+<p class="dense">Cada columna de píxeles pasa sus cargas hacia abajo, como una banda transportadora, hasta un registro horizontal; este las lleva una por una a la etapa de salida, donde se amplifican y se convierten en números.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 8 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 8</div><div class="kicker">Visión artificial</div><h3>Fotografía digital</h3>
+<div class="cols mid">
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Cámara digital en corte que deja ver el sensor CCD detrás del objetivo</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Sensor CCD dentro de una cámara. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 8.</figcaption></figure>
+<div><figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotografía de un chip sensor CCD</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Sensor CCD: arreglo matricial. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 8.</figcaption></figure>
+<p class="dense" style="margin-top:12px">Flujo de información: la luz forma la imagen sobre el arreglo matricial del sensor; las cargas se leen fila por fila y se convierten en números.</p></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 8 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 9</div><div class="kicker">Visión artificial</div><h3>El CCD</h3>
+<div class="dense"><p>El CCD (siglas de Charge Coupled Device, dispositivo de carga acoplada) es un dispositivo fotosensible que convierte la información lumínica en una respuesta eléctrica proporcional a la intensidad de la luz captada.</p><p>Willard Boyle y George Smith inventaron el CCD en 1969, en los Laboratorios Bell. Su principio de funcionamiento aprovecha el efecto fotoeléctrico, que Albert Einstein explicó en 1905 y por el que recibió el Premio Nobel de Física de 1921: la luz llega en cuantos de energía, los fotones. Cuando un fotón choca contra ciertos materiales (como el silicio de un chip CCD, que es un semiconductor), su energía puede liberar electrones; estos se almacenan en condensadores acoplados, y su carga es proporcional a la cantidad de luz que incide sobre el sensor.</p></div><p class="fix">Corrección al original: el efecto fotoeléctrico lo explicó Einstein en 1905 (el Nobel es de 1921), los fotones no tienen carga y el silicio es un semiconductor, no un metal.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 9 del original.</p></aside>
+</section>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Visión artificial · la imagen digital</div>
+<h2>Una imagen es una tabla de números</h2>
+<div class="cols c46 mid">
+  <figure class="figure"><img src="assets/img/ej_pixeles_ubicacion.jpg" alt="El patrón de calibración del caso 1 en escala de grises, con un pequeño recuadro en la esquina de uno de los cuadros negros" width="440" height="330" class="dark" style="max-height:none;"><figcaption class="credit">Patrón de calibración del caso 1. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 27.</figcaption></figure>
+  <div class="fragment"><figure class="figure"><img src="assets/img/ej_pixeles.png" alt="Ampliación de 12 por 8 píxeles de la esquina de un cuadro negro, con el valor de cada píxel escrito encima: unos 40 en el negro y unos 150 en el papel" width="620" height="413" class="dark" style="max-height:none;"><figcaption class="credit">Ampliación del recuadro: el valor de cada píxel, de 0 (negro) a 255 (blanco). Generada con <code>ejemplos/pipeline_clasico.py</code>.</figcaption></figure></div>
+</div>
+<aside class="notes"><p>Esta es la idea más importante para el laboratorio. Para la máquina, una imagen no es una foto: es una tabla de números. A la izquierda, una foto del patrón de calibración del caso 1. Si nos acercamos a la esquina de un cuadro negro, vemos los píxeles: cerca de 40 en el negro y cerca de 150 en el papel blanco.</p><p>Todo lo que haremos hoy, filtrar, umbralizar, contar, son operaciones sobre esta tabla. En una imagen a color hay tres tablas, una por canal.</p></aside>
+</section>
+
+<section>
+<section data-min="1.5">
+<div class="kicker">Visión artificial · imágenes a color</div>
+<h2>El color: tres tablas en lugar de una</h2>
+<div class="cols mid">
+  <svg class="diagram" viewBox="0 0 560 300" role="img" aria-label="Filtro de Bayer: una rejilla de filtros de color sobre los píxeles, con el doble de filtros verdes que rojos o azules, en un patrón que se repite cada dos por dos">
+    <style>.bt{font-size:18px;fill:#a3adc2}</style><rect x="20" y="20" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="54" y="20" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="88" y="20" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="122" y="20" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="156" y="20" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="190" y="20" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="20" y="54" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="54" y="54" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="88" y="54" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="122" y="54" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="156" y="54" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="190" y="54" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="20" y="88" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="54" y="88" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="88" y="88" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="122" y="88" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="156" y="88" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="190" y="88" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="20" y="122" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="54" y="122" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="88" y="122" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="122" y="122" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="156" y="122" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="190" y="122" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="20" y="156" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="54" y="156" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="88" y="156" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="122" y="156" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="156" y="156" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="190" y="156" width="32" height="32" rx="3" fill="#f87171" opacity=".85"/><rect x="20" y="190" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="54" y="190" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="88" y="190" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="122" y="190" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/><rect x="156" y="190" width="32" height="32" rx="3" fill="#38bdf8" opacity=".85"/><rect x="190" y="190" width="32" height="32" rx="3" fill="#4ade80" opacity=".85"/>
+    <text x="250" y="60" class="bt" style="fill:#e8ecf4;font-weight:700">Filtro de Bayer</text>
+    <text x="250" y="90" class="bt">cada píxel ve un solo color;</text>
+    <text x="250" y="114" class="bt">el doble de verdes, como el ojo,</text>
+    <text x="250" y="138" class="bt">más sensible al verde</text>
+    <text x="250" y="186" class="bt">los dos colores que faltan</text>
+    <text x="250" y="210" class="bt">se interpolan de los vecinos</text>
+  </svg>
+  <div>
+    <p>Un sensor solo mide <strong>intensidad</strong>.</p>
+    <p class="fragment">Para el color, cada píxel lleva un <strong>filtro</strong> rojo, verde o azul, o un <strong>prisma</strong> separa la luz hacia tres sensores.</p>
+    <p class="fragment">Resultado: tres canales (R, G, B). Cada uno es una tabla de números.</p>
+    <p class="godown">Detalle: el espacio de color RGB</p>
+  </div>
+</div>
+<aside class="notes"><p>Un sensor solo mide cuánta luz llega, no de qué color es. Hay dos soluciones. La más común es el filtro de Bayer: una rejilla de filtros rojos, verdes y azules sobre los píxeles, con el doble de verdes, porque nuestro ojo es más sensible al verde; los dos colores que faltan en cada píxel se estiman a partir de los vecinos. La otra es un prisma que separa la luz hacia tres sensores, uno por color.</p><p>En los dos casos el resultado es el mismo: tres canales, tres tablas de números. En el caso de los capilares verán que a veces un solo canal, el verde, muestra mejor lo que se busca.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 10</div><div class="kicker">Visión artificial · imágenes a color</div><h3>Segmentación del espacio de color RGB</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Prisma que separa la luz en rojo, verde y azul hacia tres sensores</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Prisma de tres sensores</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Arreglo de filtros de color sobre los píxeles de un sensor</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Filtros de color</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Arreglo de filtros de color en perspectiva</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Arreglo de filtros</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 10.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 10 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="2.5">
+<div class="kicker">Visión artificial · caracterización de la cámara</div>
+<h2>El modelo de cámara <em>pin-hole</em></h2>
+<div class="cols c64 mid">
+  <svg class="diagram" viewBox="0 0 640 400" role="img" aria-label="Modelo pin-hole: un punto X del mundo, el centro de la cámara C y el plano de la imagen; el rayo que une X con C corta el plano en el punto x, su imagen; la distancia entre C y el plano es la distancia focal f">
+  <defs><marker id="ph" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+  <style>.pt{font-size:20px;fill:#e8ecf4;font-weight:700}.ps{font-size:16px;fill:#a3adc2}</style></defs>
+  <line x1="40" y1="250" x2="620" y2="250" stroke="#2a3550" stroke-width="2" marker-end="url(#ph)"/>
+  <text x="500" y="276" class="ps">eje principal</text>
+  <polygon points="300,120 300,330 360,290 360,90" fill="rgba(56,189,248,.12)" stroke="#38bdf8" stroke-width="2"/>
+  <text x="322" y="80" class="ps">plano de la imagen</text>
+  <circle cx="110" cy="250" r="8" fill="#f5b942"/><text x="70" y="290" class="pt">C</text><text x="40" y="312" class="ps">centro de la cámara</text>
+  <g class="fragment" data-fragment-index="1"><circle cx="560" cy="110" r="9" fill="#4ade80"/><text x="575" y="104" class="pt">X</text><text x="440" y="70" class="ps">punto del mundo (3D)</text></g>
+  <g class="fragment" data-fragment-index="2"><line x1="110" y1="250" x2="560" y2="110" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <circle cx="330" cy="181.5" r="8" fill="#a78bfa"/><text x="340" y="172" class="pt">x</text><text x="300" y="360" class="ps">x: su imagen (2D)</text></g>
+  <g class="fragment" data-fragment-index="3"><line x1="110" y1="225" x2="330" y2="225" stroke="#f5b942" stroke-width="2"/>
+    <text x="200" y="216" class="pt" style="fill:#f5b942">f</text><text x="132" y="200" class="ps">distancia focal</text></g>
+</svg>
+  <div>
+    <p>Una cámara <strong>proyecta</strong> el mundo 3D en un plano 2D.</p>
+    <p class="fragment">Cada punto <strong>X</strong> del mundo cae en un punto <strong>x</strong> de la imagen, sobre la recta que pasa por el centro de la cámara.</p>
+    <p class="fragment">Calibrar es averiguar la matriz que hace esa proyección: <strong>dónde está</strong> la cámara y <strong>cómo es</strong> por dentro.</p>
+    <p class="godown">Detalle: ecuaciones del modelo</p>
+  </div>
+</div>
+<aside class="notes"><p>El modelo más simple de una cámara es el agujero de alfiler, pin-hole. Todos los rayos pasan por un punto, el centro de la cámara, y forman la imagen en un plano a una distancia f, la distancia focal.</p><p>Un punto X del mundo y su imagen x están sobre la misma recta que pasa por el centro de la cámara. Calibrar una cámara es encontrar la matriz P que hace esa proyección. P combina dos cosas: los parámetros intrínsecos, es decir, cómo es la cámara por dentro (distancia focal, punto principal), y los extrínsecos, es decir, dónde está y hacia dónde mira.</p><p>¿Por qué importa en una organización? Porque para medir en centímetros, y no en píxeles, hay que calibrar. Lo verán en el laboratorio: el mismo cuadro mide distinto en píxeles según la perspectiva. Las ecuaciones están en la columna de abajo.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 11–25</div><div class="kicker">Mapeo 2D de un espacio 3D</div><h3>Caracterización de la cámara</h3>
+<div class="cols c64 mid"><div class="dense">
+<p>La información capturada por una cámara corresponde a un mapeo 2D de un Universo 3D</p><p>Este mapeo puede ser descrito por la siguiente ecuación:</p>
+<div class="eqbox"><math display="block"><mrow><mi>x</mi><mo>=</mo><mi>P</mi><mi>X</mi></mrow></math></div>
+<p>Donde x es un punto en coordenadas homogéneas bidimensionales del mundo de la cámara y X es un punto en coordenadas homogéneas tridimensionales del mundo real.</p><p>La matriz P se conoce como matriz de calibración de cámara, esta contiene los parámetros intrínsecos de la cámara (distancia focal, punto principal, etc.) y los parámetros extrínsecos (posición, rotación y orientación)</p></div>
+<figure class="figure"><img src="assets/img/c2_d011_b.jpg" alt="Figura de cerámica blanca de una vaca sentada, sobre una base, usada como objeto de prueba" width="360" height="351" class="dark" style="max-height:none;"><figcaption class="credit">Mapeo 2D de un espacio 3D. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 11, 25.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 11 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 12</div><div class="kicker">Caracterización de la cámara</div><h3>Modelo de cámara <em>pin-hole</em></h3>
+<div class="cols mid">
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Geometría del modelo pin-hole: centro de la cámara, plano de la imagen, eje principal y un punto X proyectado en x</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 12.</figcaption></figure>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Vista lateral del modelo pin-hole: por triángulos semejantes, un punto a altura Y y profundidad Z se proyecta a la altura fY/Z en el plano de la imagen</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 12.</figcaption></figure></div>
+<p class="dense">Por triángulos semejantes, un punto a altura <em>Y</em> y profundidad <em>Z</em> se proyecta a la altura <em>fY/Z</em>: los objetos lejanos se ven más pequeños.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 12 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 13–28</div><div class="kicker">Caracterización de la cámara</div><h3>Parámetros de la cámara</h3>
+<div class="cols mid"><div class="dense">
+<p>Después de obtener la matriz P mediante las correspondencias mapeadas mediante el patrón de calibración se empleó el método de optimización por descenso de gradiente para minimizar el error de correspondencia espacial.</p><p>Para extraer los parámetros de la cámara, se debe descomponer la matriz P.</p><div class="eqbox"><math display="block"><mrow><mi>P</mi><mo>=</mo><mo>[</mo><mi>M</mi><mo>|</mo><mo>−</mo><mi>M</mi><mover><mi>C</mi><mo>~</mo></mover><mo>]</mo><mo>=</mo><mi>K</mi><mo>[</mo><mi>R</mi><mo>|</mo><mo>−</mo><mi>R</mi><mover><mi>C</mi><mo>~</mo></mover><mo>]</mo></mrow></math></div>
+<p>En donde <strong>C̃</strong> es el centro de la cámara (posición), <strong>R</strong> la rotación de la cámara con respecto al espacio 3D y <strong>K</strong> la matriz de parámetros de la cámara.</p></div>
+<div class="dense"><div class="eqbox"><math display="block"><mrow><mi>K</mi><mo>=</mo><mrow><mo>[</mo><mtable><mtr><mtd><msub><mi>α</mi><mi>x</mi></msub></mtd><mtd><mi>s</mi></mtd><mtd><msub><mi>x</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><msub><mi>α</mi><mi>y</mi></msub></mtd><mtd><msub><mi>y</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>]</mo></mrow></mrow></math></div>
+<p>α<sub>x</sub>, α<sub>y</sub>: factores de escala en x y en y; s: sesgo (<em>skew</em>); x<sub>0</sub>, y<sub>0</sub>: coordenadas del punto principal.</p>
+<div class="eqbox eqlist"><math display="block"><mrow><mi>X</mi><mo>=</mo><mrow><mi>det</mi><mo>(</mo><mo>[</mo><msub><mi>p</mi><mn>2</mn></msub><mo>,</mo><msub><mi>p</mi><mn>3</mn></msub><mo>,</mo><msub><mi>p</mi><mn>4</mn></msub><mo>]</mo><mo>)</mo></mrow><mspace width="1.2em"/><mi>Y</mi><mo>=</mo><mo>−</mo><mrow><mi>det</mi><mo>(</mo><mo>[</mo><msub><mi>p</mi><mn>1</mn></msub><mo>,</mo><msub><mi>p</mi><mn>3</mn></msub><mo>,</mo><msub><mi>p</mi><mn>4</mn></msub><mo>]</mo><mo>)</mo></mrow></mrow></math><math display="block"><mrow><mi>Z</mi><mo>=</mo><mrow><mi>det</mi><mo>(</mo><mo>[</mo><msub><mi>p</mi><mn>1</mn></msub><mo>,</mo><msub><mi>p</mi><mn>2</mn></msub><mo>,</mo><msub><mi>p</mi><mn>4</mn></msub><mo>]</mo><mo>)</mo></mrow><mspace width="1.2em"/><mi>T</mi><mo>=</mo><mo>−</mo><mrow><mi>det</mi><mo>(</mo><mo>[</mo><msub><mi>p</mi><mn>1</mn></msub><mo>,</mo><msub><mi>p</mi><mn>2</mn></msub><mo>,</mo><msub><mi>p</mi><mn>3</mn></msub><mo>]</mo><mo>)</mo></mrow></mrow></math><math display="block"><mrow><mover><mi>C</mi><mo>~</mo></mover><mo>=</mo><mo>[</mo><mfrac><mrow><mi>X</mi></mrow><mrow><mi>T</mi></mrow></mfrac><mo>,</mo><mfrac><mrow><mi>Y</mi></mrow><mrow><mi>T</mi></mrow></mfrac><mo>,</mo><mfrac><mrow><mi>Z</mi></mrow><mrow><mi>T</mi></mrow></mfrac><mo>]</mo></mrow></math></div><p class="small muted">El centro de la cámara se obtiene de las columnas p<sub>i</sub> de P.</p></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 13 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 14–29</div><div class="kicker">Caracterización de la cámara</div><h3>Mapeo paramétrico del espacio</h3>
+<div class="cols mid"><div class="dense">
+<p>La matriz de calibración P mapea la información espacial R3 homogénea en el espacio R2 homogéneo definido por el plano de la imagen.</p><p>A partir del modelo pin-hole, y considerando una línea que contiene el centro de cámara C y cualquier otro punto A en el espacio, se pueden representar los puntos sobre esta línea paramétricamente como</p>
+<div class="eqbox"><math display="block"><mrow><mi>X</mi><mo>(</mo><mi>λ</mi><mo>)</mo><mo>=</mo><mi>λ</mi><mi>A</mi><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo>)</mo><mi>C</mi></mrow></math><math display="block"><mi>x</mi><mo>=</mo><mi>P</mi><mi>X</mi><mspace width="2em"/><mi>x</mi><mo>=</mo><mi>λ</mi><mi>P</mi><mi>A</mi></math></div></div>
+<div class="dense"><p>Dado un plano π, y una estimación del vector A (se hace λ = 1 y se estima A mediante una correspondencia espacial), se puede hallar la intersección de la recta paramétrica con el plano, de esta forma, si el plano es la caracterización de una línea enviada por algún emisor de luz (proyector, una sombra) la intersección de dicho plano con la recta paramétrica de la cámara en un punto sobre el modelo a rastrear, nos va a retornar la información espacial de dicho punto sobre el modelo.</p><div class="eqbox"><math display="block"><mrow><mi>X</mi><mo>(</mo><mi>λ</mi><mo>)</mo><mo>∈</mo><mi>π</mi><mo>⟶</mo><msup><mi>π</mi><mi>T</mi></msup><mi>X</mi><mo>(</mo><mi>λ</mi><mo>)</mo><mo>=</mo><mn>0</mn></mrow></math></div><p class="small muted">Intersección de la recta paramétrica con el plano π.</p></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 14 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1.5" data-opcional>
+<div class="kicker">Procesamiento digital de imágenes · historia</div>
+<h2>Del tratamiento a la interpretación</h2>
+<svg class="diagram" viewBox="0 0 1200 300" role="img" aria-label="Línea de tiempo: de 1950 a 1970 las primeras imágenes y su tratamiento (restauración, realce, compresión); de 1970 a 1980 del tratamiento a la interpretación (segmentación, contornos, morfología, sistemas expertos); desde 1980 la visión por computador (3D, movimiento, robótica)">
+  <style>.hy{font-size:26px;fill:#f5b942;font-weight:800}.ht{font-size:21px;fill:#e8ecf4;font-weight:700}.hs{font-size:17px;fill:#a3adc2}</style>
+  <line x1="20" y1="70" x2="1180" y2="70" stroke="#2a3550" stroke-width="4"/>
+  <g><circle cx="120" cy="70" r="12" fill="#38bdf8"/><text x="40" y="40" class="hy">1950–1970</text><text x="40" y="120" class="ht">Las primeras imágenes</text><text x="40" y="150" class="hs">rayos X, OCR</text><text x="40" y="176" class="hs">restaurar, realzar, comprimir</text><text x="40" y="202" class="hs">imágenes malas y muy pesadas</text></g>
+  <g class="fragment"><circle cx="520" cy="70" r="12" fill="#38bdf8"/><text x="440" y="40" class="hy">1970–1980</text><text x="440" y="120" class="ht">De tratar a interpretar</text><text x="440" y="150" class="hs">segmentación, contornos, morfología</text><text x="440" y="176" class="hs">auge de los sistemas expertos…</text><text x="440" y="202" class="hs">…y decepción: el saber es difícil de modelar</text></g>
+  <g class="fragment"><circle cx="920" cy="70" r="12" fill="#a78bfa"/><text x="840" y="40" class="hy">1980 →</text><text x="840" y="120" class="ht">Visión por computador</text><text x="840" y="150" class="hs">del 2D a los modelos 3D</text><text x="840" y="176" class="hs">movimiento y robótica</text><text x="840" y="202" class="hs">visión 2½D, «shape from X»</text></g>
+  <text x="600" y="276" text-anchor="middle" class="hs">Tres disciplinas estudian la percepción visual: la neurofisiología, la psicología perceptiva y la visión por computador.</text>
+</svg>
+<p class="godown">Detalle: cada periodo, como en el original</p>
+<aside class="notes"><p>Una historia en tres periodos. Entre 1950 y 1970, las primeras imágenes digitales, de rayos X y de reconocimiento de caracteres: imágenes malas y muy pesadas, y tres tareas, restaurarlas, realzarlas y comprimirlas. Entre 1970 y 1980, el paso a la interpretación: segmentación, contornos, morfología matemática; y un entusiasmo enorme con los sistemas expertos, que vieron en la primera sesión, seguido de una decepción proporcional, porque el saber resultó muy complejo de modelar. Desde 1980, la visión por computador: de la imagen 2D a modelos 3D, el movimiento y la robótica.</p><p>Opcional si el tiempo aprieta: el detalle de cada periodo está abajo.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 15</div><div class="kicker">Tres disciplinas</div><h3>Procesamiento digital de imágenes</h3>
+<div class="dense"><p>La visión artificial es el área más reciente de investigación sobre el mecanismo de la percepción visual.</p><p>Ellas son:</p><p>• La Neurofisiología. Analiza el funcionamiento de adquisición y los mecanismos neuronales de los sistemas biológicos.</p><p>• La Psicología Perceptiva. Trata de comprender los mecanismos subyacentes a la percepción visual, incluyendo los mecanismos inteligentes.</p><p>• La Visión por Computador. Concibe y analiza los aspectos de cálculo y algoritmos de los procesos de adquisición, tratamiento e interpretación de las imágenes numéricas.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 15 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 16</div><div class="kicker">Historia</div><h3>Las primeras imágenes y su tratamiento (1950–1970)</h3>
+<div class="dense"><p>• Origen del tratamiento de imágenes 1950.</p><p>• Aplicación : Rayos X, OCR,...</p><p>• Imágenes de mala calidad y muy voluminosas.</p><p>• Tres dominios de investigación:</p><p>• Restauración (corregir defectos ligados a la adquisición)</p><p>• Realce (obtención de una imagen &quot;bella&quot; para 			  visualizarla).</p><p>• Compresión (reducir el tamaño de la imagen).</p></div><p class="fix">Un hito de la época: en 1957, Russell Kirsch escaneó en el computador SEAC del NBS (hoy NIST) la primera imagen digital, de 176 × 176 píxeles.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 16 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 17</div><div class="kicker">Historia</div><h3>Del tratamiento a la interpretación (1970–1980)</h3>
+<div class="dense"><p>• Evolución hacia la extracción automática de información.</p><p>• Aparición de la noción de descripción estructural.</p><p>• Nuevos temas: segmentación, extracción de contornos,</p><p>morfología matemática, etc.</p><p>• Interpretación de imágenes:</p><p>• Un entusiasmo explosivo al momento de la aparición de los</p><p>sistemas expertos</p><p>• Decepción proporcional al entusiasmo (el saber es muy</p><p>complejo para ser modelizado !).</p></div><p class="fix">Precisión: la morfología matemática nació antes, en 1964, con Matheron y Serra en la École des Mines de París; se difundió en los años setenta.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 17 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 18</div><div class="kicker">Historia</div><h3>La visión por computador (1980 en adelante)</h3>
+<div class="dense"><p>• De la imagen 2D a los modelos</p><p>tridimensionales.</p><p>• Análisis de movimiento.</p><p>• Visión para la robótica (movimiento, 3D, detección de obstáculo, trayectoria).</p><p>• Visión 2D½, Shape from X.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 18 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="2">
+<div class="kicker">Procesamiento digital de imágenes · etapas fundamentales</div>
+<h2>Las etapas del procesamiento</h2>
+<svg class="diagram" viewBox="0 0 1200 380" role="img" aria-label="Etapas fundamentales del procesamiento digital de imágenes: adquisición, preproceso, segmentación, representación y descripción, y reconocimiento e interpretación, todas alrededor de una base de conocimiento; la entrada es la escena y la salida, el resultado">
+  <defs><marker id="et" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker>
+  <style>.eb{fill:rgba(23,32,51,.92);stroke:#38bdf8;stroke-width:2}.et{font-size:21px;fill:#e8ecf4;font-weight:700}.es{font-size:15px;fill:#a3adc2}</style></defs>
+  <text x="10" y="40" class="es">entrada: la escena</text>
+  <g><rect class="eb" x="10" y="60" width="200" height="86" rx="12"/><text x="110" y="98" text-anchor="middle" class="et">Adquisición</text><text x="110" y="124" text-anchor="middle" class="es">sensor, luz, montaje</text></g>
+  <g class="fragment" data-fragment-index="1"><line x1="214" y1="103" x2="250" y2="103" stroke="#f5b942" stroke-width="3" marker-end="url(#et)"/><rect class="eb" x="256" y="60" width="200" height="86" rx="12"/><text x="356" y="98" text-anchor="middle" class="et">Preproceso</text><text x="356" y="124" text-anchor="middle" class="es">filtrar, realzar, corregir</text></g>
+  <g class="fragment" data-fragment-index="2"><line x1="460" y1="103" x2="496" y2="103" stroke="#f5b942" stroke-width="3" marker-end="url(#et)"/><rect class="eb" x="502" y="60" width="200" height="86" rx="12"/><text x="602" y="98" text-anchor="middle" class="et">Segmentación</text><text x="602" y="124" text-anchor="middle" class="es">separar objeto y fondo</text></g>
+  <g class="fragment" data-fragment-index="3"><line x1="706" y1="103" x2="742" y2="103" stroke="#f5b942" stroke-width="3" marker-end="url(#et)"/><rect class="eb" x="748" y="60" width="200" height="86" rx="12"/><text x="848" y="90" text-anchor="middle" class="et">Representación</text><text x="848" y="114" text-anchor="middle" class="et">y descripción</text><text x="848" y="136" text-anchor="middle" class="es">medidas, características</text></g>
+  <g class="fragment" data-fragment-index="4"><line x1="952" y1="103" x2="988" y2="103" stroke="#f5b942" stroke-width="3" marker-end="url(#et)"/><rect class="eb" x="994" y="60" width="200" height="86" rx="12"/><text x="1094" y="90" text-anchor="middle" class="et">Reconocimiento</text><text x="1094" y="114" text-anchor="middle" class="et">e interpretación</text><text x="1094" y="136" text-anchor="middle" class="es">etiqueta, decisión</text></g>
+  <g class="fragment" data-fragment-index="4"><text x="1094" y="186" text-anchor="middle" class="es">salida: el resultado</text></g>
+  <g class="fragment" data-fragment-index="5"><rect x="380" y="240" width="440" height="96" rx="14" fill="rgba(167,139,250,.14)" stroke="#a78bfa" stroke-width="2"/><text x="600" y="280" text-anchor="middle" class="et">Base de conocimiento</text><text x="600" y="308" text-anchor="middle" class="es">lo que se sabe del problema guía cada etapa</text>
+    <g stroke="#a78bfa" stroke-width="2" stroke-dasharray="5 5"><line x1="110" y1="150" x2="420" y2="240"/><line x1="356" y1="150" x2="500" y2="240"/><line x1="602" y1="150" x2="600" y2="240"/><line x1="848" y1="150" x2="700" y2="240"/><line x1="1094" y1="150" x2="780" y2="240"/></g></g>
+</svg>
+<p class="fragment small">Es el mapa del <strong>Laboratorio 4A</strong>. <span class="muted">Diagrama clásico de Gonzalez y Woods; la 4.ª edición (2018) detalla más etapas.</span></p>
+<aside class="notes"><p>Este es el mapa de toda la sesión, y del laboratorio. Cinco etapas alrededor de una base de conocimiento. La adquisición: el sensor, la luz, el montaje. El preproceso: filtrar ruido, realzar, corregir la iluminación. La segmentación: separar el objeto del fondo. La representación y descripción: medir, extraer características. Y el reconocimiento e interpretación: ponerle una etiqueta y decidir.</p><p>La base de conocimiento en el centro es lo que sabemos del problema, y guía cada etapa: qué tamaño tiene un defecto, qué color tiene la piel, cuántos cuadros tiene el patrón. El original resumía las etapas en cuatro: adquisición, preproceso, segmentación y clasificación o reconocimiento.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 19–20</div><div class="kicker">Procesamiento digital de imágenes</div><h3>Etapas fundamentales en el original</h3>
+<div class="cols c64 mid">
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Diagrama de las etapas fundamentales del procesamiento digital de imágenes alrededor de una base de conocimiento</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 19.</figcaption></figure>
+<ul class="dense"><li>Adquisición</li><li>Preproceso</li><li>Segmentación</li><li>Clasificación o reconocimiento</li></ul></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 19 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="2.5">
+<div class="kicker">El pipeline en acción · segmentación de capilares</div>
+<h2>Etapa por etapa, sobre una imagen real</h2>
+<div class="pipe">
+  <div class="st"><img src="assets/img/c2_d097_a.png" alt="Imagen de microscopía de capilares, anaranjada y de bajo contraste" width="172" height="129" class="dark" style="max-height:none;"><div class="nm">Original</div><div class="ds">microscopía de capilares</div></div><div class="ar">→</div>
+  <div class="st fragment"><img src="assets/img/c2_d097_b.jpg" alt="La misma imagen ecualizada: los capilares se ven más oscuros y el fondo rojizo" width="172" height="129" class="dark" style="max-height:none;"><div class="nm">Ecualización</div><div class="ds">se estira el contraste</div></div><div class="ar">→</div>
+  <div class="st fragment"><img src="assets/img/c2_d097_c.jpg" alt="El canal verde de la imagen, donde los capilares resaltan" width="172" height="129" class="dark" style="max-height:none;"><div class="nm">Canal verde</div><div class="ds">el canal con más contraste</div></div><div class="ar">→</div>
+  <div class="st fragment"><img src="assets/img/c2_d097_d.jpg" alt="El canal verde filtrado, en escala de grises" width="172" height="129" class="dark" style="max-height:none;"><div class="nm">Filtrado</div><div class="ds">se suaviza el ruido</div></div><div class="ar">→</div>
+  <div class="st fragment"><img src="assets/img/c2_d098_a.png" alt="Bordes detectados con el filtro de Sobel: trazos blancos dispersos sobre fondo negro" width="145" height="145" class="dark" style="max-height:none;"><div class="nm">Bordes</div><div class="ds">gradiente (Sobel)</div></div><div class="ar">→</div>
+  <div class="st fragment"><img src="assets/img/c2_d100_a.png" alt="Mapa de colores con las regiones de los capilares segmentadas por crecimiento de regiones" width="145" height="145" class="dark" style="max-height:none;"><div class="nm">Regiones</div><div class="ds">crecimiento de regiones</div></div>
+</div>
+<p class="fragment" style="margin-top:14px">Cada etapa prepara la siguiente; ninguna sola basta.</p>
+<p class="godown">Detalle: el trabajo completo de segmentación de capilares</p>
+<aside class="notes"><p>Veamos las etapas en acción con uno de los trabajos del original: la segmentación de capilares en imágenes de microscopía. La imagen original es anaranjada y de bajo contraste. La ecualización estira el contraste. De los tres canales, el verde es el que más contrasta los capilares contra el fondo. El filtrado suaviza el ruido. Los métodos de gradiente, como Sobel, marcan los bordes. Y el crecimiento de regiones separa los capilares del fondo.</p><p>La lección: cada etapa prepara la siguiente y ninguna sola basta. Es exactamente lo que harán en el laboratorio, con parámetros que ustedes ajustan. El detalle completo, con la compresión JPG, los gradientes, el clasificador bayesiano y los resultados, está en la columna de abajo.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 93–94</div><div class="kicker">Caso 5 · capilares</div><h3>Segmentación de capilares · imágenes originales</h3>
+<div class="gal"><figure><img src="assets/img/c2_d094_a.jpg" alt="Imagen de microscopía de capilares con aumento 1x" width="360" height="270" class="dark" style="max-height:none;"><figcaption>1x</figcaption></figure><figure><img src="assets/img/c2_d094_b.jpg" alt="Imagen de microscopía de capilares con aumento 4x" width="360" height="270" class="dark" style="max-height:none;"><figcaption>4x</figcaption></figure><figure><img src="assets/img/c2_d094_c.jpg" alt="Imagen de microscopía de capilares con aumento 8x" width="360" height="270" class="dark" style="max-height:none;"><figcaption>8x</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 93, 94.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 93 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 95</div><div class="kicker">Caso 5 · capilares</div><h3>Compresión JPG</h3>
+<div class="cols mid">
+<figure class="figure"><img src="assets/img/c2_d094_a.jpg" alt="Imagen de microscopía de capilares con aumento 1x" width="440" height="330" class="dark" style="max-height:none;"><figcaption class="credit">Imagen original. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 95.</figcaption></figure>
+<figure class="figure"><img src="assets/img/c2_d095_b.jpg" alt="Ampliación de una zona de la imagen donde se ven los bloques del ruido de compresión JPG" width="500" height="358" class="dark" style="max-height:none;"><figcaption class="credit">Ruido de la reconstrucción JPG, ampliado. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 95.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 95 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 96</div><div class="kicker">Caso 5 · capilares</div><h3>Imágenes de prueba</h3>
+<div class="gal"><figure><img src="assets/img/c2_d096_a.png" alt="Imagen de prueba de capilares 1xa" width="230" height="230" class="dark" style="max-height:none;"><figcaption>1xa</figcaption></figure><figure><img src="assets/img/c2_d096_b.png" alt="Imagen de prueba de capilares 4xa" width="230" height="230" class="dark" style="max-height:none;"><figcaption>4xa</figcaption></figure><figure><img src="assets/img/c2_d096_c.png" alt="Imagen de prueba de capilares 8xa" width="230" height="230" class="dark" style="max-height:none;"><figcaption>8xa</figcaption></figure><figure><img src="assets/img/c2_d096_d.png" alt="Imagen de prueba de capilares n2" width="230" height="230" class="dark" style="max-height:none;"><figcaption>n2</figcaption></figure><figure><img src="assets/img/c2_d096_e.png" alt="Imagen de prueba de capilares n3" width="230" height="230" class="dark" style="max-height:none;"><figcaption>n3</figcaption></figure><figure><img src="assets/img/c2_d096_f.png" alt="Imagen de prueba de capilares n4" width="230" height="230" class="dark" style="max-height:none;"><figcaption>n4</figcaption></figure><figure><img src="assets/img/c2_d096_g.png" alt="Imagen de prueba de capilares n5" width="230" height="230" class="dark" style="max-height:none;"><figcaption>n5</figcaption></figure><figure><img src="assets/img/c2_d096_h.png" alt="Imagen de prueba de capilares n6" width="230" height="230" class="dark" style="max-height:none;"><figcaption>n6</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 96.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 96 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 97</div><div class="kicker">Caso 5 · capilares</div><h3>Preproceso</h3>
+<div class="gal"><figure><img src="assets/img/c2_d097_a.png" alt="Imagen original de capilares" width="270" height="202" class="dark" style="max-height:none;"><figcaption>Original</figcaption></figure><figure><img src="assets/img/c2_d097_b.jpg" alt="Imagen ecualizada" width="270" height="202" class="dark" style="max-height:none;"><figcaption>Ecualización</figcaption></figure><figure><img src="assets/img/c2_d097_c.jpg" alt="Canal verde" width="270" height="202" class="dark" style="max-height:none;"><figcaption>Canal verde</figcaption></figure><figure><img src="assets/img/c2_d097_d.jpg" alt="Canal verde filtrado" width="270" height="202" class="dark" style="max-height:none;"><figcaption>Filtrado</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 97.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 97 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 98</div><div class="kicker">Caso 5 · capilares</div><h3>Métodos de gradiente</h3>
+<div class="gal"><figure><img src="assets/img/c2_d098_a.png" alt="Bordes con el filtro de Sobel" width="256" height="256" class="dark" style="max-height:none;"><figcaption>Filtro Sobel</figcaption></figure><figure><img src="assets/img/c2_d098_b.png" alt="Bordes con el filtro de Kirsch adelgazado" width="300" height="300" class="dark" style="max-height:none;"><figcaption>Filtro Kirsch adelgazado</figcaption></figure><figure><img src="assets/img/c2_d098_c.png" alt="Bordes con el filtro MDIF2" width="256" height="256" class="dark" style="max-height:none;"><figcaption>Filtro MDIF2</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 98.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 98 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 99</div><div class="kicker">Caso 5 · capilares</div><h3>Clasificador bayesiano</h3>
+<div class="gal"><figure><img src="assets/img/c2_d099_a.png" alt="Segmentación con clasificador bayesiano de la imagen 1x" width="256" height="256" class="dark" style="max-height:none;"><figcaption>1x</figcaption></figure><figure><img src="assets/img/c2_d099_b.png" alt="Segmentación con clasificador bayesiano de la imagen 4x, con ruido de compresión" width="256" height="256" class="dark" style="max-height:none;"><figcaption>4x · ruido de compresión</figcaption></figure><figure><img src="assets/img/c2_d099_c.png" alt="Segmentación con clasificador bayesiano de la imagen 8x" width="256" height="256" class="dark" style="max-height:none;"><figcaption>8x</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 99.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 99 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 100</div><div class="kicker">Caso 5 · capilares</div><h3>Crecimiento de regiones</h3>
+<div class="gal"><figure><img src="assets/img/c2_d100_a.png" alt="Crecimiento de regiones con umbral 60" width="256" height="256" class="dark" style="max-height:none;"><figcaption>Umbral 60</figcaption></figure><figure><img src="assets/img/c2_d100_b.png" alt="Crecimiento de regiones con umbral 40" width="256" height="256" class="dark" style="max-height:none;"><figcaption>Umbral 40</figcaption></figure><figure><img src="assets/img/c2_d100_c.png" alt="Crecimiento de regiones con umbral 100" width="256" height="256" class="dark" style="max-height:none;"><figcaption>Umbral 100</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 100.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 100 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 101–102</div><div class="kicker">Caso 5 · capilares</div><h3>Resultados generales</h3>
+<div class="gal"><figure><img src="assets/img/c2_d101_a.png" alt="Resultado del clasificador bayesiano, imagen 1" width="190" height="190" class="dark" style="max-height:none;"><figcaption>Bayesiano</figcaption></figure><figure><img src="assets/img/c2_d101_b.png" alt="Crecimiento de regiones con umbral 80, imagen 1" width="190" height="190" class="dark" style="max-height:none;"><figcaption>Crecimiento · umbral 80</figcaption></figure><figure><img src="assets/img/c2_d101_c.png" alt="Crecimiento de regiones con umbral 90, imagen 1" width="190" height="190" class="dark" style="max-height:none;"><figcaption>Crecimiento · umbral 90</figcaption></figure><figure><img src="assets/img/c2_d102_a.png" alt="Resultado del clasificador bayesiano, imagen 2" width="190" height="190" class="dark" style="max-height:none;"><figcaption>Bayesiano</figcaption></figure><figure><img src="assets/img/c2_d102_b.png" alt="Crecimiento de regiones con umbral 80, imagen 2" width="190" height="190" class="dark" style="max-height:none;"><figcaption>Crecimiento · umbral 80</figcaption></figure><figure><img src="assets/img/c2_d102_c.png" alt="Crecimiento de regiones con umbral 90, imagen 2" width="190" height="190" class="dark" style="max-height:none;"><figcaption>Crecimiento · umbral 90</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 101, 102.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 101 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 103</div><div class="kicker">Caso 5 · capilares</div><h3>Resultados generales (continuación)</h3>
+<div class="gal"><figure><img src="assets/img/c2_d103_a.png" alt="Resultado de segmentación de capilares 1" width="192" height="192" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d103_b.png" alt="Resultado de segmentación de capilares 2" width="192" height="192" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d103_c.png" alt="Resultado de segmentación de capilares 3" width="192" height="192" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d103_d.png" alt="Resultado de segmentación de capilares 4" width="192" height="192" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d103_e.png" alt="Resultado de segmentación de capilares 5" width="192" height="192" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d103_f.png" alt="Resultado de segmentación de capilares 6" width="192" height="192" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d103_g.png" alt="Resultado de segmentación de capilares 7" width="192" height="192" class="dark" style="max-height:none;"></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 103.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 103 del original.</p></aside>
+</section>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Para el laboratorio · diapositiva nueva</div>
+<h2>Histograma, umbral y morfología: contar</h2>
+<div class="pipe" style="align-items:flex-start">
+  <div class="st"><img src="assets/img/ej_histograma.png" alt="Histograma de niveles de gris del patrón de calibración: un pico cerca de 20 para los cuadros negros y otro cerca de 150 para el papel, con el umbral de Otsu en 87" width="300" height="158" class="dark" style="max-height:none;"><div class="nm">1 · Histograma</div><div class="ds">dos picos: cuadros y papel; el umbral (87) los separa</div></div>
+  <div class="st fragment"><img src="assets/img/ej_umbral.png" alt="Imagen binaria tras el umbral: los cuadros en blanco sobre fondo negro, con manchas en la mesa y la base" width="240" height="180" class="dark" style="max-height:none;"><div class="nm">2 · Umbral</div><div class="ds">blanco o negro, píxel por píxel</div></div>
+  <div class="st fragment"><img src="assets/img/ej_morfologia.png" alt="Imagen binaria después de la apertura morfológica: los cuadros limpios y menos manchas" width="240" height="180" class="dark" style="max-height:none;"><div class="nm">3 · Morfología</div><div class="ds">la apertura borra puntos y líneas finas</div></div>
+  <div class="st fragment"><img src="assets/img/ej_conteo.jpg" alt="El patrón con cada región contada enmarcada y numerada: 62 regiones, de las cuales 60 son cuadros y 2 son las franjas negras de la base de madera" width="240" height="180" class="dark" style="max-height:none;"><div class="nm">4 · Contar y medir</div><div class="ds"><strong>62</strong> regiones… y el patrón tiene <strong>60</strong> cuadros</div></div>
+</div>
+<p class="fragment" style="margin-top:12px">Las dos de más son las franjas negras de la base de madera: por eso se <strong>compara con un conteo a mano</strong>.</p>
+<aside class="notes"><p>Esta diapositiva no está en el original: la agregué porque el laboratorio la necesita. Tomamos la foto del patrón de calibración y la contamos en cuatro pasos.</p><p>Uno, el histograma: cuántos píxeles hay de cada nivel de gris. Hay dos picos, los cuadros negros y el papel blanco, y el método de Otsu elige el umbral que mejor los separa: 87. Dos, el umbral: cada píxel queda blanco o negro. Tres, la morfología: una apertura borra puntos sueltos y líneas finas. Cuatro, contar y medir las regiones con forma de cuadro.</p><p>El resultado es 62, y el patrón tiene 60 cuadros. Las dos regiones de más son las franjas negras de la base de madera. Es la razón por la que en el laboratorio compararán siempre con un conteo hecho a mano: el pipeline cuenta lo que se parece a lo que buscamos, no lo que buscamos.</p><p>Las imágenes las genera ejemplos/pipeline_clasico.py.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Casos de estudio · Manizales</div>
+<h2>Cinco investigaciones, cinco etapas</h2>
+<div class="casegrid"><div class="card fragment"><img src="assets/img/c2_d036_d.jpg" alt="Reconstrucción tridimensional en malla de la figura de la vaca" width="114" height="118" class="dark" style="max-height:none;width:100%;height:118px;object-fit:contain;background:#0a0e17"><h4>Caso 1 · Luz estructurada</h4><p class="stg">Adquisición 3D</p></div><div class="card fragment"><img src="assets/img/c2_d046_b.png" alt="Silueta blanca de un rostro segmentado sobre fondo negro" width="152" height="118" class="dark" style="max-height:none;width:100%;height:118px;object-fit:contain;background:#0a0e17"><h4>Caso 2 · Antropometría facial</h4><p class="stg">Segmentación por color</p></div><div class="card fragment"><img src="assets/img/c2_d071_c.png" alt="Gráfica del espacio de características reducido por el análisis de Fisher, con puntos agrupados por vocal" width="142" height="118" class="dark" style="max-height:none;width:100%;height:118px;object-fit:contain;background:#0a0e17"><h4>Caso 3 · Posturas labiales</h4><p class="stg">Características y clasificación</p></div><div class="card fragment"><img src="assets/img/c2_d082_d.jpg" alt="Modelo 3D de una vasija precolombina con su textura de color" width="66" height="118" class="dark" style="max-height:none;width:100%;height:118px;object-fit:contain;background:#0a0e17"><h4>Caso 4 · Mapeo de texturas</h4><p class="stg">Registro 2D–3D</p></div><div class="card fragment"><img src="assets/img/c2_d092_b.png" alt="Granos de café con las regiones segmentadas por crecimiento de regiones" width="118" height="118" class="dark" style="max-height:none;width:100%;height:118px;object-fit:contain;background:#0a0e17"><h4>Caso 5 · Café y capilares</h4><p class="stg">Crecimiento de regiones</p></div></div>
+<p class="fragment small" style="margin-top:12px">Cada caso ilustra una etapa del pipeline. El detalle completo de cada uno está en su columna: ↓ desde su diapositiva.</p>
+<aside class="notes"><p>El original presentaba cinco casos de investigación hechos aquí en Manizales. Cada uno ilustra una etapa distinta del pipeline: la adquisición 3D con luz estructurada; la segmentación por color de la piel en un estudio antropométrico; la extracción de características y la clasificación de posturas labiales; el registro entre imágenes 2D y modelos 3D para mapear texturas; y el crecimiento de regiones en granos de café y capilares, que ya vimos.</p><p>Les muestro una diapositiva por caso. El detalle completo, con ecuaciones y resultados, está en cada columna vertical.</p></aside>
+</section>
+
+<section>
+<section data-min="1">
+<div class="kicker">Caso 1 · adquisición</div>
+<h2>Adquisición 3D por luz estructurada</h2>
+<div class="cols c46 mid">
+  <div><figure class="figure"><img src="assets/img/c2_d036_d.jpg" alt="Reconstrucción tridimensional en malla de la figura de cerámica de una vaca" width="388" height="400" class="dark" style="max-height:none;"><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 36.</figcaption></figure></div>
+  <div>
+    <p><strong>Pregunta:</strong> ¿cómo obtener un modelo 3D con una cámara y un proyector de bajo costo?</p>
+    <p class="fragment"><strong>Resultado:</strong> reconstrucciones de 25 714 a 44 808 puntos, comparadas con un escáner comercial.</p>
+    <p class="fragment amber">La iluminación de la escena influye de forma determinante en la reconstrucción.</p>
+    <p class="godown">Detalle completo del caso</p>
+  </div>
+</div>
+<p class="credit" style="margin-top:14px">Publicación del caso: Trabajo del grupo PCI, UNAL Manizales. Antecedente: Gómez Mendoza (2004), <a href="https://repositorio.unal.edu.co/handle/unal/2752">tesis de maestría</a>.</p>
+<aside class="notes"><p>El primer caso trata de la adquisición: cómo obtener un modelo tridimensional con equipos de bajo costo, una cámara y un proyector. El proyector lanza patrones de luz sobre el objeto, la cámara los ve deformados, y por triangulación se recupera la profundidad. Para eso hay que calibrar la cámara y el proyector, con el modelo pin-hole que vimos.</p><p>El resultado: modelos de decenas de miles de puntos, comparados con un escáner comercial. Y la conclusión que nos importa hoy: la iluminación de la escena influye de forma determinante en el resultado.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 22–23</div><div class="kicker">Caso 1 · adquisición de imágenes de rango</div><h3>Proyección de luz estructurada</h3>
+<div class="cols c64 mid"><div class="dense"><p>El método de triangulación, es por mucho el método más empleado para inferir la información espacial de un objeto del mundo real por medio de dispositivos ópticos.</p><p>Los sistemas de captura por triangulación se componen generalmente por un sistema de “proyección” de luz estructurada, que proyecta patrones como puntos, líneas, rejillas, etc., y por un sensor óptico, que típicamente es un CCD.</p></div>
+<figure class="figure"><img src="assets/img/c2_d023_a.jpg" alt="Esquema de un sistema de luz estructurada: un láser proyecta una línea sobre objetos, una cámara CCD la observa y un computador calcula la altura" width="420" height="335" class="dark" style="max-height:none;"><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 23.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 22 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 24</div><div class="kicker">Caso 1</div><h3>Montaje de triangulación</h3>
+<div class="cols mid"><div class="dense"><p>El sistema de adquisición cuenta con tres objetos que tienen coordenadas relativas con respecto a un origen global que se puede elegir arbitrariamente. Todos los elementos en la escena deben ser referidos a las coordenadas del mundo elegidas.</p><p>A partir de la información visual que se pueda obtener con la cámara, se deben calcular la posición y orientación de la cámara y el proyector con el fin de encontrar la información espacial implícita en cada silueta proyectada sobre el objeto.</p></div>
+<figure class="figure"><img src="assets/img/c2_d024_a.png" alt="Vista superior del montaje de triangulación: el objeto, la cámara y el proyector con sus rayos" width="509" height="380" class="dark" style="max-height:none;"><figcaption class="credit">Montaje de triangulación: vista superior. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 24.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 24 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 26</div><div class="kicker">Caso 1 · calibración</div><h3>Algoritmo DLT</h3>
+<p class="dense2">El algoritmo empleado para encontrar la matriz de calibración de cámara es el DLT. Este método se basa en encontrar la matriz P que mejor se ajuste a un sistema sobredimensionado de correspondencias entre el plano de la cámara y el mundo 3D. Se requieren entonces correspondencias 2D-3D de la cámara y el mundo real.</p>
+<div class="eqbox dense2"><div class="lbl">Algoritmo DLT con normalización · requiere n correspondencias x<sub>i</sub> ↔ X<sub>i</sub></div><ol style="margin-top:6px"><li>Hallar las matrices de normalización T y Q de los n puntos x y X, respectivamente.</li><li>Normalizar las coordenadas en cada una de las imágenes de forma independiente y hallar x̄ y X̄.</li><li>Para cada correspondencia x̄<sub>i</sub> ↔ X̄<sub>i</sub>, construir la matriz Ā<sub>i</sub>.</li><li>Construir la matriz Ā de (2n × 12) a partir de las n matrices Ā<sub>i</sub>.</li><li>Obtener la descomposición en valores singulares de Ā: el vector singular unitario asociado al menor valor singular es la solución p̄.</li><li>La matriz P̄ se determina a partir de p̄, por filas.</li><li>P = T<sup>−1</sup> P̄ Q.</li></ol></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 26 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 26</div><div class="kicker">Caso 1 · calibración</div><h3>Matrices de normalización</h3>
+<div class="cols mid"><div class="eqbox eqlist"><math display="block"><mrow><mi>T</mi><mo>=</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msub><mi>d</mi><mi>máx</mi></msub></mrow></mfrac><mrow><mo>[</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd><mtd><mrow><mo>−</mo><msub><mi>x</mi><mi>mean</mi></msub></mrow></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>2</mn></mtd><mtd><mrow><mo>−</mo><msub><mi>y</mi><mi>mean</mi></msub></mrow></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>]</mo></mrow></mrow></math><math display="block"><mrow><mi>Q</mi><mo>=</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msub><mi>d</mi><mi>máx</mi></msub></mrow></mfrac><mrow><mo>[</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mrow><mo>−</mo><msub><mi>X</mi><mi>mean</mi></msub></mrow></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>3</mn></mtd><mtd><mn>0</mn></mtd><mtd><mrow><mo>−</mo><msub><mi>Y</mi><mi>mean</mi></msub></mrow></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>3</mn></mtd><mtd><mrow><mo>−</mo><msub><mi>Z</mi><mi>mean</mi></msub></mrow></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>]</mo></mrow></mrow></math></div>
+<figure class="figure"><img src="assets/img/c2_d026_b.jpg" alt="Patrón de calibración: dos planos en ángulo recto con cuadros negros sobre fondo blanco" width="520" height="390" class="dark" style="max-height:none;"><figcaption class="credit">Patrón de calibración. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 26.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 26 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 27</div><div class="kicker">Caso 1 · calibración</div><h3>Patrón de calibración</h3>
+<div class="gal"><figure><img src="assets/img/c2_d027_d.jpg" alt="Fotografía del patrón de calibración: dos planos con 60 cuadros negros" width="290" height="218" class="dark" style="max-height:none;"><figcaption>Patrón de calibración</figcaption></figure><figure><img src="assets/img/c2_d027_b.jpg" alt="Bordes del patrón detectados con el operador de Prewitt" width="290" height="218" class="dark" style="max-height:none;"><figcaption>Bordes Prewitt</figcaption></figure><figure><img src="assets/img/c2_d027_c.jpg" alt="Esquinas de los cuadros detectadas en el patrón" width="290" height="218" class="dark" style="max-height:none;"><figcaption>Esquinas</figcaption></figure><figure><img src="assets/img/c2_d027_a.jpg" alt="Rastreo: las esquinas numeradas en orden para establecer las correspondencias" width="287" height="230" class="dark" style="max-height:none;"><figcaption>Rastreo</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 27.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 27 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 30</div><div class="kicker">Caso 1</div><h3>Posición del proyector</h3>
+<div class="gal"><figure><img src="assets/img/c2_d030_a.jpg" alt="Toma de calibración del proyector en el plano Z igual a cero: un cuadro negro proyectado con cuatro esquinas marcadas" width="500" height="375" class="dark" style="max-height:none;"><figcaption>Toma de calibración Z = 0</figcaption></figure><figure><img src="assets/img/c2_d030_b.jpg" alt="Modelo de posicionamiento: los planos de luz del proyector en el espacio" width="500" height="375" class="dark" style="max-height:none;"><figcaption>Modelo de posicionamiento</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 30.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 30 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 31</div><div class="kicker">Caso 1</div><h3>Planos generados por el proyector</h3>
+<figure class="figure"><img src="assets/img/c2_d031_a.jpg" alt="Simulación de los planos de luz del proyector que cortan un objeto rojo frente a una pared de ladrillo" width="627" height="470" class="dark" style="max-height:none;"><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 31.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 31 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 32</div><div class="kicker">Caso 1</div><h3>Condiciones de adquisición</h3>
+<div class="gal"><figure><img src="assets/img/c2_d032_f.jpg" alt="Objeto blanco sobre fondo blanco iluminado con los patrones" width="250" height="228" class="dark" style="max-height:none;"><figcaption>Fondo blanco</figcaption></figure><figure><img src="assets/img/c2_d032_e.jpg" alt="Patrones de líneas de luz de colores sobre un objeto" width="181" height="250" class="dark" style="max-height:none;"><figcaption>Patrones de luz</figcaption></figure><figure><img src="assets/img/c2_d032_a.jpg" alt="Canal rojo de la imagen de una manzana con líneas proyectadas" width="229" height="250" class="dark" style="max-height:none;"><figcaption>Canal rojo</figcaption></figure><figure><img src="assets/img/c2_d032_c.jpg" alt="Canal verde de la misma imagen" width="229" height="250" class="dark" style="max-height:none;"><figcaption>Canal verde</figcaption></figure><figure><img src="assets/img/c2_d032_b.jpg" alt="Canal azul de la misma imagen" width="229" height="250" class="dark" style="max-height:none;"><figcaption>Canal azul</figcaption></figure><figure><img src="assets/img/c2_d032_d.jpg" alt="Imagen RGB de la manzana con las líneas de luz de colores" width="229" height="250" class="dark" style="max-height:none;"><figcaption>Imagen RGB</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 32.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 32 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 33–34</div><div class="kicker">Caso 1</div><h3>Simulación</h3>
+<div class="gal"><figure><img src="assets/img/c2_d033_a.jpg" alt="Ventana de simulación con un cuadro blanco" width="260" height="195" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d033_b.jpg" alt="Modelo 3D de una cabeza sobre fondo negro" width="260" height="195" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d033_c.jpg" alt="Cabeza sintética iluminada en la simulación" width="224" height="230" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d033_d.jpg" alt="Cabeza sintética frente al patrón de calibración" width="260" height="195" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d034_a.jpg" alt="Cabeza sintética frente a una pared de ladrillo" width="260" height="195" class="dark" style="max-height:none;"></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 33, 34.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 33 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 35</div><div class="kicker">Caso 1</div><h3>Triangulación de la imagen de rango</h3>
+<div class="gal"><figure><img src="assets/img/c2_d035_a.png" alt="Diagrama de la triangulación de una rejilla de puntos en triángulos" width="520" height="262" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d035_b.png" alt="Captura del programa con la malla triangulada" width="357" height="380" class="dark" style="max-height:none;"></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 35.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 35 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 36</div><div class="kicker">Caso 1</div><h3>Resultados</h3>
+<div class="gal"><figure><img src="assets/img/c2_d036_b.jpg" alt="Reconstrucción en malla de un rostro" width="280" height="288" class="dark" style="max-height:none;"><figcaption>Reconstrucciones de 27 273 y 25 714 puntos</figcaption></figure><figure><img src="assets/img/c2_d036_c.jpg" alt="Reconstrucción en malla de un rostro, otra vista" width="280" height="288" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d036_d.jpg" alt="Reconstrucción en malla de la figura de la vaca" width="280" height="289" class="dark" style="max-height:none;"><figcaption>44 808 puntos</figcaption></figure><figure><img src="assets/img/c2_d036_a.jpg" alt="Fotografía de la figura de cerámica de la vaca" width="280" height="280" class="dark" style="max-height:none;"><figcaption>El objeto</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 36.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 36 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 37</div><div class="kicker">Caso 1</div><h3>Escáner de referencia: Minolta Vivid 9i</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Escaneo tridimensional con textura del rostro de un adulto, vista frontal</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Escaneo tridimensional del rostro de un adulto en color de profundidad</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Escaneo tridimensional del rostro de un adulto, vista lateral</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Escaneo tridimensional del rostro de un adulto, otra vista</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Escáner tridimensional Minolta Vivid 9i</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Minolta Vivid 9i</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 37.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 37 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 38</div><div class="kicker">Caso 1</div><h3>Conclusiones</h3>
+<div class="dense2"><p>Se planteó un esquema práctico de triangulación 3D de bajo costo, empleando luz estructurada. El esquema propuesto es flexible y puede ser adaptado fácilmente a esquemas con equipos diferentes a los empleados en este desarrollo, haciendo pequeños ajustes a la formulación planteada.</p><p>La iluminación de la escena influye de forma determinante en el resultado de la reconstrucción final. Esto debido al contraste en la imagen y la influencia de la iluminación en la crominancia de los colores elegidos para los patrones de luz en la adquisición.</p><p>La disposición de la cámara y el proyector, y en forma práctica, la separación entre estos tiene un efecto en la aproximación obtenida el cual debe ser considerado, ya que si la distancia es muy corta, la información espacial es poca, y si la distancia es muy grande, la oclusión de los patrones de luz sobre el objeto desde el punto de vista de la cámara hacen que el modelo resultante no sea práctico.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 38 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1">
+<div class="kicker">Caso 2 · segmentación por color</div>
+<h2>Antropometría facial en niños de Manizales</h2>
+<div class="cols c46 mid">
+  <div><div class="imgrow"><figure class="figure"><img src="assets/img/c2_d046_b.png" alt="Silueta blanca de un rostro segmentado por el modelo de color de la piel, sobre fondo negro" width="240" height="187" class="dark" style="max-height:none;"><figcaption class="credit">Segmentación final. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 46.</figcaption></figure><figure class="figure"><img src="assets/img/c2_d045_b.jpg" alt="Nube de puntos del color de la piel en el plano Cb–Cr, con una elipse que la encierra" width="260" height="228" class="dark" style="max-height:none;"><figcaption class="credit">Modelo elíptico del color de la piel. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 45.</figcaption></figure></div></div>
+  <div>
+    <p><strong>Pregunta:</strong> ¿se pueden medir los rasgos faciales de forma automática, a partir de fotografías?</p>
+    <p class="fragment"><strong>Resultado:</strong> un modelo elíptico del color de la piel en YCbCr localiza rostro. ojos y boca; estudio en 23 colegios (5.866 estudiantes. muestra de 662)</p>
+    <p class="fragment amber">La iluminación y el tono de la piel determinan el desempeño.</p>
+    <p class="godown">Detalle completo del caso</p>
+  </div>
+</div>
+<p class="credit" style="margin-top:14px">Publicación del caso: Mejía (2004), informe técnico del grupo PCI, UNAL Manizales.</p>
+<aside class="notes"><p>El segundo caso es un estudio de antropometría facial: medir de forma automática los rasgos de la cara de niños de 5 a 10 años de Manizales, a partir de fotografías tomadas en los colegios con iluminación controlada.</p><p>La clave es la segmentación por color: en el espacio YCbCr, el color de la piel forma una nube compacta que se puede encerrar en una elipse. Así se separa el rostro del fondo, y dentro del rostro se buscan los ojos y la boca. El estudio se hizo en 23 colegios, con una muestra de 662 niños de una población de 5866.</p><p>La conclusión: la iluminación y el tono de la piel son los factores que más determinan el desempeño. Las fotografías de los niños están en la columna de abajo y solo se muestran en clase.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 39–40</div><div class="kicker">Caso 2</div><h3>Estudio de antropometría facial</h3>
+<div class="cols c64 mid"><div class="dense2"><p>Antropometría facial es la medida de la superficie de la cabeza y de la cara.</p><p>Expresa la calidad de las relaciones entre varias partes del cuerpo humano. La introducción de medidas individuales de la cabeza y de la cara desarrolladas principalmente para la medida del cráneo, data de la segunda mitad del siglo XIX. La antropometría experimentó un renacimiento hace 3 décadas cuando los médicos comenzaron a usar las medidas de la superficie de pacientes con deformidades craneofaciales congénitas o adquiridas y gradualmente ganó reconocimiento como un método objetivo para determinar cambios en la morfología de los tejidos blandos de la cara, permitiendo el establecimiento de los rasgos característicos del ser humano de acuerdo a su raza y sexo, y las diferentes anomalías faciales dentro de una población determinada.</p></div>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Dibujo de perfil de una cabeza con los puntos antropométricos marcados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Dibujo frontal de un rostro con los puntos antropométricos marcados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 39 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 41</div><div class="kicker">Caso 2</div><h3>Adquisición: entorno controlado con iluminación estructurada</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Montaje de fotografía con sombrillas de luz y un niño sentado de perfil</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Montaje de fotografía con un niño sentado de espaldas a la cámara</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Montaje de fotografía con un niño sentado frente a la cámara</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Montaje de fotografía en otro colegio con una niña sentada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 41.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 41 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 42</div><div class="kicker">Caso 2</div><h3>Base de datos</h3>
+<div class="cols" style="gap:20px;font-size:15px"><table class="tbl num xs"><thead><tr><th>Núcleo</th><th>Institución</th><th>Estudiantes</th><th>Muestra</th><th>Hombres</th><th>Mujeres</th></tr></thead><tbody><tr><td>1</td><td>Colegio A</td><td>142</td><td>16</td><td>8</td><td>8</td></tr><tr><td>1</td><td>Colegio B</td><td>247</td><td>28</td><td>14</td><td>14</td></tr><tr><td>1</td><td>Colegio C</td><td>138</td><td>16</td><td>8</td><td>8</td></tr><tr><td>2</td><td>Colegio A</td><td>290</td><td>32</td><td>16</td><td>16</td></tr><tr><td>2</td><td>Colegio B</td><td>115</td><td>14</td><td>7</td><td>7</td></tr><tr><td>3</td><td>Colegio A</td><td>357</td><td>40</td><td>20</td><td>20</td></tr><tr><td>3</td><td>Colegio B</td><td>186</td><td>20</td><td>10</td><td>10</td></tr><tr><td>4</td><td>Colegio A</td><td>182</td><td>20</td><td>10</td><td>10</td></tr><tr><td>4</td><td>Colegio B</td><td>322</td><td>36</td><td>18</td><td>18</td></tr><tr><td>5</td><td>Colegio A</td><td>459</td><td>52</td><td>26</td><td>26</td></tr><tr><td>5</td><td>Colegio B</td><td>129</td><td>14</td><td>7</td><td>7</td></tr><tr><td>5</td><td>Colegio C</td><td>138</td><td>16</td><td>8</td><td>8</td></tr></tbody></table><table class="tbl num xs"><thead><tr><th>Núcleo</th><th>Institución</th><th>Estudiantes</th><th>Muestra</th><th>Hombres</th><th>Mujeres</th></tr></thead><tbody><tr><td>6</td><td>Colegio A</td><td>256</td><td>28</td><td>14</td><td>14</td></tr><tr><td>6</td><td>Colegio B</td><td>221</td><td>24</td><td>12</td><td>12</td></tr><tr><td>7</td><td>Colegio A</td><td>182</td><td>20</td><td>10</td><td>10</td></tr><tr><td>8</td><td>Colegio A</td><td>545</td><td>62</td><td>31</td><td>31</td></tr><tr><td>9</td><td>Colegio A</td><td>383</td><td>44</td><td>22</td><td>22</td></tr><tr><td>9</td><td>Colegio B</td><td>474</td><td>54</td><td>27</td><td>27</td></tr><tr><td>10</td><td>Colegio A</td><td>190</td><td>22</td><td>11</td><td>11</td></tr><tr><td>10</td><td>Colegio B</td><td>347</td><td>40</td><td>20</td><td>20</td></tr><tr><td>10</td><td>Colegio C</td><td>198</td><td>24</td><td>12</td><td>12</td></tr><tr><td>11</td><td>Colegio A</td><td>150</td><td>16</td><td>8</td><td>8</td></tr><tr><td>11</td><td>Colegio B</td><td>215</td><td>24</td><td>12</td><td>12</td></tr></tbody></table></div>
+<p class="dense2">Base de datos seleccionada de niños estudiantes de colegio entre 5 y 10 años de la ciudad de Manizales: 5866 estudiantes en total en 23 colegios; muestra de 662, la mitad hombres y la mitad mujeres.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 42 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 43</div><div class="kicker">Caso 2</div><h3>Extracción de características</h3>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Diagrama del proceso de extracción de características faciales con imágenes de un niño en cada paso: compensación de iluminación, transformación del espacio de color, detección del color de piel, segmentación, componentes conectados, detección de ojos y boca, frontera facial y verificación</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 43.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 43 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 44</div><div class="kicker">Caso 2</div><h3>Compensación de iluminación y espacios de color</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotografía frontal de una niña antes de compensar la iluminación</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Original</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>La misma fotografía con la iluminación compensada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Compensación de la iluminación</figcaption></figure><figure><img src="assets/img/c2_d044_c.png" alt="Nube tridimensional del color de la piel en un espacio de color" width="246" height="260" class="dark" style="max-height:none;"><figcaption>Separación del color de la piel (a)</figcaption></figure><figure><img src="assets/img/c2_d044_d.png" alt="Nube tridimensional del color de la piel en otro espacio de color" width="235" height="260" class="dark" style="max-height:none;"><figcaption>Separación del color de la piel (b)</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 44.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 44 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 45</div><div class="kicker">Caso 2</div><h3>Modelado del color de la piel</h3>
+<div class="cols c64 mid"><div class="dense2"><p>Modelar el color de la piel requiere escoger un espacio de color adecuado e identificar una región (nube característica) asociada con su color en este. Se trabaja con el espacio de color YCbCr, ya que es un espacio de color perceptualmente uniforme y es ampliamente usado en compresión de video.</p><p>El espacio de color YCbCr es el equivalente digital del espacio de color YUV , donde Cb es la componente de crominancia que corresponde con la componente U y la componente Cr es análoga a V. El formato YCbCr, concentra la mayor parte de la información de la imagen en la luminancia y menos en la crominancia.</p><p>El resultado es que los elementos de YCbCr, están menos correlacionados y pueden ser codificados por separado y la nube característica del color de la piel es lo suficientemente compacta.</p></div>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotografía de un niño representada en el espacio de color YCbCr</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><img src="assets/img/c2_d045_b.jpg" alt="Nube del color de la piel en el plano Cb–Cr encerrada por una elipse" width="260" height="228" class="dark" style="max-height:none;"></figure></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 45 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 46</div><div class="kicker">Caso 2</div><h3>Segmentación con el modelo de color de la piel</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotografía de una niña con la iluminación corregida</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Imagen con corrección de iluminación</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>La misma fotografía en el espacio de color YCbCr</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Espacio de color YCbCr</figcaption></figure><figure><img src="assets/img/c2_d046_a.png" alt="Segmentación inicial: máscara blanca del rostro con huecos en ojos y boca" width="270" height="194" class="dark" style="max-height:none;"><figcaption>Segmentación inicial</figcaption></figure><figure><img src="assets/img/c2_d046_b.png" alt="Segmentación final: silueta blanca del rostro" width="270" height="210" class="dark" style="max-height:none;"><figcaption>Segmentación final</figcaption></figure></div><p class="dense2">La segmentación se realiza mediante un modelado elíptico de la información del color de la piel en el espacio 3D YCbCr.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 46 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 47</div><div class="kicker">Caso 2</div><h3>Construcción del mapa de la boca</h3>
+<div class="cols mid"><div><p class="dense2">La boca presenta una baja respuesta en la característica Cr/Cb, y de forma contraria en Cr2. En base a estos criterios, el mapa de la boca es construido mediante la expresión descrita en la ecuación</p><div class="eqbox"><math display="block"><mrow><mi>MouthMap</mi><mo>=</mo><msup><msub><mi>C</mi><mi>r</mi></msub><mn>2</mn></msup><mo>·</mo><msup><mrow><mo>(</mo><msup><msub><mi>C</mi><mi>r</mi></msub><mn>2</mn></msup><mo>−</mo><mi>η</mi><mo>·</mo><msub><mi>C</mi><mi>r</mi></msub><mo>/</mo><msub><mi>C</mi><mi>b</mi></msub><mo>)</mo></mrow><mn>2</mn></msup></mrow></math><math display="block"><mrow><mi>η</mi><mo>=</mo><mn>0,95</mn><mo>·</mo><mfrac><mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><munder><mo>∑</mo><mrow><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mo>∈</mo><mi>FG</mi></mrow></munder><msup><mrow><msub><mi>C</mi><mi>r</mi></msub><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo></mrow><mn>2</mn></msup></mrow></mrow><mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><munder><mo>∑</mo><mrow><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mo>∈</mo><mi>FG</mi></mrow></munder><msub><mi>C</mi><mi>r</mi></msub><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mo>/</mo><msub><mi>C</mi><mi>b</mi></msub><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo></mrow></mrow></mfrac></mrow></math></div></div>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Proceso del mapa de la boca: imágenes de las características Cr/Cb y Cr al cuadrado del rostro de un niño, su diferencia y la boca segmentada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 47.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 47 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 48</div><div class="kicker">Caso 2</div><h3>Construcción del mapa de los ojos</h3>
+<div class="cols mid"><div><div class="eqbox"><math display="block"><mrow><mi>EyeMapL</mi><mo>=</mo><mfrac><mrow><mrow><mi>Y</mi><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mo>⊕</mo><msub><mi>g</mi><mi>σ</mi></msub><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo></mrow></mrow><mrow><mrow><mi>Y</mi><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mo>⊖</mo><msub><mi>g</mi><mi>σ</mi></msub><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mo>+</mo><mn>1</mn></mrow></mrow></mfrac></mrow></math></div>
+<p class="dense2">⊕ y ⊖ son la dilatación y la erosión en escala de grises con un elemento estructurante g<sub>σ</sub>.</p>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de una niña con los ojos y la boca detectados, enmarcados en verde</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Rostro detectado. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 48.</figcaption></figure></div>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Proceso del mapa de los ojos con las componentes de color del rostro de un niño</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 48.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 48 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 49</div><div class="kicker">Caso 2</div><h3>Detección de las comisuras labiales</h3>
+<div class="cols mid"><figure class="figure"><img src="assets/img/c2_d049_c.png" alt="Diagrama de la detección de las comisuras labiales: área de la boca, proyección horizontal, búsqueda de mínimos y posición de las esquinas, con imágenes de los labios en gris" width="560" height="333" class="dark" style="max-height:none;"><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 49.</figcaption></figure>
+<div><figure class="figure"><img src="assets/img/c2_d049_a.jpg" alt="Mapa de calor de la imagen de los labios" width="460" height="152" class="dark" style="max-height:none;"><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 49.</figcaption></figure><figure class="figure"><img src="assets/img/c2_d049_b.png" alt="Superficie tridimensional del mapa de bits de la imagen de los labios" width="460" height="155" class="dark" style="max-height:none;"><figcaption class="credit">Superficie del mapa de bits de la imagen de los labios. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 49.</figcaption></figure></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 49 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 50–51</div><div class="kicker">Caso 2</div><h3>Detección del iris y de las comisuras de los párpados</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Diagrama de la detección del iris: área de los ojos, región del centro del iris, bordes SUSAN y detección circular, con imágenes del ojo de un niño</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Detección del iris</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Diagrama del modelado de las comisuras de los párpados: área de los ojos, iris, suavizado, esquinas SUSAN y búsqueda de mínimos, con imágenes del ojo de un niño</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Modelado de las comisuras de los párpados</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 50, 51.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 50 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 52</div><div class="kicker">Caso 2</div><h3>Complejo facial antropométrico</h3>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de una niña con las medidas antropométricas marcadas entre ojos, nariz y boca</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 52.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 52 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 53–54</div><div class="kicker">Caso 2</div><h3>Resultados</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de una niña con ojos y boca detectados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ojos de la niña recortados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de la niña recortada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de otra niña con ojos y boca detectados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ojos de la niña recortados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de la niña recortada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 53, 54.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 53 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 55–56</div><div class="kicker">Caso 2</div><h3>Resultados (continuación)</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de un niño con ojos y boca detectados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ojos del niño recortados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca del niño recortada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de un niño con ojos y boca detectados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de otro niño con ojos y boca detectados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ojos de un niño recortados</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de un niño recortada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Ojo de un niño con las comisuras marcadas</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 55, 56.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 55 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 57</div><div class="kicker">Caso 2</div><h3>Conclusiones: la muestra</h3>
+<div class="dense2"><p>El establecimiento del estudio antropométrico facial de una determinada población requiere de una muestra representativa que permita generalizar los resultados obtenidos. Se tomó como población total, la de los niños inscritos en las diferentes instituciones educativas de la ciudad de Manizales. No se trabaja con la información determinada por el CENSO del año de 1993, ya que este es una proyección que no indica la situación real de la población para el año 2004. Con base en el conjunto poblacional seleccionado, se realizó un muestreo bietápico, ya que, la información requerida por el DANE a través de la Secretaría de Educación de Manizales, no es discriminante en cuanto la edad y el género, es decir, no se tiene el dato preciso de cuántas niñas de 5 años hay en una institución determinada por ejemplo, sino que, se tiene el dato general de niños y niñas. Por esta razón se seleccionó la muestra de niños y niñas por cada grupo de edad como un solo valor y se distribuyó, un 50% para el sexo masculino, y un 50% para el sexo femenino.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 57 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 58</div><div class="kicker">Caso 2</div><h3>Conclusiones: la adquisición</h3>
+<div class="dense2"><p>Para la adquisición de las diferentes imágenes faciales, se estableció un protocolo de control de las condiciones de toma de las muestras, como son la distribución geométrica de los elementos y el manejo de luces artificiales en un ambiente oscuro. Sin embargo, dichas condiciones tienen un pequeño margen de variabilidad, originado por las condiciones de trabajo de los elementos de adquisición (fotografía), la limitación del espacio físico en cada una de las instituciones visitadas y el trabajo con niños de edades inferiores. En cuanto al trabajo con los niños de las diferentes edades, se encontró dificultades, para controlar su posición estática, frontal y recta frente a la cámara, razón por lo cual se tienen imágenes rotadas, trasladadas, con los ojos fuera del rango frontal, y con la boca abierta.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 58 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 59</div><div class="kicker">Caso 2</div><h3>Conclusiones: el procesamiento</h3>
+<div class="dense2"><p>En el procesamiento digital de las imágenes adquiridas, las condiciones de iluminación de la escena y el tono de la piel son los factores más importantes que determinan el desempeño de los algoritmos de detección y extracción de características faciales. Comparando los resultados de las diferentes pruebas realizadas, la imagen sin compensación de iluminación y sin transformación no lineal del espacio de color YCbCr, presenta el mayor desempeño en cuanto a imágenes procesadas satisfactoriamente y tiempo de cómputo, ya que las condiciones de iluminación del proceso de adquisición, son lo suficientemente buenas para dar un equilibrio entre el color del tono de la piel del sujeto de análisis y el brillo de la escena. Las pruebas con compensación de iluminación y/o transformación no lineal, introducen brillos indeseados en la imagen, que conducen a obtener falsos negativos en la detección, y consecuentemente fallos en la localización de los diferentes puntos faciales.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 59 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1">
+<div class="kicker">Caso 3 · características y clasificación</div>
+<h2>Posturas labiales en niños con labio o paladar hendido</h2>
+<div class="cols c46 mid">
+  <div><figure class="figure"><img src="assets/img/c2_d071_b.png" alt="Gráfica del espacio de características reducido con el análisis de Fisher: puntos agrupados por vocal" width="470" height="188" class="dark" style="max-height:none;"><figcaption class="credit">Espacio de características tras el análisis de Fisher. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 71.</figcaption></figure><table class="tbl num"><thead><tr><th></th><th>/a/</th><th>/e/</th><th>/i/</th><th>/o/</th><th>/u/</th></tr></thead><tbody><tr><td>/a/</td><td class="hi">79 %</td><td>12 %</td><td>1 %</td><td>8 %</td><td>0 %</td></tr><tr><td>/e/</td><td>10 %</td><td class="hi">62 %</td><td>24 %</td><td>1 %</td><td>3 %</td></tr><tr><td>/i/</td><td>3 %</td><td>35 %</td><td class="hi">55 %</td><td>0 %</td><td>7 %</td></tr><tr><td>/o/</td><td>2 %</td><td>3 %</td><td>6 %</td><td class="hi">51 %</td><td>38 %</td></tr><tr><td>/u/</td><td>0 %</td><td>1 %</td><td>5 %</td><td>13 %</td><td class="hi">81 %</td></tr></tbody></table></div>
+  <div>
+    <p><strong>Pregunta:</strong> ¿se puede reconocer la vocal que se pronuncia a partir de la forma de los labios?</p>
+    <p class="fragment"><strong>Resultado:</strong> 19 características (densidad, momentos, momentos invariantes, color) y cuatro clasificadores; con el bayesiano, de 51 % a 81 % de aciertos según la vocal.</p>
+    <p class="fragment amber">Un clasificador sencillo, el bayesiano, basta para separar las cinco vocales.</p>
+    <p class="godown">Detalle completo del caso</p>
+  </div>
+</div>
+<p class="credit" style="margin-top:14px">Publicación del caso: Salazar y Prieto (2006), <em>DYNA</em> 73(150), 175–188. <a href="https://revistas.unal.edu.co/index.php/dyna/article/view/849">Artículo</a>.</p>
+<aside class="notes"><p>El tercer caso es un pipeline completo de reconocimiento: a partir de la forma de los labios, reconocer cuál de las cinco vocales pronuncia un niño. Es parte de un proyecto con niños con labio o paladar hendido corregido.</p><p>Se segmenta la boca, se detecta el contorno de los labios y se describen con 19 características: densidad, momentos estadísticos, momentos invariantes y color. Después se reduce el espacio con el análisis de Fisher y se comparan cuatro clasificadores: lineal, bayesiano, máquinas de vectores de soporte y redes neuronales.</p><p>La tabla es la matriz de confusión del bayesiano: en la diagonal, los aciertos por vocal, entre 51 y 81 %. La conclusión del trabajo: un clasificador sencillo, como el bayesiano, basta. Volveremos a este caso en la charla intermedia, como ejemplo de características diseñadas a mano.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 60–61</div><div class="kicker">Caso 3</div><h3>Estudio de fonética acústica</h3>
+<div class="cols c64 mid"><div class="dense2"><p>El modo de articulación está determinado por la disposición de los órganos móviles en la cavidad bucal y cómo impiden o dejan libre el paso del aire. Esta acción consiste en la interrupción instantánea y completa del paso del aire para los fonemas oclusivos (/p/,/t/,/k/,/b/,/d/,/g/); en dejar abierto el paso nasal pero interrumpido el oral para los fonemas nasales (/m/,/n/,/ñ/); en producir un contacto con la lengua pero dejar libre el paso del aire a uno y otro lado para los fonemas laterales (/l/,/ll/); en producir una leve interrupción primero y dejar el paso libre después para los fonemas africados (/c/); en permitir el paso del aire por un paso estrecho por el que el aire pasa rozando para los fonemas fricativos (/b/,/d/,/g/,/f/,/s/), y en permitir el paso libre del aire por el centro de la lengua sin fricción alguna para los fonemas vocales (/a/,/e/,/i/,/o/,/u/)</p></div>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Esquema del aparato fonador: cavidades nasal y bucal, faringe, laringe, tráquea, bronquios, pulmones y diafragma</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 61.</figcaption></figure></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 60 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 62</div><div class="kicker">Caso 3</div><h3>Caracterización de la postura para las vocales</h3>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Triángulo de las vocales según la posición de la lengua y perfiles de la boca para cada vocal</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 62.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 62 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 63</div><div class="kicker">Caso 3</div><h3>Segmentación del área bucal</h3>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Pasos de la segmentación del área bucal: región de búsqueda, imagen recortada, imagen binaria, región en color, espacio de color HSV, componente de tono filtrada, candidatos y región de la boca</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 63.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 63 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 64–65</div><div class="kicker">Caso 3</div><h3>Extracción de la postura y de las comisuras</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Rostro de un niño con la boca abierta y la región de la boca marcada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Extracción de la postura</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca abierta ampliada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Pasos de la extracción de las comisuras de los labios: imagen original, componente de tono, imagen binaria, regiones de búsqueda, bordes SUSAN y detección de los vértices</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Extracción de las comisuras</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 64, 65.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 64 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 66</div><div class="kicker">Caso 3</div><h3>Detección del contorno de los labios</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca abierta con puntos azules y amarillos en el contorno de los labios</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca con el contorno exterior trazado en rojo</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca con la línea media de los labios trazada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca con el contorno completo trazado</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 66.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 66 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 67</div><div class="kicker">Caso 3</div><h3>Detección del contorno de los labios: el método</h3>
+<div class="cols mid"><ol class="dense2">
+<li>Se define la región de búsqueda como la banda ubicada en el centro de la distancia entre los vértices (10 columnas a la izquierda y 10 a la derecha).</li><li>Se hace la suma de los valores de intensidad de cada fila, obteniéndose una distribución P[r].</li><li>Se calcula P[r]− &lt; P[r] &gt; (&lt; P[r] &gt; equivale a la media de P[r]), obteniendo P’[r].</li><li>La posición vertical de los puntos se determina como el ancho MW que se muestra las figuras de tono y exclusión de rojo.</li></ol>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Imagen de tono filtrada de la boca con la banda de búsqueda en rojo</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><img src="assets/img/c2_d067_b.png" alt="Distribución de intensidad por fila de la imagen de tono filtrada" width="260" height="212" class="dark" style="max-height:none;"><figcaption>Imagen de tono filtrada</figcaption></figure><figure><img src="assets/img/c2_d067_c.png" alt="Distribución de intensidad por fila de la imagen de exclusión de rojo" width="260" height="191" class="dark" style="max-height:none;"><figcaption>Imagen de exclusión de rojo</figcaption></figure></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 67 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 68</div><div class="kicker">Caso 3</div><h3>Contorno de los labios: dos fuentes de información</h3>
+<figure class="figure"><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Dos imágenes de la boca con los puntos del contorno marcados: con la información del tono filtrado y con la información de exclusión de rojo</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption class="credit">(a) Con la información del tono filtrado. (b) Con la información de exclusión de rojo. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 68.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 68 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 69</div><div class="kicker">Caso 3</div><h3>Características: densidad y momentos</h3>
+<div class="cols c46 mid" style="font-size:.86em"><div><div class="eqbox"><math display="block"><mrow><mi>d</mi><mo>=</mo><mfrac><mrow><msup><mi>p</mi><mn>2</mn></msup></mrow><mrow><mi>A</mi></mrow></mfrac></mrow></math></div>
+<p class="dense2">Densidad: p es el perímetro de la región y A el número de píxeles comprendidos en su contorno.</p><div class="eqbox"><math display="block"><mrow><mover><mi>x</mi><mo>¯</mo></mover><mo>=</mo><mfrac><mrow><msub><mi>m</mi><mn>10</mn></msub></mrow><mrow><msub><mi>m</mi><mn>00</mn></msub></mrow></mfrac><mspace width="1.5em"/><mover><mi>y</mi><mo>¯</mo></mover><mo>=</mo><mfrac><mrow><msub><mi>m</mi><mn>01</mn></msub></mrow><mrow><msub><mi>m</mi><mn>00</mn></msub></mrow></mfrac></mrow></math></div><p class="small muted">Centro de masa.</p></div>
+<div><div class="eqbox"><math display="block"><mrow><msub><mi>m</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub><mo>=</mo><munderover><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>∞</mi></munderover><munderover><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>∞</mi></munderover><msup><mi>x</mi><mi>p</mi></msup><msup><mi>y</mi><mi>q</mi></msup><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mi>d</mi><mi>x</mi><mi>d</mi><mi>y</mi></mrow><mspace width="1em"/><mi>p</mi><mo>,</mo><mi>q</mi><mo>∈</mo><msup><mi>ℤ</mi><mo>+</mo></msup></mrow></math></div><p class="small muted">Momentos estadísticos.</p><div class="eqbox"><math display="block"><mrow><msub><mi>μ</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub><mo>=</mo><munderover><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>∞</mi></munderover><munderover><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>∞</mi></munderover><msup><mrow><mo>(</mo><mi>x</mi><mo>−</mo><mover><mi>x</mi><mo>¯</mo></mover><mo>)</mo></mrow><mi>p</mi></msup><msup><mrow><mo>(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo>¯</mo></mover><mo>)</mo></mrow><mi>q</mi></msup><mrow><mi>f</mi><mo>(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>)</mo><mi>d</mi><mi>x</mi><mi>d</mi><mi>y</mi></mrow></mrow></math></div><p class="small muted">Momentos centrales.</p></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 69 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 70</div><div class="kicker">Caso 3</div><h3>Momentos centrales e invariantes</h3>
+<div class="cols c46"><div class="eqbox dense2">μ₀₀ = m₀₀<br>μ₁₀ = μ₀₁ = 0<br>μ₂₀ = m₂₀ − x̄ m₁₀<br>μ₀₂ = m₀₂ − ȳ m₀₁<br>μ₁₁ = m₁₁ − ȳ m₁₀<br>μ₃₀ = m₃₀ − 3x̄ m₂₀ + 2x̄² m₁₀<br>μ₀₃ = m₀₃ − 3ȳ m₀₂ + 2ȳ² m₀₁<br>μ₁₂ = m₁₂ − 2ȳ m₁₁ − x̄ m₀₂ + 2ȳ² m₁₀<br>μ₂₁ = m₂₁ − 2x̄ m₁₁ − ȳ m₂₀ + 2x̄² m₀₁</div>
+<div><div class="eqbox dense2" style="font-size:18px">φ₁ = η₂₀ + η₀₂<br>φ₂ = (η₂₀ − η₀₂)² + 4η₁₁²<br>φ₃ = (η₃₀ − 3η₁₂)² + (3η₂₁ − η₀₃)²<br>φ₄ = (η₃₀ + η₁₂)² + (η₂₁ + η₀₃)²<br>φ₅ = (η₃₀ − 3η₁₂)(η₃₀ + η₁₂)[(η₃₀ + η₁₂)² − 3(η₂₁ + η₀₃)²] + (3η₂₁ − η₀₃)(η₂₁ + η₀₃)[3(η₃₀ + η₁₂)² − (η₂₁ + η₀₃)²]<br>φ₆ = (η₂₀ − η₀₂)[(η₃₀ + η₁₂)² − (η₂₁ + η₀₃)²] + 4η₁₁(η₃₀ + η₁₂)(η₂₁ + η₀₃)<br>φ₇ = (3η₂₁ − η₀₃)(η₃₀ + η₁₂)[(η₃₀ + η₁₂)² − 3(η₂₁ + η₀₃)²] − (η₃₀ − 3η₁₂)(η₂₁ + η₀₃)[3(η₃₀ + η₁₂)² − (η₂₁ + η₀₃)²]</div><div class="eqbox" style="margin-top:8px"><math display="block"><mrow><msub><mi>η</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub><mo>=</mo><mfrac><mrow><msub><mi>μ</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub></mrow><mrow><msup><msub><mi>μ</mi><mn>00</mn></msub><mrow><mn>1</mn><mo>+</mo><mfrac><mrow><mrow><mi>p</mi><mo>+</mo><mi>q</mi></mrow></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msup></mrow></mfrac></mrow></math></div>
+<p class="fix">Corregido respecto al original: se intercambiaban μ₂₀ y μ₀₂, μ₁₁ estaba incompleto, μ₁₂ tenía un término errado, y φ₃ y φ₇ tenían un signo y un subíndice equivocados. Se agrega la normalización η<sub>pq</sub>, que el original no define. Fórmulas de Hu (1962).</p></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 70 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 71–72</div><div class="kicker">Caso 3</div><h3>Espacio de características</h3>
+<div class="cols c46 mid"><table class="tbl num"><thead><tr><th>#</th><th>Característica</th><th>#</th><th>Característica</th></tr></thead><tbody><tr><td>1</td><td>d</td><td>11</td><td>φ₁</td></tr><tr><td>2</td><td>m₀₁</td><td>12</td><td>φ₂</td></tr><tr><td>3</td><td>m₁₀</td><td>13</td><td>φ₃</td></tr><tr><td>4</td><td>m₁₁</td><td>14</td><td>φ₄</td></tr><tr><td>5</td><td>m₂₀</td><td>15</td><td>φ₅</td></tr><tr><td>6</td><td>m₀₂</td><td>16</td><td>φ₆</td></tr><tr><td>7</td><td>m₃₀</td><td>17</td><td>φ₇</td></tr><tr><td>8</td><td>m₀₃</td><td>18</td><td>μ_f</td></tr><tr><td>9</td><td>m₁₂</td><td>19</td><td>σ_f</td></tr><tr><td>10</td><td>m₂₁</td><td></td><td></td></tr></tbody></table>
+<div class="gal"><figure><img src="assets/img/c2_d071_b.png" alt="Proyecciones de las características antes del análisis de Fisher" width="420" height="168" class="dark" style="max-height:none;"><figcaption>Análisis multivariado de Fisher</figcaption></figure><figure><img src="assets/img/c2_d071_c.png" alt="Espacio de características reducido con el análisis de Fisher: puntos agrupados por vocal" width="264" height="220" class="dark" style="max-height:none;"><figcaption>Reducción del espacio de características</figcaption></figure></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 71 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 73</div><div class="kicker">Caso 3</div><h3>Clasificadores y métricas de desempeño</h3>
+<div class="cols c46"><ul class="dense"><li>Clasificador lineal</li><li>Clasificador bayesiano</li><li>Clasificador SVM</li><li>Redes neuronales</li></ul>
+<div><table class="tbl"><tbody><tr><td>Efectividad (PVP)</td><td>proporción de verdaderos positivos</td><td><math><mfrac><mi>VP</mi><mrow><mi>VP</mi><mo>+</mo><mi>FN</mi></mrow></mfrac></math></td></tr><tr><td>Error positivo (PFN)</td><td>proporción de falsos negativos</td><td><math><mfrac><mi>FN</mi><mrow><mi>VP</mi><mo>+</mo><mi>FN</mi></mrow></mfrac></math></td></tr><tr><td>Especificidad (PVN)</td><td>proporción de verdaderos negativos</td><td><math><mfrac><mi>VN</mi><mrow><mi>VN</mi><mo>+</mo><mi>FP</mi></mrow></mfrac></math></td></tr><tr><td>Error negativo (PFP)</td><td>proporción de falsos positivos</td><td><math><mfrac><mi>FP</mi><mrow><mi>VN</mi><mo>+</mo><mi>FP</mi></mrow></mfrac></math></td></tr><tr><td>Precisión (VPP)</td><td>valor predictivo positivo</td><td><math><mfrac><mi>VP</mi><mrow><mi>VP</mi><mo>+</mo><mi>FP</mi></mrow></mfrac></math></td></tr></tbody></table></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 73 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 74</div><div class="kicker">Caso 3</div><h3>Resultados: las cinco vocales</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de un niño pronunciando la vocal A con el contorno trazado</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Fonema A</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de un niño pronunciando la vocal E con el contorno trazado</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Fonema E</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de un niño pronunciando la vocal I con el contorno trazado</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Fonema I</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de un niño pronunciando la vocal O con el contorno trazado</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Fonema O</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Boca de un niño pronunciando la vocal U con el contorno trazado</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Fonema U</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 74.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 74 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 75</div><div class="kicker">Caso 3</div><h3>Resultados: clasificador bayesiano</h3>
+<div class="cols"><table class="tbl num"><thead><tr><th></th><th>/a/</th><th>/e/</th><th>/i/</th><th>/o/</th><th>/u/</th></tr></thead><tbody><tr><td>/a/</td><td class="hi">79 %</td><td>12 %</td><td>1 %</td><td>8 %</td><td>0 %</td></tr><tr><td>/e/</td><td>10 %</td><td class="hi">62 %</td><td>24 %</td><td>1 %</td><td>3 %</td></tr><tr><td>/i/</td><td>3 %</td><td>35 %</td><td class="hi">55 %</td><td>0 %</td><td>7 %</td></tr><tr><td>/o/</td><td>2 %</td><td>3 %</td><td>6 %</td><td class="hi">51 %</td><td>38 %</td></tr><tr><td>/u/</td><td>0 %</td><td>1 %</td><td>5 %</td><td>13 %</td><td class="hi">81 %</td></tr></tbody></table>
+<table class="tbl num"><thead><tr><th></th><th>PVP (%)</th><th>PFN (%)</th><th>PVN (%)</th><th>PFP (%)</th><th>VPP (%)</th></tr></thead><tbody><tr><td>/a/</td><td>79,00</td><td>21,00</td><td>86,52</td><td>13,48</td><td>84,04</td></tr><tr><td>/e/</td><td>62,00</td><td>38,00</td><td>63,11</td><td>36,89</td><td>54,87</td></tr><tr><td>/i/</td><td>55,00</td><td>45,00</td><td>71,65</td><td>28,35</td><td>60,44</td></tr><tr><td>/o/</td><td>51,00</td><td>49,00</td><td>81,12</td><td>18,88</td><td>69,86</td></tr><tr><td>/u/</td><td>81,00</td><td>19,00</td><td>64,71</td><td>35,29</td><td>62,79</td></tr></tbody></table></div><p class="small muted">Izquierda: matriz de confusión (fila: vocal real; columna: vocal asignada). Derecha: métricas por vocal.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 75 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 76</div><div class="kicker">Caso 3</div><h3>Resultados: máquinas de vectores de soporte</h3>
+<table class="tbl num"><thead><tr><th></th><th>/a/</th><th>/e/</th><th>/i/</th><th>/o/</th><th>/u/</th></tr></thead><tbody><tr><td>/a/</td><td class="hi">86,60</td><td>0,00</td><td>8,25</td><td>2,06</td><td>3,09</td></tr><tr><td>/e/</td><td>31,25</td><td class="hi">0,00</td><td>67,19</td><td>0,00</td><td>1,56</td></tr><tr><td>/i/</td><td>6,25</td><td>0,00</td><td class="hi">91,67</td><td>0,00</td><td>2,08</td></tr><tr><td>/o/</td><td>9,60</td><td>0,00</td><td>6,40</td><td class="hi">40,80</td><td>43,20</td></tr><tr><td>/u/</td><td>0,52</td><td>0,00</td><td>8,38</td><td>3,66</td><td class="hi">87,44</td></tr></tbody></table>
+<p class="fix">En el original, la tabla de métricas de esta diapositiva es idéntica a la de redes neuronales y no corresponde a esta matriz de confusión: se omite hasta verificarla.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 76 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 77</div><div class="kicker">Caso 3</div><h3>Resultados: redes neuronales</h3>
+<div class="cols"><table class="tbl num"><thead><tr><th></th><th>/a/</th><th>/e/</th><th>/i/</th><th>/o/</th><th>/u/</th></tr></thead><tbody><tr><td>/a/</td><td class="hi">88,8 %</td><td>6,4 %</td><td>0,8 %</td><td>4 %</td><td>0 %</td></tr><tr><td>/e/</td><td>16,8 %</td><td class="hi">50,4 %</td><td>31,2 %</td><td>1,6 %</td><td>0 %</td></tr><tr><td>/i/</td><td>2,4 %</td><td>34,4 %</td><td class="hi">60,8 %</td><td>0,8 %</td><td>1,6 %</td></tr><tr><td>/o/</td><td>5,6 %</td><td>3,2 %</td><td>3,2 %</td><td class="hi">68 %</td><td>20 %</td></tr><tr><td>/u/</td><td>0 %</td><td>0 %</td><td>7,2 %</td><td>30,4 %</td><td class="hi">62,4 %</td></tr></tbody></table>
+<table class="tbl num"><thead><tr><th></th><th>PVP (%)</th><th>PFN (%)</th><th>PVN (%)</th><th>PFP (%)</th><th>VPP (%)</th></tr></thead><tbody><tr><td>/a/</td><td>88,80</td><td>11,20</td><td>79,09</td><td>20,91</td><td>78,17</td></tr><tr><td>/e/</td><td>50,40</td><td>49,60</td><td>66,92</td><td>33,08</td><td>53,39</td></tr><tr><td>/i/</td><td>60,80</td><td>39,20</td><td>67,83</td><td>32,17</td><td>58,91</td></tr><tr><td>/o/</td><td>68,00</td><td>32,00</td><td>71,16</td><td>28,84</td><td>64,89</td></tr><tr><td>/u/</td><td>62,40</td><td>37,60</td><td>81,41</td><td>18,59</td><td>74,29</td></tr></tbody></table></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 77 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 78</div><div class="kicker">Caso 3</div><h3>Conclusiones: las técnicas</h3>
+<div class="dense2"><p>Las técnicas empleadas, basadas en la información de color y sus transformaciones en los diferentes espacios de color, la técnica de proyecciones, los detectores de bordes y el análisis de regiones, son invariantes a la rotación y traslación de la boca. De igual manera son independientes de si la boca se encuentra abierta o cerrada permitiendo trabajar con las posturas labiales de los 5 fonemas vocales. Para el caso de la detección del rostro en la escena, se obtiene que el modelo elíptico de la piel establecido por Hsu, Abdel-Mottaleb y Jain (2002) es apropiado para el color del tono de la piel presente en la población de la zona centro de Colombia. En cuanto a la extracción de características visuales de los labios, se tiene que la localización correcta de los ápices depende de la eficiencia en la ubicación de las coordenadas (x, y) de los vértices.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 78 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 79–80</div><div class="kicker">Caso 3</div><h3>Conclusiones: SUSAN y los clasificadores</h3>
+<div class="dense2"><p>La técnica de detección de bordes a través del operador SUSAN permite obtener resultados confiables para el análisis del contorno de los labios, desarrollando el método de reducción del espacio de búsqueda basado en la segmentación al eliminar la información espuria y resaltar de manera óptima los bordes exteriores de la boca. Así mismo, emplea un tiempo de cómputo bastante bajo lo cual permite la integración de los algoritmos desarrollados en este trabajo al sistema automático propuesto para el proyecto Análisis acústico de voz y de posturas labiales en pacientes de 5 a 15 años con labio y/o paladar hendido corregido en la zona centro del país.</p><p>De manera general, el error global de los clasificadores es muy similar para la información en espacios de trabajo originales de orden superior y para los espacios de orden reducido, teniendo entonces un ahorro en costo computacional sin sacrificar la efectividad en la clasificación de las diferentes posturas labiales. Así mismo, dichos errores permiten concluir que se puede trabajar con un clasificador más sencillo como el Bayesiano para separar los 5 fonemas vocales.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 79 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1">
+<div class="kicker">Caso 4 · registro 2D–3D</div>
+<h2>Mapeo de texturas a objetos 3D</h2>
+<div class="cols c46 mid">
+  <div><div class="imgrow"><figure class="figure"><img src="assets/img/c2_d082_c.png" alt="Vasija precolombina en 3D con color por vértices, de aspecto borroso" width="198" height="330" class="dark" style="max-height:none;"><figcaption class="credit">3553 polígonos · color por vértices</figcaption></figure><figure class="figure"><img src="assets/img/c2_d082_d.jpg" alt="La misma vasija con mapeo de texturas, con todo el detalle de la decoración" width="183" height="330" class="dark" style="max-height:none;"><figcaption class="credit">3553 polígonos · mapeo de texturas</figcaption></figure></div></div>
+  <div>
+    <p><strong>Pregunta:</strong> ¿cómo darle a un modelo 3D la apariencia real del objeto, a partir de fotografías?</p>
+    <p class="fragment"><strong>Resultado:</strong> con la textura, un modelo de 3553 polígonos se ve con el detalle de uno de 71 084.</p>
+    <p class="fragment amber">Hay que corregir la iluminación entre vistas: el brillo cambia de una foto a otra.</p>
+    <p class="godown">Detalle completo del caso</p>
+  </div>
+</div>
+<p class="credit" style="margin-top:14px">Publicación del caso: Hernández Londoño (2006), <a href="https://repositorio.unal.edu.co/handle/unal/7077">tesis de maestría</a>, UNAL Manizales.</p>
+<aside class="notes"><p>El cuarto caso une imágenes 2D y modelos 3D. Un escáner da la geometría de un objeto, por ejemplo una vasija precolombina, pero no su apariencia. Las fotografías tienen la apariencia. Hay que registrarlas sobre el modelo: saber qué píxel de cada foto corresponde a qué punto de la superficie.</p><p>El efecto se ve en la imagen: con la textura, un modelo de solo 3553 polígonos se ve con el detalle de uno de 71 084. Y aparece otra vez la iluminación: el brillo cambia de una vista a otra, y hubo que corregirlo con un algoritmo de constancia de color.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 81–82</div><div class="kicker">Caso 4</div><h3>Polígonos, color por vértices y textura</h3>
+<div class="gal"><figure><img src="assets/img/c2_d082_a.png" alt="Vasija precolombina en 3D con 71 084 polígonos" width="230" height="386" class="dark" style="max-height:none;"><figcaption>71 084 polígonos</figcaption></figure><figure><img src="assets/img/c2_d082_b.png" alt="La vasija con 35 541 polígonos" width="230" height="382" class="dark" style="max-height:none;"><figcaption>35 541 polígonos</figcaption></figure><figure><img src="assets/img/c2_d082_c.png" alt="La vasija con 3553 polígonos y color por vértices" width="230" height="384" class="dark" style="max-height:none;"><figcaption>3553 polígonos · color por vértices</figcaption></figure><figure><img src="assets/img/c2_d082_d.jpg" alt="La vasija con 3553 polígonos y mapeo de texturas" width="222" height="400" class="dark" style="max-height:none;"><figcaption>3553 polígonos · mapeo de texturas</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 82.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 81 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 83</div><div class="kicker">Caso 4</div><h3>Modelo triangulado, color artificial y mapeo de texturas</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Modelo 3D de un hipopótamo como malla triangulada</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Modelo triangulado</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>El modelo del hipopótamo con color artificial gris</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Color artificial</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>El modelo del hipopótamo con su textura</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Mapeo de texturas</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 83.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 83 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 84</div><div class="kicker">Caso 4</div><h3>Montaje de la escena</h3>
+<figure class="figure"><img src="assets/img/c2_d084_a.jpg" alt="Montaje de laboratorio: un escáner 3D en un trípode frente a una figura sobre una mesa giratoria, con el patrón de calibración al fondo" width="778" height="470" class="dark" style="max-height:none;"><figcaption class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 84.</figcaption></figure>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 84 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 85</div><div class="kicker">Caso 4</div><h3>Calibración</h3>
+<div class="cols c64"><div><div class="eqbox dense2"><div class="lbl">Algoritmo «Gold Standard» (Hartley y Zisserman, 2004, alg. 7.1) · entrada: n &gt; 6 correspondencias X<sub>i</sub> ↔ x<sub>i</sub> · salida: la matriz P</div><ol style="margin-top:6px"><li><strong>Normalización:</strong> hallar las matrices de normalización T y Q de los n puntos X y x, respectivamente; normalizar las coordenadas en cada espacio de forma independiente y hallar X̄ y x̄.</li><li><strong>DLT:</strong> para cada correspondencia X̄<sub>i</sub> ↔ x̄<sub>i</sub>, construir la matriz Ā<sub>i</sub>; construir Ā de (2n × 12) y obtener su descomposición en valores singulares. El vector singular asociado al menor valor singular es la solución p̄; P̄ se determina a partir de p̄, por filas.</li><li><strong>Minimización del error geométrico:</strong> con la estimación lineal como punto inicial, se minimiza Σ<sub>i</sub> d(x̄<sub>i</sub>, P̄X̄<sub>i</sub>)² sobre P̄ con un algoritmo iterativo.</li><li><strong>Desnormalización:</strong> P = T<sup>−1</sup> P̄ Q.</li></ol></div></div>
+<div class="gal"><figure><img src="assets/img/c2_d085_a.jpg" alt="Patrón de calibración con cuadros negros" width="280" height="210" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d085_b.jpg" alt="Patrón de calibración con círculos negros" width="279" height="210" class="dark" style="max-height:none;"></figure></div></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 85 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 86</div><div class="kicker">Caso 4</div><h3>Mapeo manual</h3>
+<div class="gal"><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotografía de una mujer joven con puntos de control amarillos en el rostro, tomada con el escáner</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Minolta Vivid 9i</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Fotografía digital de la misma persona con puntos de control</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div><figcaption>Modelo 3D + imagen digital</figcaption></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Modelo 3D del rostro con la textura del escáner</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure><figure><div class="img-reservada"><strong>Imagen con derechos reservados</strong><span>Modelo 3D del rostro con la textura de la fotografía digital</span><span>No se incluye en la versión pública: véala en el enlace del crédito.</span></div></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 86.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 86 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 87</div><div class="kicker">Caso 4</div><h3>Mapeo 2D a 3D</h3>
+<div class="gal"><figure><img src="assets/img/c2_d087_a.png" alt="Modelo 3D gris de una figura precolombina" width="147" height="260" class="dark" style="max-height:none;"><figcaption>Modelo 3D</figcaption></figure><figure><img src="assets/img/c2_d087_b.jpg" alt="Fotografía de la figura usada como textura" width="199" height="260" class="dark" style="max-height:none;"><figcaption>Textura</figcaption></figure><figure><img src="assets/img/c2_d087_c.jpg" alt="Tres vistas del modelo con la textura mapeada" width="330" height="151" class="dark" style="max-height:none;"><figcaption>Mapeo</figcaption></figure><figure><img src="assets/img/c2_d087_d.png" alt="Siluetas de la figura usadas para registrar la foto con el modelo" width="330" height="179" class="dark" style="max-height:none;"><figcaption>Registro de siluetas</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 87.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 87 del original.</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 88–90</div><div class="kicker">Caso 4</div><h3>Conclusiones</h3>
+<div class="dense2"><p>Este trabajo establece una metodología general para el mapeo de texturas de modelos de objetos del mundo real utilizando múltiples vistas. Las imágenes de textura pueden ser tomadas utilizando un patrón de calibración y de esta forma obtener resultados de alta precisión y calidad en la asignación de la textura sobre el modelo 3D. Igualmente, pueden ser tomadas desde posiciones arbitrarias utilizando el método semi-automático de registro 3D - 2D a un punto de vista o el método manual de asignación de puntos de control, para el mapeo de texturas obteniendo resultados muy aceptables.</p><p>Las diferencias en el brillo debido a la iluminación y a las propiedades de reflectancia de los objetos, presentes en la adquisición de las múltiples vistas del modelo, fueron reducidas utilizando un algoritmo de corrección de iluminación por constancia de color por correlación. De igual forma, la utilización de un ponderado con el uso de pesos de los posibles téxeles, producen una reconstrucción visualmente suave, entre la asignación de las texturas en regiones adyacentes de la superficie del modelo.</p><p>Los mejores resultados y las mejores métricas se obtuvieron utilizando la textura proveniente de la cámara CCD del escáner de rango, esto se debe a que el sensor de adquisición de la información de rango y textura es el mismo. A pesar de ello, el mapeo de texturas utilizando las imágenes de la cámara SONY no son muy inferiores, teniendo en cuenta que ofrece mucha más información de textura, a comparación de la textura de la cámara CCD del escáner de rango, según el criterio de densidad.</p></div>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 88 del original.</p></aside>
+</section>
+</section>
+
+<section>
+<section data-min="1">
+<div class="kicker">Caso 5 · crecimiento de regiones</div>
+<h2>Granos de café: crecimiento de regiones</h2>
+<div class="cols c46 mid">
+  <div><div class="gal"><figure><img src="assets/img/c2_d092_a.png" alt="Granos de café sobre un fondo azul con una semilla marcada en cada grano" width="230" height="228" class="dark" style="max-height:none;"><figcaption>Semillas</figcaption></figure><figure><img src="assets/img/c2_d092_d.png" alt="Los granos con las regiones segmentadas por crecimiento de regiones" width="230" height="231" class="dark" style="max-height:none;"><figcaption>Regiones</figcaption></figure></div></div>
+  <div>
+    <p><strong>Pregunta:</strong> ¿cómo separar cada grano de café del fondo y de sus vecinos?</p>
+    <p class="fragment"><strong>Resultado:</strong> a partir de una semilla por grano, cada región crece mientras los píxeles vecinos se parecen.</p>
+    <p class="fragment amber">Es el mismo método que segmenta los capilares del bloque 12.</p>
+    <p class="godown">Detalle completo del caso</p>
+  </div>
+</div>
+<p class="credit" style="margin-top:14px">Publicación del caso: Betancur, Prieto y Osorio (2006), <em>Rev. Fac. Nal. Agr. Medellín</em> 59(1). <a href="https://revistas.unal.edu.co/index.php/refame/article/view/24309">Artículo</a>.</p>
+<aside class="notes"><p>El quinto caso usa el crecimiento de regiones: se pone una semilla en cada grano de café y la región crece mientras los píxeles vecinos se parezcan, en color, a la semilla. Así se separa cada grano del fondo y de sus vecinos.</p><p>Es el mismo método que vimos en la segmentación de capilares. Y es una buena pregunta para el laboratorio: ¿qué pasa si dos granos se tocan, o si la luz no es pareja?</p></aside>
+</section>
+<section data-min="0">
+<div class="vtag">Original · diap. 91–92</div><div class="kicker">Caso 5 · segmentación de granos de café</div><h3>Crecimiento de regiones</h3>
+<div class="gal"><figure><img src="assets/img/c2_d092_a.png" alt="Granos de café sobre un fondo azul con semillas marcadas" width="280" height="277" class="dark" style="max-height:none;"><figcaption>Semillas</figcaption></figure><figure><img src="assets/img/c2_d092_b.png" alt="Regiones segmentadas, primera etapa" width="280" height="280" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d092_c.png" alt="Regiones segmentadas, segunda etapa" width="280" height="280" class="dark" style="max-height:none;"></figure><figure><img src="assets/img/c2_d092_d.png" alt="Regiones segmentadas, resultado" width="279" height="280" class="dark" style="max-height:none;"><figcaption>Resultado</figcaption></figure></div><p class="credit">Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 92.</p>
+<aside class="notes"><p>Material de consulta: contenido de la diapositiva 91 del original.</p></aside>
+</section>
+</section>
+
+<section data-min="1">
+<div class="kicker">Síntesis</div>
+<h2>Lo que nos llevamos</h2>
+<div class="cols-4" style="margin-top:20px">
+  <div class="card accent"><h4>Imagen</h4><p>una tabla de números: una por canal de color</p></div>
+  <div class="card accent fragment"><h4>Pipeline</h4><p>adquirir, preprocesar, segmentar, describir, reconocer</p></div>
+  <div class="card amber fragment"><h4>Adquisición</h4><p>la luz y el montaje deciden más que el algoritmo (casos 1, 2 y 4)</p></div>
+  <div class="card ok fragment"><h4>Verificar</h4><p>comparar siempre con la verdad: un conteo hecho a mano</p></div>
+</div>
+<aside class="notes"><p>Cuatro ideas. Una imagen es una tabla de números, una por canal de color. Procesarla es un pipeline de etapas: adquirir, preprocesar, segmentar, describir y reconocer. La adquisición, la luz y el montaje, deciden más que el algoritmo: lo dicen las conclusiones de los casos 1, 2 y 4. Y siempre hay que comparar con la verdad: el pipeline cuenta lo que se parece a lo que buscamos.</p></aside>
+</section>
+
+<section data-min="1" class="transition-slide">
+<div class="kicker amber">A continuación · 60 min</div>
+<h1 style="font-size:58px">Laboratorio 4A · Procesamiento y análisis clásico de imágenes</h1>
+<p class="lead">Inspección industrial con un pipeline clásico: histograma, filtrado, umbral, morfología, segmentación y medición, con cada imagen intermedia a la vista.</p>
+<div class="cols-3" style="margin-top:18px">
+  <div class="card"><h4>Ajustar</h4><p>los parámetros de cada etapa, y observar su efecto</p></div>
+  <div class="card"><h4>Contar y medir</h4><p>y comparar con un conteo hecho a mano</p></div>
+  <div class="card"><h4>Sin escribir código</h4><p>notebook de configuración, en parejas</p></div>
+</div>
+<aside class="notes"><p>Pasamos al laboratorio, una hora en parejas. El notebook trae un pipeline clásico listo, con cada imagen intermedia a la vista, sobre un problema de inspección industrial. Ustedes ajustan los parámetros de cada etapa, el umbral, el tamaño del filtro, las operaciones morfológicas, y observan el efecto; al final cuentan o miden y comparan con un conteo hecho a mano. No se escribe código.</p><p>Después viene la pausa de 15 minutos y la charla intermedia, sobre modelos preentrenados.</p></aside>
+</section>
+
+<section data-min="0">
+<div class="kicker">Referencias de la charla inicial · fundamentos</div>
+<h2>Para profundizar</h2>
+<div class="refs-tight"><ol class="refs"><li>Gonzalez, R. C. y Woods, R. E. (2018). <em>Digital Image Processing</em>, 4.ª ed. Pearson. <a href="https://www.imageprocessingplace.com/DIP-4E/dip4e_main_page.htm">Sitio de los autores</a></li><li>Hartley, R. y Zisserman, A. (2004). <em>Multiple View Geometry in Computer Vision</em>, 2.ª ed. Cambridge University Press, caps. 4, 6 y 7. <a href="https://www.robots.ox.ac.uk/~vgg/hzbook/">Sitio del libro</a></li><li>Szeliski, R. (2022). <em>Computer Vision: Algorithms and Applications</em>, 2.ª ed. Springer, caps. 1–3. <a href="https://szeliski.org/Book/">szeliski.org/Book</a></li><li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em>, 4.ª ed., cap. 25, «Computer Vision». <a href="https://aima.cs.berkeley.edu/contents.html">Índice</a></li><li>Einstein, A. (1905). Über einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt. <em>Annalen der Physik</em> 17(6), 132–148. <a href="https://doi.org/10.1002/andp.19053220607">DOI</a> · <a href="https://www.nobelprize.org/prizes/physics/1921/summary/">Nobel 1921</a></li><li>Boyle, W. S. y Smith, G. E. (1970). Charge coupled semiconductor devices. <em>Bell System Technical Journal</em> 49(4), 587–593. <a href="https://doi.org/10.1002/j.1538-7305.1970.tb01790.x">DOI</a> · <a href="https://www.nobelprize.org/prizes/physics/2009/popular-information/">Nobel 2009</a></li><li>Bayer, B. E. (1976). Color imaging array. Patente US 3,971,065. <a href="https://patents.google.com/patent/US3971065A/en">Google Patents</a></li><li>NIST. La primera imagen digital (Russell Kirsch, 1957). <a href="https://www.nist.gov/mathematics-statistics/first-digital-image">nist.gov</a> · Matheron, G. y Serra, J. (2000). <a href="https://people.cmm.minesparis.psl.eu/users/serra/pdf/birth_of_mm.pdf">The birth of mathematical morphology</a></li><li>Shepard, R. N. y Metzler, J. (1971). Mental rotation of three-dimensional objects. <em>Science</em> 171(3972), 701–703. <a href="https://doi.org/10.1126/science.171.3972.701">DOI</a></li><li>Otsu, N. (1979). A threshold selection method from gray-level histograms. <em>IEEE Trans. Systems, Man, and Cybernetics</em> 9(1), 62–66. <a href="https://doi.org/10.1109/TSMC.1979.4310076">DOI</a></li></ol></div>
+
+<aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+<section data-min="0">
+<div class="kicker">Referencias de la charla inicial · casos de estudio</div>
+<h2>Para profundizar</h2>
+<div class="refs-tight"><ol class="refs"><li>Hu, M.-K. (1962). Visual pattern recognition by moment invariants. <em>IRE Trans. Information Theory</em> 8(2), 179–187. <a href="https://doi.org/10.1109/TIT.1962.1057692">DOI</a></li><li>Hsu, R.-L., Abdel-Mottaleb, M. y Jain, A. K. (2002). Face detection in color images. <em>IEEE TPAMI</em> 24(5), 696–706. <a href="https://doi.org/10.1109/34.1000242">DOI</a></li><li>Smith, S. M. y Brady, J. M. (1997). SUSAN: a new approach to low level image processing. <em>IJCV</em> 23(1), 45–78. <a href="https://doi.org/10.1023/A:1007963824710">DOI</a></li><li>ITU-R (2011). Recomendación BT.601-7: parámetros de codificación de televisión digital para estudios (espacio YCbCr). <a href="https://www.itu.int/rec/R-REC-BT.601">ITU</a></li><li>Gómez Mendoza, J. B. (2004). Integración de imágenes de rango para la obtención de modelos faciales. Tesis de maestría, UNAL Manizales (antecedente del caso 1). <a href="https://repositorio.unal.edu.co/handle/unal/2752">Repositorio</a></li><li>Mejía, I. (2004). Extracción automática de características faciales para el estudio antropométrico en niños entre 5 y 10 años de la ciudad de Manizales. Informe técnico, grupo PCI, UNAL (caso 2)</li><li>Salazar, A. y Prieto, F. (2006). Extracción y clasificación de posturas labiales en niños entre 5 y 10 años de la ciudad de Manizales. <em>DYNA</em> 73(150), 175–188 (caso 3). <a href="https://revistas.unal.edu.co/index.php/dyna/article/view/849">Artículo</a></li><li>Hernández Londoño, J. E. (2006). Mapeo de texturas a objetos 3D basado en la geometría de la escena. Tesis de maestría, UNAL Manizales (caso 4). <a href="https://repositorio.unal.edu.co/handle/unal/7077">Repositorio</a></li><li>Betancur, J. A., Prieto, F. A. y Osorio, G. A. (2006). Segmentación de frutos de café mediante métodos de crecimiento de regiones. <em>Rev. Fac. Nal. Agr. Medellín</em> 59(1), 3311–3333 (caso 5). <a href="https://revistas.unal.edu.co/index.php/refame/article/view/24309">Artículo</a></li><li>Riaño, J. C., Prieto, F. A., Sánchez, E. y Jaramillo, F. (2008). Caracterización de imágenes capilares. <em>Avances en Sistemas e Informática</em> 5(3), 7–12 (trabajo afín a la segmentación de capilares). <a href="https://revistas.unal.edu.co/index.php/avances/article/view/10092">Artículo</a></li></ol></div>
+<p class="navlinks"><a href="index.html">Volver a la agenda</a><a href="charla2_del_pipeline_a_los_modelos.html">Charla intermedia →</a></p>
+<aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 4 · Charla inicial · Procesamiento digital de imágenes</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

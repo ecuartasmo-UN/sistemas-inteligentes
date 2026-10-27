@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club de lectura · CLIP — Sesión 4 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="15">
+
+<section data-min="3" class="title-slide">
+<div class="kicker">Sesión 4 · Club de lectura · 15 min</div>
+<h1 style="font-size:54px">CLIP: aprender a ver leyendo</h1>
+<div class="cols c64 mid">
+  <div><p>Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., Krueger, G. y Sutskever, I. (2021). <em>Learning Transferable Visual Models From Natural Language Supervision</em>. ICML 2021, PMLR 139, 8748–8763.</p>
+  <p class="small muted">Se asignaron la introducción, el enfoque y la discusión de limitaciones.</p></div>
+  <div class="card amber"><h4>La pregunta</h4><p>¿Qué aprende CLIP del texto que no aprende de etiquetas fijas, y qué precio paga?</p></div>
+</div>
+<aside class="notes"><p>Bienvenidos al club. La lectura es el artículo de CLIP, de OpenAI, presentado en ICML 2021. Leyeron la introducción, el enfoque y la discusión de limitaciones.</p><p>La pregunta que guía la discusión: ¿qué aprende CLIP del texto que no aprende de etiquetas fijas, y qué precio paga por eso? Acaban de usarlo en el laboratorio, así que pueden responder también desde su experiencia.</p></aside>
+</section>
+
+<section data-min="3">
+<div class="kicker">La tesis y el resultado</div>
+<h2>Supervisar con lenguaje, no con etiquetas</h2>
+<div class="cols">
+  <div><p>Predecir <strong>qué texto acompaña a qué imagen</strong>, con 400 millones de pares imagen–texto de internet.</p>
+  <p class="fragment">Después, el lenguaje nombra conceptos visuales, incluso nuevos: clasificar sin entrenamiento previo.</p>
+  <div class="fragment"><figure class="figure"><img src="assets/img/distill_mmn.jpg" alt="Tres visualizaciones circulares, muy coloridas, de neuronas de CLIP: una mezcla letras y soles, otra muestra un rostro dibujado y otra una figura sentada" width="520" height="174" style="max-height:none;"><figcaption class="credit">Visualizaciones de neuronas de CLIP. Goh et ál. (2021), «Multimodal Neurons in Artificial Neural Networks», <a href="https://distill.pub/2021/multimodal-neurons/">Distill</a>, CC BY 4.0.</figcaption></figure></div></div>
+  <div class="fragment">
+    <div class="big-number">76,2 %</div><p>en ImageNet sin entrenamiento previo: <strong>iguala a la ResNet-50 original</strong> sin usar ninguno de sus 1,28 millones de ejemplos etiquetados.</p>
+    <p class="small muted">Evaluado en más de 30 conjuntos de datos. Con plantillas y conjuntos de 80 frases, casi 5 puntos más en ImageNet.</p>
+  </div>
+</div>
+<aside class="notes"><p>La tesis: en lugar de entrenar con un conjunto fijo de categorías, CLIP aprende a predecir qué texto acompaña a qué imagen, con 400 millones de pares tomados de internet. Después, el lenguaje sirve para nombrar conceptos visuales, incluso nuevos, y clasificar sin entrenamiento previo.</p><p>La imagen viene de un trabajo posterior sobre CLIP, de Goh y colegas en 2021, que visualiza lo que activa a sus neuronas. Encontraron neuronas que responden a un mismo concepto en una foto, en un dibujo o escrito como texto: dentro del modelo, la imagen y el lenguaje quedaron mezclados. Esa misma mezcla explica el ataque tipográfico de la charla de cierre.</p><p>El resultado más citado: 76,2 % de exactitud en ImageNet sin entrenamiento previo, igual que la ResNet-50 original, sin usar ninguno de sus 1,28 millones de ejemplos etiquetados. Lo evaluaron en más de 30 conjuntos de datos. Y un detalle que vieron en el laboratorio: la forma de escribir las frases importa; con plantillas y conjuntos de 80 frases ganan casi 5 puntos en ImageNet.</p></aside>
+</section>
+
+<section data-min="3">
+<div class="kicker">El enfoque</div>
+<h2>Entrenamiento contrastivo y clasificación con frases</h2>
+<figure class="figure"><img src="assets/img/clip_fig1.png" alt="Diagrama del enfoque de CLIP: entrenamiento contrastivo de un codificador de imágenes y uno de texto, creación de un clasificador a partir de las etiquetas escritas como frases y predicción sin entrenamiento previo" width="1100" height="388" style="max-height:none;"><figcaption class="credit">OpenAI (2021), diagrama del repositorio <a href="https://github.com/openai/CLIP">github.com/openai/CLIP</a>, licencia MIT.</figcaption></figure>
+<aside class="notes"><p>La figura resume el enfoque en tres pasos. Uno: entrenamiento contrastivo; en cada lote, el modelo aprende a acercar cada imagen a su texto y a alejarla de los textos de las demás. Dos: para una tarea nueva, las etiquetas se escriben como frases, «una foto de un perro», y el codificador de texto las convierte en un clasificador. Tres: la imagen se compara con todas las frases y gana la más parecida.</p><p>Pregunta para la discusión: ¿qué de esto reconocieron en el Laboratorio 4B?</p></aside>
+</section>
+
+<section data-min="3">
+<div class="kicker">Lo que el propio artículo reconoce</div>
+<h2>Limitaciones e impacto</h2>
+<div class="cols">
+  <ul class="dense">
+    <li>Sin entrenamiento previo, CLIP suele apenas <strong>competir con un clasificador lineal</strong> sobre ResNet-50; llegar al estado del arte pediría unas <strong>1000 veces más cómputo</strong>.</li>
+    <li class="fragment">Consultaron conjuntos de validación durante el desarrollo: <strong>no es un <em>zero-shot</em> puro</strong>.</li>
+    <li class="fragment">Muchas tareas son difíciles de especificar <strong>solo con texto</strong>.</li>
+  </ul>
+  <ul class="dense fragment">
+    <li>El diseño de las clases cambia el sesgo: con etiquetas ofensivas en la lista, personas de 0 a 20 años caen en ellas el <strong>32,3 %</strong> de las veces; al agregar la clase «niño», el <strong>8,7 %</strong>.</li>
+    <li class="fragment">Identifica celebridades: 59,2 % entre 100 candidatos. Riesgo de <strong>vigilancia</strong>.</li>
+  </ul>
+</div>
+<aside class="notes"><p>Lo valioso del artículo es que reconoce sus límites. Sin entrenamiento previo, CLIP suele apenas competir con un clasificador lineal sobre las características de una ResNet-50, y los autores estiman que llegar al estado del arte pediría unas mil veces más cómputo. Admiten que consultaron conjuntos de validación durante el desarrollo, lo que no es realista para un verdadero zero-shot. Y que muchas tareas son difíciles de especificar solo con texto.</p><p>En la sección de impactos: el diseño de las clases cambia el sesgo. Con una lista de clases que incluía términos ofensivos, el modelo clasificó en ellos el 32,3 % de las imágenes de personas de 0 a 20 años; al agregar la clase «niño», bajó a 8,7 %. Y puede identificar celebridades, con 59,2 % de aciertos entre 100 candidatos: un riesgo de vigilancia que conecta con la Ley 1581 de la charla de cierre.</p></aside>
+</section>
+
+<section data-min="3">
+<div class="kicker">Discusión</div>
+<h2>Tres preguntas</h2>
+<ol>
+  <li>En el Laboratorio 4B, ¿cambiar las frases cambió los resultados? ¿Escribir las clases es diseñar características, como el umbral del 4A?</li>
+  <li class="fragment">El artículo dice que el diseño de las clases cambia el sesgo. ¿Qué clases faltarían o sobrarían en la inspección de su organización?</li>
+  <li class="fragment">Con la guía de decisión: ¿en qué problema de su proyecto usaría CLIP, y en cuál no?</li>
+</ol>
+<p class="small muted" style="margin-top:14px">Próxima lectura: Alammar (2018), <em>The Illustrated Transformer</em>. Entregas al inicio de la semana 3.</p>
+<aside class="notes"><p>Tres preguntas para cerrar. Primera, desde el laboratorio: ¿cambiar las frases cambió los resultados? ¿Escribir las clases es una forma de diseñar características, como elegir el umbral en el 4A? Segunda, desde las limitaciones: si el diseño de las clases cambia el sesgo, ¿qué clases faltarían o sobrarían en una inspección de su organización? Tercera, con la guía de decisión: ¿en qué problema de su proyecto usaría CLIP, y en cuál no?</p><p>Recuerden la lectura de la sesión 5, The Illustrated Transformer, y las entregas al inicio de la semana 3.</p></aside>
+</section>
+
+<section data-min="0">
+<div class="kicker">Referencias del club de lectura</div>
+<h2>Para profundizar</h2>
+<div class="refs-tight"><ol class="refs"><li>Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., Krueger, G. y Sutskever, I. (2021). Learning transferable visual models from natural language supervision. <em>ICML 2021</em>, PMLR 139, 8748–8763. <a href="https://proceedings.mlr.press/v139/radford21a/radford21a.pdf">PDF</a> · <a href="https://proceedings.mlr.press/v139/radford21a/radford21a-supp.pdf">material suplementario</a></li><li>OpenAI (2021). Repositorio de CLIP, con el código y la ficha del modelo. <a href="https://github.com/openai/CLIP">github.com/openai/CLIP</a> · <a href="https://github.com/openai/CLIP/blob/main/model-card.md">ficha del modelo</a></li></ol></div>
+<p class="navlinks"><a href="charla3_cuando_confiar_y_cierre.html">← Charla de cierre</a><a href="index.html">Volver a la agenda</a></p>
+<aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 4 · Club de lectura · Radford et ál. (2021), CLIP</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

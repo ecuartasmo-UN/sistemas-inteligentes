@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla intermedia · Del pipeline clásico a los modelos que ven y leen — Sesión 4 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<section data-min="1.5" class="title-slide">
+<div class="kicker">Sesión 4 · Unidad 4 · Charla intermedia</div>
+<h1>Del pipeline clásico a los modelos que ven y leen</h1>
+<p class="lead muted">Reconocer: de las características diseñadas a mano a los modelos preentrenados</p>
+<p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+<p class="navlinks"><a href="charla1_procesamiento_digital_de_imagenes.html">← Charla inicial</a><a href="index.html">Agenda</a><a href="charla3_cuando_confiar_y_cierre.html">Charla de cierre →</a></p>
+<aside class="notes"><p>Después de la pausa. En el Laboratorio 4A construyeron un pipeline clásico: ustedes decidían el umbral, el filtro, la morfología. Esta charla responde la pregunta siguiente: ¿cómo se pasa de medir a reconocer?, y ¿qué cambia cuando las características ya no las diseñamos nosotros sino que las aprende un modelo? Prepara el Laboratorio 4B.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Reconocer con características diseñadas</div>
+<h2>El pipeline clásico de reconocimiento</h2>
+<div class="flow4" style="margin-bottom:16px">
+  <div class="card"><h4>Imagen</h4><p class="small">la boca segmentada</p></div>
+  <div class="card fragment"><h4>Características</h4><p class="small">19 medidas que alguien eligió: densidad, momentos, color</p></div>
+  <div class="card fragment"><h4>Clasificador</h4><p class="small">bayesiano, SVM, red neuronal</p></div>
+  <div class="card fragment"><h4>Etiqueta</h4><p class="small">/a/, /e/, /i/, /o/, /u/</p></div>
+</div>
+<div class="cols c46 mid fragment">
+  <figure class="figure"><img src="assets/img/c2_d071_c.png" alt="Espacio de características reducido con el análisis de Fisher: puntos agrupados por vocal" width="283" height="236" class="dark" style="max-height:none;"><figcaption class="credit">Caso 3 de la charla inicial. Imagen: Clase2.ppt, E. Cuartas Morales (2007), diap. 71.</figcaption></figure>
+  <div><table class="tbl num"><thead><tr><th></th><th>/a/</th><th>/e/</th><th>/i/</th><th>/o/</th><th>/u/</th></tr></thead><tbody><tr><td>/a/</td><td class="hi">79 %</td><td>12 %</td><td>1 %</td><td>8 %</td><td>0 %</td></tr><tr><td>/e/</td><td>10 %</td><td class="hi">62 %</td><td>24 %</td><td>1 %</td><td>3 %</td></tr><tr><td>/i/</td><td>3 %</td><td>35 %</td><td class="hi">55 %</td><td>0 %</td><td>7 %</td></tr><tr><td>/o/</td><td>2 %</td><td>3 %</td><td>6 %</td><td class="hi">51 %</td><td>38 %</td></tr><tr><td>/u/</td><td>0 %</td><td>1 %</td><td>5 %</td><td>13 %</td><td class="hi">81 %</td></tr></tbody></table><p class="small muted">Clasificador bayesiano: aciertos de 51 % a 81 % por vocal.</p></div>
+</div>
+<aside class="notes"><p>Recordemos el caso 3 de la charla inicial. Para reconocer la vocal por la forma de los labios, una persona decidió qué medir: densidad, momentos estadísticos, momentos invariantes, color. Diecinueve características. Con ellas, un clasificador asigna la etiqueta.</p><p>Funciona: el bayesiano acierta entre el 51 y el 81 % según la vocal. Pero todo el conocimiento está en la elección de las características, y esa elección hay que rehacerla para cada problema.</p></aside>
+</section>
+
+<section data-min="2" data-opcional>
+<div class="kicker">El límite del diseño a mano</div>
+<h2>Cada problema pide sus propias características</h2>
+<div class="cols-3">
+  <div class="card"><img src="assets/img/c2_d092_d.png" alt="Granos de café segmentados por crecimiento de regiones" width="199" height="200" class="dark" style="max-height:none;"><h4 style="margin-top:8px">Café</h4><p class="small">color y semejanza entre vecinos</p></div>
+  <div class="card"><img src="assets/img/c2_d045_b.jpg" alt="Nube del color de la piel en el plano Cb–Cr" width="229" height="200" class="dark" style="max-height:none;"><h4 style="margin-top:8px">Rostros</h4><p class="small">una elipse en el espacio YCbCr</p></div>
+  <div class="card"><img src="assets/img/c2_d098_b.png" alt="Bordes de capilares con el filtro de Kirsch" width="200" height="200" class="dark" style="max-height:none;"><h4 style="margin-top:8px">Capilares</h4><p class="small">gradientes y crecimiento de regiones</p></div>
+</div>
+<p class="fragment" style="margin-top:14px">Y cada diseño depende de la <strong>iluminación</strong> con que se tomaron las imágenes.</p>
+<aside class="notes"><p>Los casos de la charla inicial lo muestran: para el café se usó el color y la semejanza entre vecinos; para los rostros, una elipse en el espacio YCbCr; para los capilares, gradientes y crecimiento de regiones. Tres problemas, tres diseños, y cada uno ajustado a cómo se tomaron las fotos.</p><p>Se puede saltar si el tiempo aprieta.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Aprender las características</div>
+<h2>Redes convolucionales: filtros que se aprenden</h2>
+<div class="cols c46 mid">
+  <div><p class="small muted" style="margin-bottom:6px">Filtro de Sobel, diseñado a mano:</p><table class="tbl num" style="width:auto;font-size:22px"><tbody><tr><td>−1</td><td>0</td><td>1</td></tr><tr><td>−2</td><td>0</td><td>2</td></tr><tr><td>−1</td><td>0</td><td>1</td></tr></tbody></table>
+  <p class="fragment" style="margin-top:14px">Una red convolucional <strong>aprende</strong> sus filtros a partir de ejemplos: miles en cada capa.</p></div>
+  <div class="fragment"><p>Las primeras capas aprenden <strong>bordes</strong>; las siguientes, texturas, patrones, partes y, al final, <strong>objetos</strong>.</p></div>
+</div>
+<div class="fragment"><figure class="figure"><img src="assets/img/distill_featvis.jpg" alt="Visualización de lo que detectan las capas de una red convolucional entrenada en ImageNet: bordes en las primeras capas, después texturas, patrones, partes y objetos" width="550" height="220" class="dark" style="max-height:none;"><figcaption class="credit">Capas cada vez más profundas, de izquierda a derecha. Olah et ál. (2017), «Feature Visualization», <a href="https://distill.pub/2017/feature-visualization/">Distill</a>, CC BY 4.0.</figcaption></figure></div>
+<aside class="notes"><p>Aquí está el cambio. El filtro de Sobel que vimos en los capilares es una tabla de nueve números que alguien diseñó para detectar bordes. Una red convolucional usa la misma operación, pero no le damos los números: los aprende a partir de miles de ejemplos etiquetados, y tiene miles de filtros en cada capa.</p><p>Cuando se visualiza lo que detecta cada capa, aparece algo notable: las primeras capas aprenden bordes, parecidos a Sobel; las siguientes, texturas y patrones; las últimas, partes de objetos y objetos completos. Cómo se diseñan y se entrenan estas redes es tema de la electiva de aprendizaje profundo y de la Unidad 5; aquí nos basta saber qué hacen.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">El cambio de época</div>
+<h2>ImageNet y AlexNet: datos y cómputo</h2>
+<svg class="diagram" viewBox="0 0 1120 410" role="img" aria-label="Error top-5 del ganador del concurso ImageNet por año: 28,2 % en 2010, 25,8 % en 2011, 16,4 % en 2012 con AlexNet, 11,7 % en 2013, 6,7 % en 2014, 3,57 % en 2015, 2,99 % en 2016 y 2,25 % en 2017; una persona experta se equivoca en el 5,1 %">
+<style>.gs{font-size:15px;fill:#a3adc2}.ga{font-size:18px;fill:#e8ecf4;font-weight:700}.gv{font-size:17px;fill:#e8ecf4;font-weight:700}.gh{font-size:17px;fill:#4ade80;font-weight:700}</style>
+<line x1="80" y1="330" x2="1040" y2="330" stroke="#2a3550" stroke-width="1"/><text x="68" y="336" text-anchor="end" class="gs">0 %</text><line x1="80" y1="230" x2="1040" y2="230" stroke="#2a3550" stroke-width="1"/><text x="68" y="236" text-anchor="end" class="gs">10 %</text><line x1="80" y1="130" x2="1040" y2="130" stroke="#2a3550" stroke-width="1"/><text x="68" y="136" text-anchor="end" class="gs">20 %</text><line x1="80" y1="30" x2="1040" y2="30" stroke="#2a3550" stroke-width="1"/><text x="68" y="36" text-anchor="end" class="gs">30 %</text><g><rect x="46" y="48" width="68" height="282" rx="4" fill="#38bdf8" opacity=".9"/><text x="80" y="38" text-anchor="middle" class="gv">28,2</text><text x="80" y="382" text-anchor="middle" class="gs">NEC-UIUC</text></g><g><rect x="183" y="72" width="68" height="258" rx="4" fill="#38bdf8" opacity=".9"/><text x="217" y="62" text-anchor="middle" class="gv">25,8</text><text x="217" y="382" text-anchor="middle" class="gs">XRCE</text></g><g class="fragment"><rect x="320" y="166" width="68" height="164" rx="4" fill="#f5b942" opacity=".9"/><text x="354" y="156" text-anchor="middle" class="gv">16,4</text><text x="354" y="382" text-anchor="middle" class="gs">AlexNet</text></g><g class="fragment"><rect x="457" y="213" width="68" height="117" rx="4" fill="#38bdf8" opacity=".9"/><text x="491" y="203" text-anchor="middle" class="gv">11,7</text><text x="491" y="382" text-anchor="middle" class="gs">Clarifai</text></g><g class="fragment"><rect x="595" y="263" width="68" height="67" rx="4" fill="#38bdf8" opacity=".9"/><text x="629" y="253" text-anchor="middle" class="gv">6,7</text><text x="629" y="382" text-anchor="middle" class="gs">GoogLeNet</text></g><g class="fragment"><rect x="732" y="294" width="68" height="36" rx="4" fill="#38bdf8" opacity=".9"/><text x="766" y="284" text-anchor="middle" class="gv">3,57</text><text x="766" y="382" text-anchor="middle" class="gs">ResNet</text></g><g class="fragment"><rect x="869" y="300" width="68" height="30" rx="4" fill="#38bdf8" opacity=".9"/><text x="903" y="290" text-anchor="middle" class="gv">2,99</text><text x="903" y="382" text-anchor="middle" class="gs">Trimps-Soushen</text></g><g class="fragment"><rect x="1006" y="308" width="68" height="22" rx="4" fill="#38bdf8" opacity=".9"/><text x="1040" y="298" text-anchor="middle" class="gv">2,25</text><text x="1040" y="382" text-anchor="middle" class="gs">SENet</text></g><text x="80" y="358" text-anchor="middle" class="ga">2010</text><text x="217" y="358" text-anchor="middle" class="ga">2011</text><text x="354" y="358" text-anchor="middle" class="ga">2012</text><text x="491" y="358" text-anchor="middle" class="ga">2013</text><text x="629" y="358" text-anchor="middle" class="ga">2014</text><text x="766" y="358" text-anchor="middle" class="ga">2015</text><text x="903" y="358" text-anchor="middle" class="ga">2016</text><text x="1040" y="358" text-anchor="middle" class="ga">2017</text><g class="fragment"><line x1="80" y1="279" x2="1040" y2="279" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="8 6"/><text x="1036" y="271" text-anchor="end" class="gh">una persona experta: 5,1 %</text></g></svg>
+<p class="small" style="margin-top:6px">Error top-5 del ganador del concurso ImageNet (ILSVRC), 1000 categorías. En 2012, AlexNet: una red convolucional de 60 millones de parámetros, entrenada de 5 a 6 días en dos GPU.</p>
+<aside class="notes"><p>El cambio de época tiene fecha. ImageNet es una base de millones de imágenes etiquetadas por personas. Desde 2010 hubo un concurso anual: clasificar imágenes en mil categorías, y se mide el error top-5, es decir, la proporción de imágenes en que la respuesta correcta no está entre las cinco primeras del modelo.</p><p>En 2010 y 2011, con características diseñadas a mano, el error ganador estaba por encima del 25 %. En 2012, AlexNet, una red convolucional de 60 millones de parámetros entrenada en dos tarjetas gráficas durante cinco o seis días, lo bajó a 16,4 %. Desde entonces ganaron siempre las redes, y en 2015 el error quedó por debajo del de una persona experta, estimado en 5,1 %.</p><p>La lección para una organización: el salto vino de juntar tres cosas, muchos datos etiquetados, cómputo con GPU y redes que aprenden sus propias características.</p></aside>
+</section>
+
+<section data-min="2">
+<div class="kicker">Modelos fundacionales visión–lenguaje</div>
+<h2>CLIP: imágenes y frases en un mismo espacio</h2>
+<svg class="diagram" viewBox="0 0 1180 400" role="img" aria-label="CLIP: un codificador de imágenes y un codificador de texto llevan imágenes y frases a un mismo espacio; cada imagen queda cerca de la frase que la describe">
+<defs><marker id="ca" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker>
+<style>.ct{font-size:20px;fill:#e8ecf4;font-weight:700}.cs{font-size:16px;fill:#a3adc2}.cp{font-size:16px;fill:#0a0e17;font-weight:700}</style></defs>
+<rect x="10" y="40" width="250" height="70" rx="12" fill="rgba(23,32,51,.9)" stroke="#38bdf8" stroke-width="2"/><text x="135" y="72" text-anchor="middle" class="ct">imagen</text><text x="135" y="96" text-anchor="middle" class="cs">foto de una tuerca</text>
+<rect x="10" y="270" width="250" height="70" rx="12" fill="rgba(23,32,51,.9)" stroke="#f5b942" stroke-width="2"/><text x="135" y="302" text-anchor="middle" class="ct">texto</text><text x="135" y="326" text-anchor="middle" class="cs">«una foto de una tuerca»</text>
+<rect x="320" y="40" width="210" height="70" rx="12" fill="rgba(56,189,248,.14)" stroke="#38bdf8" stroke-width="2"/><text x="425" y="82" text-anchor="middle" class="ct">codificador</text>
+<rect x="320" y="270" width="210" height="70" rx="12" fill="rgba(245,185,66,.14)" stroke="#f5b942" stroke-width="2"/><text x="425" y="312" text-anchor="middle" class="ct">codificador</text>
+<line x1="262" y1="75" x2="314" y2="75" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#ca)"/><line x1="262" y1="305" x2="314" y2="305" stroke="#a3adc2" stroke-width="2.5" marker-end="url(#ca)"/>
+<g class="fragment" data-fragment-index="1">
+  <rect x="640" y="20" width="520" height="360" rx="16" fill="rgba(167,139,250,.08)" stroke="#a78bfa" stroke-width="2"/><text x="900" y="50" text-anchor="middle" class="ct">un mismo espacio</text>
+  <line x1="532" y1="75" x2="700" y2="150" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#ca)"/><line x1="532" y1="305" x2="712" y2="200" stroke="#f5b942" stroke-width="2.5" marker-end="url(#ca)"/>
+  <circle cx="730" cy="160" r="15" fill="#38bdf8"/><circle cx="755" cy="195" r="15" fill="#f5b942"/><text x="785" y="185" class="cs">imagen y frase que se corresponden: cerca</text>
+  <circle cx="1040" cy="300" r="12" fill="#38bdf8" opacity=".6"/><circle cx="880" cy="320" r="12" fill="#f5b942" opacity=".6"/><circle cx="1090" cy="120" r="12" fill="#f5b942" opacity=".6"/>
+  <text x="900" y="360" text-anchor="middle" class="cs">aprendido con 400 millones de pares imagen–texto de internet</text>
+</g>
+</svg>
+<aside class="notes"><p>Las redes de ImageNet tienen una limitación: solo conocen sus mil categorías. Para una categoría nueva hay que conseguir ejemplos etiquetados y volver a entrenar.</p><p>CLIP, de OpenAI, cambió eso. Tiene dos codificadores, uno para imágenes y otro para texto, y los entrenó con 400 millones de pares imagen y texto tomados de internet, aprendiendo a poner cada imagen cerca de la frase que la acompaña. El resultado es un espacio común en el que una foto de una tuerca queda cerca de la frase «una foto de una tuerca». Es la lectura del club de hoy: aquí solo vemos cómo se usa.</p></aside>
+</section>
+
+<section data-min="2">
+<div class="kicker">Clasificación sin entrenamiento previo (<em>zero-shot</em>)</div>
+<h2>Clasificar escribiendo las etiquetas</h2>
+<div class="cols mid">
+  <div>
+    <p>1. Se escribe cada clase como una frase:</p>
+    <div class="acl" style="font-size:22px">«una foto de una tuerca sin defectos»<br>«una foto de una tuerca rayada»<br>«una foto de una tuerca doblada»</div>
+    <p class="fragment" style="margin-top:12px">2. CLIP compara la imagen con cada frase.</p>
+    <p class="fragment">3. Gana la frase más parecida. <strong>Ningún ejemplo etiquetado.</strong></p>
+  </div>
+  <div class="fragment">
+    <div class="card amber"><h4>En el laboratorio</h4><p>Cambiar las frases cambia el clasificador: es una decisión de diseño, como el umbral del 4A.</p></div>
+    <p class="small muted" style="margin-top:12px">El artículo recomienda la plantilla «A photo of a {label}.»: solo con ella, la exactitud en ImageNet sube 1,3 puntos.</p>
+  </div>
+</div>
+<aside class="notes"><p>¿Cómo se clasifica con CLIP? No se entrena nada. Se escribe cada clase como una frase, por ejemplo una foto de una tuerca sin defectos, una foto de una tuerca rayada, una foto de una tuerca doblada. CLIP mide qué tan cerca está la imagen de cada frase en su espacio, y gana la más cercana. Por eso se llama zero-shot: cero ejemplos.</p><p>Lo importante para el laboratorio: las frases son el clasificador. Cambiarlas cambia el resultado, igual que el umbral cambiaba el conteo en el 4A. Los autores encontraron que la sola plantilla «una foto de un…» mejora la exactitud en ImageNet en 1,3 puntos.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Detección de objetos</div>
+<h2>Clasificar, detectar y segmentar</h2>
+<svg class="diagram" viewBox="0 0 1180 330" role="img" aria-label="Tres tareas sobre la misma escena con tres piezas: clasificación da una etiqueta para toda la imagen; detección dibuja una caja y una etiqueta por objeto; segmentación pinta los píxeles de cada objeto">
+<style>.tt{font-size:22px;fill:#e8ecf4;font-weight:700}.ts{font-size:16px;fill:#a3adc2}.tl{font-size:14px;fill:#0a0e17;font-weight:700}</style>
+<defs><g id="escena"><rect x="0" y="0" width="340" height="220" rx="10" fill="#1d2638"/><circle cx="80" cy="140" r="42" fill="#8f97a8"/><circle cx="80" cy="140" r="16" fill="#1d2638"/>
+<rect x="160" y="60" width="150" height="34" rx="6" fill="#8f97a8"/><rect x="160" y="60" width="34" height="34" fill="#6b7385"/>
+<polygon points="215,150 255,150 275,185 255,205 215,205 195,185" fill="#8f97a8"/><circle cx="235" cy="178" r="12" fill="#1d2638"/></g></defs>
+<g><use href="#escena" x="20" y="40"/><text x="190" y="300" text-anchor="middle" class="tt">Clasificación</text><text x="190" y="324" text-anchor="middle" class="ts">una etiqueta: «piezas metálicas»</text>
+  <rect x="40" y="50" width="150" height="26" rx="6" fill="#38bdf8"/><text x="115" y="68" text-anchor="middle" class="tl">piezas metálicas</text></g>
+<g class="fragment"><use href="#escena" x="420" y="40"/><text x="590" y="300" text-anchor="middle" class="tt">Detección</text><text x="590" y="324" text-anchor="middle" class="ts">una caja y una etiqueta por objeto</text>
+  <g fill="none" stroke="#f5b942" stroke-width="3"><rect x="455" y="133" width="92" height="92"/><rect x="576" y="96" width="158" height="42"/><rect x="611" y="185" width="86" height="62"/></g>
+  <g class="tl"><rect x="455" y="111" width="74" height="22" fill="#f5b942"/><text x="492" y="127" text-anchor="middle" class="tl">arandela</text>
+  <rect x="576" y="74" width="62" height="22" fill="#f5b942"/><text x="607" y="90" text-anchor="middle" class="tl">perno</text>
+  <rect x="611" y="247" width="62" height="22" fill="#f5b942"/><text x="642" y="263" text-anchor="middle" class="tl">tuerca</text></g></g>
+<g class="fragment"><use href="#escena" x="820" y="40"/><text x="990" y="300" text-anchor="middle" class="tt">Segmentación</text><text x="990" y="324" text-anchor="middle" class="ts">los píxeles de cada objeto</text>
+  <circle cx="900" cy="180" r="42" fill="#4ade80" opacity=".75"/><rect x="980" y="100" width="150" height="34" rx="6" fill="#a78bfa" opacity=".8"/>
+  <polygon points="1035,190 1075,190 1095,225 1075,245 1035,245 1015,225" fill="#f87171" opacity=".8"/></g>
+</svg>
+<aside class="notes"><p>Para inspección industrial, a veces no basta una etiqueta para toda la imagen. Hay tres tareas distintas. Clasificar: una etiqueta para la imagen completa. Detectar: una caja y una etiqueta por cada objeto, que es lo que necesitamos para contar piezas o ubicar defectos. Segmentar: los píxeles exactos de cada objeto.</p><p>La ilustración es un dibujo, no la salida de un modelo; en la siguiente diapositiva está la salida real de un detector.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Detección de objetos · YOLO</div>
+<h2>YOLO: todas las cajas de una sola mirada</h2>
+<div class="cols c64 mid">
+  <figure class="figure"><img src="assets/img/commons_yolo_escritorio.jpg" alt="Un escritorio con un portátil, botellas, un tazón, una silla y un bolso; cada objeto está encerrado en una caja de color con su etiqueta en inglés" width="715" height="460" class="dark" style="max-height:none;"><figcaption class="credit">Salida de YOLOv3, entrenado con el conjunto COCO, en el módulo dnn de OpenCV. MTheiler, <a href="https://commons.wikimedia.org/wiki/File:Detected-with-YOLO--Schreibtisch-mit-Objekten.jpg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption></figure>
+  <div>
+    <p><strong>YOLO</strong> (Redmon et ál., 2016): una sola red predice todas las cajas y sus clases a la vez, en tiempo real.</p>
+    <p class="fragment">Viene entrenado con objetos comunes: COCO tiene 80 clases. Para piezas o defectos propios hay que <strong>ajustarlo con imágenes etiquetadas</strong>.</p>
+    <p class="fragment small muted">Versión actual: YOLO26 (Ultralytics, enero de 2026); detecta, segmenta y clasifica. Licencia AGPL-3.0.</p>
+  </div>
+</div>
+<aside class="notes"><p>Esta es la salida real de un detector, YOLOv3, sobre la foto de un escritorio: cada objeto tiene su caja y su clase, en inglés porque así se entrenó. YOLO, You Only Look Once, presentado en 2016, resolvió la detección con una sola red que predice todas las cajas y sus clases de una vez, lo bastante rápido para video en tiempo real.</p><p>Viene entrenado con COCO, un conjunto de 80 clases de objetos comunes: portátil, botella, silla. No sabe qué es un tornillo defectuoso; para eso hay que ajustarlo con imágenes propias etiquetadas con cajas. Su versión actual, YOLO26, de enero de 2026, hace detección, segmentación, clasificación y pose. Es software con licencia AGPL-3.0: libre para investigación y cursos, con licencia empresarial para uso comercial cerrado.</p></aside>
+</section>
+
+<section data-min="2">
+<div class="kicker">LLMs multimodales</div>
+<h2>Preguntarle a una imagen</h2>
+<div class="cols mid">
+  <div class="flow4" style="grid-template-columns:1fr;gap:10px">
+    <div class="card accent"><h4>Imagen + instrucción</h4><p class="small">«¿La tuerca tiene algún defecto? Responde sí o no y descríbelo.»</p></div>
+    <div class="card violet fragment"><h4>LLM multimodal</h4><p class="small">convierte la imagen en tokens y la lee junto con el texto</p></div>
+    <div class="card ok fragment"><h4>Respuesta en texto</h4><p class="small">etiqueta, descripción, explicación</p></div>
+  </div>
+  <div class="fragment">
+    <p>Flexible: la tarea se cambia con la instrucción.</p>
+    <p>Pero la propia documentación advierte que <strong>cuenta</strong> y <strong>ubica</strong> objetos de forma aproximada.</p>
+    <p class="small muted">Anthropic, guía de visión de la API de Claude (consultada el 26-oct-2026).</p>
+  </div>
+</div>
+<aside class="notes"><p>La tercera familia son los LLMs multimodales, como Claude, Gemini o GPT. Reciben la imagen junto con una instrucción en lenguaje natural y responden en texto. Por dentro, la imagen se convierte en tokens, como el texto.</p><p>Su ventaja es la flexibilidad: la tarea se cambia escribiendo otra instrucción, y pueden explicar lo que ven. Su debilidad la reconoce la propia documentación: cuentan objetos y dan posiciones de forma aproximada, y no son la herramienta para medir. En el laboratorio los compararán con CLIP sobre las mismas imágenes.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">¿Cuánto cuesta ver?</div>
+<h2>El costo por imagen</h2>
+<table class="tbl"><thead><tr><th>Método</th><th>Dónde corre</th><th>Tiempo o tokens</th><th>Costo</th></tr></thead><tbody><tr><td>Pipeline clásico (OpenCV)</td><td>en el computador</td><td>milisegundos por imagen</td><td>sin costo por imagen</td></tr><tr><td>CLIP sin entrenamiento previo</td><td>en el computador (CPU o GPU)</td><td>depende del equipo; más rápido con GPU</td><td>sin costo por imagen</td></tr><tr><td>Detector preentrenado (YOLO)</td><td>en el computador (CPU o GPU)</td><td>milisegundos por imagen con GPU</td><td>sin costo por imagen; licencia AGPL-3.0 o empresarial</td></tr><tr><td>LLM multimodal · Claude Haiku 5.5</td><td>en la nube (API)</td><td>1369 tokens por imagen de 1024 × 1024</td><td>≈ US$0,14 por 1000 imágenes*</td></tr><tr><td>LLM multimodal · Gemini 3.1 Flash-Lite</td><td>en la nube (API)</td><td>1120 tokens por imagen</td><td>≈ US$0,28 por 1000 imágenes*</td></tr><tr><td>LLM multimodal · GPT-5.4 nano</td><td>en la nube (API)</td><td>1229 tokens por imagen de 1024 × 1024</td><td>≈ US$0,25 por 1000 imágenes*</td></tr></tbody></table>
+<p class="small muted" style="margin-top:8px">* Solo los tokens de la imagen, con los precios oficiales del 26-oct-2026; la instrucción y la respuesta se cobran aparte. En Claude, una imagen cuesta ⌈ancho/28⌉ × ⌈alto/28⌉ tokens.</p>
+<aside class="notes"><p>El costo cambia mucho según el método. El pipeline clásico, CLIP y un detector como YOLO corren en el propio computador: no pagan por imagen, aunque pueden necesitar una GPU para ir rápido. Un LLM multimodal corre en la nube y cobra por tokens.</p><p>¿Cuántos tokens es una imagen? En Claude, un parche de 28 por 28 píxeles es un token: una imagen de 1024 por 1024 son 1369 tokens. Con Haiku 5.5, a diez centavos de dólar el millón de tokens de entrada, mil imágenes cuestan unos catorce centavos, solo por las imágenes. Gemini y GPT dan cifras del mismo orden. Para una línea de producción con miles de piezas por hora, la cuenta importa; y también importa que las imágenes salgan de la organización.</p></aside>
+</section>
+
+<section data-min="2.5">
+<div class="kicker">Contrapunto</div>
+<h2>Tres formas de resolver la misma inspección</h2>
+<table class="tbl"><thead><tr><th></th><th>Pipeline clásico</th><th>CLIP · YOLO preentrenado</th><th>LLM multimodal</th></tr></thead><tbody>
+<tr><td>Quién decide qué mirar</td><td>usted: umbrales, filtros, medidas</td><td>el modelo, entrenado con millones de imágenes</td><td>el modelo, guiado por la instrucción</td></tr>
+<tr class="fragment"><td>Qué necesita</td><td>adquisición controlada</td><td>frases (CLIP) o un modelo para sus clases (YOLO)</td><td>una buena instrucción y conexión</td></tr>
+<tr class="fragment"><td>Cómo se equivoca</td><td>cuando cambia la luz o el fondo</td><td>con clases raras o mal descritas</td><td>cuenta y ubica de forma aproximada; puede inventar</td></tr>
+<tr class="fragment"><td>Cómo se explica</td><td>cada paso se ve y se mide</td><td>similitud o caja con su confianza</td><td>con texto, que hay que verificar</td></tr>
+</tbody></table>
+<aside class="notes"><p>Pongamos los tres lado a lado sobre la misma inspección. En el pipeline clásico, usted decide qué mirar, y necesita controlar la adquisición: se equivoca cuando cambia la luz o el fondo, pero cada paso se ve y se puede medir. Con un modelo preentrenado como CLIP o YOLO, el modelo decide qué mirar a partir de millones de imágenes: necesita frases bien escritas o un modelo para sus clases, y se equivoca con clases raras. El LLM multimodal es el más flexible, pero cuenta y ubica de forma aproximada, puede inventar, y su explicación es un texto que hay que verificar.</p><p>Es el mismo contrapunto de las sesiones 2 y 3: lo clásico da control y verificación; los modelos grandes dan flexibilidad. En el laboratorio lo van a medir.</p></aside>
+</section>
+
+<section data-min="2" data-opcional>
+<div class="kicker">Cuándo basta lo clásico</div>
+<h2>Si se controla la adquisición, lo sencillo funciona</h2>
+<div class="cols c64 mid">
+  <div>
+  <ul>
+    <li>Fondo, luz y distancia fijos: un umbral separa la pieza.</li>
+    <li class="fragment">Pocas clases bien definidas: unas medidas bastan.</li>
+    <li class="fragment">Hay que explicar cada rechazo: cada paso se puede auditar.</li>
+  </ul>
+  <div class="card amber fragment" style="margin-top:14px"><h4>Caso 3, conclusión</h4><p>«se puede trabajar con un clasificador más sencillo como el Bayesiano para separar los 5 fonemas vocales».</p></div>
+  </div>
+  <figure class="figure"><img src="assets/img/commons_aoi_saki.jpg" alt="Máquina de inspección óptica automática: un gabinete gris con una pantalla que muestra una placa electrónica y un teclado al frente" width="316" height="420" class="dark" style="max-height:none;"><figcaption class="credit">Inspección óptica automática (AOI) de placas electrónicas: la cámara y la luz van dentro de la máquina. Gpkp, Electronica India 2025, <a href="https://commons.wikimedia.org/wiki/File:Electronica,_Bangalore_International_Exhibition_Centre_(2025)_37.jpg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption></figure>
+</div>
+<aside class="notes"><p>No todo problema necesita un modelo grande. La foto es una máquina de inspección óptica automática de placas electrónicas: la placa entra a la máquina, y la cámara y la luz están adentro, siempre iguales. Si se controla así la adquisición, con fondo, luz y distancia fijos, un umbral separa la pieza. Si hay pocas clases bien definidas, unas medidas bastan. Y si hay que explicar cada rechazo, por ejemplo ante un cliente o un auditor, cada paso del pipeline clásico se puede revisar.</p><p>La conclusión del caso 3 lo dice: un clasificador sencillo, el bayesiano, bastó. Opcional si el tiempo aprieta.</p></aside>
+</section>
+
+<section data-min="1.5">
+<div class="kicker">Síntesis</div>
+<h2>Lo que nos llevamos</h2>
+<div class="cols-4" style="margin-top:20px">
+  <div class="card accent"><h4>Diseñar</h4><p>el pipeline clásico: control y explicación, si la adquisición es estable</p></div>
+  <div class="card accent fragment"><h4>Aprender</h4><p>las redes aprenden sus filtros: datos y cómputo</p></div>
+  <div class="card violet fragment"><h4>Describir</h4><p>CLIP clasifica con frases; YOLO detecta y cuenta</p></div>
+  <div class="card amber fragment"><h4>Preguntar</h4><p>un LLM multimodal es flexible, cobra por imagen y hay que verificarlo</p></div>
+</div>
+<aside class="notes"><p>Cuatro ideas: diseñar características da control, si la adquisición es estable; las redes aprenden sus filtros a partir de datos y cómputo; CLIP clasifica describiendo las clases con frases y YOLO detecta y cuenta; un LLM multimodal es flexible, pero cobra por imagen y su respuesta hay que verificarla.</p></aside>
+</section>
+
+<section data-min="1.5" class="transition-slide">
+<div class="kicker amber">A continuación · 60 min</div>
+<h1 style="font-size:58px">Laboratorio 4B · Reconocimiento con modelos preentrenados</h1>
+<p class="lead">Las mismas imágenes de inspección industrial, con modelos que ya saben ver: CLIP sin entrenamiento previo, un LLM multimodal y un detector preentrenado.</p>
+<div class="cols-3" style="margin-top:18px">
+  <div class="card"><h4>Comparar</h4><p>con la matriz de confusión y el costo por imagen</p></div>
+  <div class="card"><h4>Analizar</h4><p>los errores: ¿cuándo basta el pipeline del 4A?</p></div>
+  <div class="card"><h4>Sin escribir código</h4><p>notebook de configuración, en parejas</p></div>
+</div>
+<aside class="notes"><p>Pasamos al Laboratorio 4B, una hora en parejas. Van a usar modelos que ya saben ver sobre imágenes de inspección industrial: CLIP sin entrenamiento previo, escribiendo las clases como frases; un LLM multimodal; y un detector preentrenado. Compararán con la matriz de confusión y el costo por imagen, analizarán los errores y discutirán cuándo basta el pipeline clásico del 4A. No se escribe código.</p><p>Después del laboratorio viene la charla de cierre y el club de lectura sobre CLIP.</p></aside>
+</section>
+
+<section data-min="0">
+<div class="kicker">Referencias de la charla intermedia</div>
+<h2>Para profundizar</h2>
+<div class="refs-tight"><ol class="refs"><li>Deng, J. et ál. (2009). ImageNet: a large-scale hierarchical image database. <em>CVPR 2009</em>, 248–255. <a href="https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf">PDF</a></li><li>Russakovsky, O. et ál. (2015). ImageNet Large Scale Visual Recognition Challenge. <em>IJCV</em> 115(3), 211–252. <a href="https://doi.org/10.1007/s11263-015-0816-y">DOI</a> · <a href="https://arxiv.org/abs/1409.0575">arXiv</a></li><li>Krizhevsky, A., Sutskever, I. y Hinton, G. E. (2012). ImageNet classification with deep convolutional neural networks. <em>NIPS 2012</em>. <a href="https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf">PDF</a></li><li>Zeiler, M. D. y Fergus, R. (2014). Visualizing and understanding convolutional networks. <em>ECCV 2014</em>, 818–833. <a href="https://arxiv.org/abs/1311.2901">arXiv</a></li><li>Olah, C., Mordvintsev, A. y Schubert, L. (2017). Feature visualization. <em>Distill</em>. <a href="https://distill.pub/2017/feature-visualization/">distill.pub</a></li><li>Radford, A. et ál. (2021). Learning transferable visual models from natural language supervision. <em>ICML 2021</em>, PMLR 139, 8748–8763. <a href="https://proceedings.mlr.press/v139/radford21a.html">PMLR</a></li><li>Redmon, J., Divvala, S., Girshick, R. y Farhadi, A. (2016). You Only Look Once: unified, real-time object detection. <em>CVPR 2016</em>, 779–788. <a href="https://arxiv.org/abs/1506.02640">arXiv</a> · Ultralytics (2026). <a href="https://docs.ultralytics.com/models/yolo26/">YOLO26</a> · <a href="https://www.ultralytics.com/license">licencias</a></li><li>Documentación de visión y precios, consultada el 26-oct-2026: Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/vision">visión</a> y <a href="https://platform.claude.com/docs/en/about-claude/pricing">precios</a>; OpenAI, <a href="https://developers.openai.com/api/docs/guides/images-vision">visión</a> y <a href="https://developers.openai.com/api/docs/pricing">precios</a>; Google, <a href="https://ai.google.dev/gemini-api/docs/media-resolution">resolución de medios</a> y <a href="https://ai.google.dev/gemini-api/docs/pricing">precios</a></li><li>Salazar, A. y Prieto, F. (2006). Extracción y clasificación de posturas labiales en niños entre 5 y 10 años de la ciudad de Manizales. <em>DYNA</em> 73(150), 175–188. <a href="https://revistas.unal.edu.co/index.php/dyna/article/view/849">Artículo</a></li></ol></div>
+<p class="navlinks"><a href="charla1_procesamiento_digital_de_imagenes.html">← Charla inicial</a><a href="index.html">Volver a la agenda</a><a href="charla3_cuando_confiar_y_cierre.html">Charla de cierre →</a></p>
+<aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 4 · Charla intermedia · Del pipeline clásico a los modelos</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>
