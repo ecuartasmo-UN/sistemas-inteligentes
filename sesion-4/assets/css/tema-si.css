@@ -488,3 +488,5 @@ section.transition-slide { padding-top: 120px !important; }
 /* Versión pública: lugar de una imagen con derechos reservados */
 .img-reservada { display: flex; flex-direction: column; justify-content: center; gap: 10px; min-height: 170px; padding: 18px 26px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 18px; line-height: 1.35; text-align: left; }
 .img-reservada strong { color: var(--text); font-size: 19px; }
+.img-reservada.ajustada { display: inline-flex; min-height: 64px; max-width: 100%; height: auto; box-sizing: border-box; overflow: hidden; gap: 4px; padding: 10px 14px; font-size: 14px; line-height: 1.3; vertical-align: middle; }
+.img-reservada.ajustada strong { font-size: 15px; }
