@@ -60,4 +60,4 @@ Si no puede instalar el entorno, cada laboratorio también corre en Google Colab
 
 ## Créditos
 
-Las imágenes de las diapositivas y de los notebooks son de dominio público, tienen licencia Creative Commons o son diagramas propios; cada una lleva su crédito junto a la imagen. Las imágenes con derechos reservados que se muestran en clase no se incluyen aquí: en su lugar aparece un recuadro con su descripción, y el crédito enlaza a la fuente original. MantenIA, la empresa de los ejemplos, es ficticia.
+Las imágenes de las diapositivas y de los notebooks son de dominio público, tienen licencia Creative Commons, son diagramas propios o vienen del material original del docente; cada una lleva su crédito junto a la imagen, y las pocas figuras tomadas de otras obras citan su fuente al pie. Algunas imágenes con derechos reservados de la sesión 2 no se incluyen aquí: en su lugar aparece un recuadro con su descripción, y el crédito enlaza a la fuente original. MantenIA, la empresa de los ejemplos, es ficticia.
