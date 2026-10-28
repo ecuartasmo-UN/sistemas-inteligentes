@@ -1,0 +1,11 @@
+# Laboratorio 4B · librerías (probadas con Python 3.12 y 3.13 el 28-oct-2026)
+torch==2.14.1
+transformers==5.19.0
+anthropic==2.1.0
+openai==3.36.0
+python-dotenv==1.2.4
+# las del 4A, para comparar conteos con su pipeline
+opencv-python-headless==5.0.0.93
+scikit-image==0.26.0
+scipy==1.18.1
+matplotlib==3.11.2

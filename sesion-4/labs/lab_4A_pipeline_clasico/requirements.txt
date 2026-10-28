@@ -1,0 +1,5 @@
+# Laboratorio 4A · librerías (probadas con Python 3.12 y 3.13 el 28-oct-2026)
+opencv-python-headless==5.0.0.93
+scikit-image==0.26.0
+scipy==1.18.1
+matplotlib==3.11.2
