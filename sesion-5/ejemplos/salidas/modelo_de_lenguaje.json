@@ -1,0 +1,410 @@
+{
+ "modelo": "Qwen/Qwen2.5-0.5B",
+ "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+ "capas": 24,
+ "cabezas": 14,
+ "tokens": {
+  "gpt2_es": [
+   "La",
+   " bomb",
+   "a",
+   " 3",
+   " present",
+   "a",
+   " vibr",
+   "aci",
+   "ón",
+   " alt",
+   "a",
+   " y",
+   " temper",
+   "atur",
+   "a",
+   " elev",
+   "ada",
+   " en",
+   " el",
+   " ro",
+   "dam",
+   "ient",
+   "o",
+   "."
+  ],
+  "gpt2_en": [
+   "P",
+   "ump",
+   " 3",
+   " shows",
+   " high",
+   " vibration",
+   " and",
+   " elevated",
+   " temperature",
+   " in",
+   " the",
+   " bearing",
+   "."
+  ],
+  "qwen2.5_es": [
+   "La",
+   " bomb",
+   "a",
+   " ",
+   "3",
+   " presenta",
+   " vibr",
+   "ación",
+   " alta",
+   " y",
+   " temperatura",
+   " elev",
+   "ada",
+   " en",
+   " el",
+   " ro",
+   "dam",
+   "iento",
+   "."
+  ],
+  "qwen2.5_en": [
+   "P",
+   "ump",
+   " ",
+   "3",
+   " shows",
+   " high",
+   " vibration",
+   " and",
+   " elevated",
+   " temperature",
+   " in",
+   " the",
+   " bearing",
+   "."
+  ]
+ },
+ "banco": {
+  "frases": [
+   "Para pagar la factura del proveedor fuimos al banco",
+   "El gerente pidió el crédito para la planta en el banco",
+   "Cansado después del turno, el técnico se sentó en el banco",
+   "Para descansar un rato en el parque, se sentaron en el banco"
+  ],
+  "capa": 12,
+  "similitud_antes": [
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ]
+  ],
+  "similitud_capa": [
+   [
+    1.0,
+    0.89,
+    0.75,
+    0.74
+   ],
+   [
+    0.89,
+    1.0,
+    0.76,
+    0.75
+   ],
+   [
+    0.75,
+    0.76,
+    1.0,
+    0.9
+   ],
+   [
+    0.74,
+    0.75,
+    0.9,
+    1.0
+   ]
+  ]
+ },
+ "atencion": [
+  {
+   "frase": "Para pagar la factura del proveedor fuimos al banco",
+   "tokens": [
+    " pagar",
+    " la",
+    " factura",
+    " del",
+    " prove",
+    "edor",
+    " fu",
+    "imos",
+    " al",
+    " banco"
+   ],
+   "peso_primer_token": 0.777,
+   "pesos_sin_primer_token": [
+    0.203,
+    0.046,
+    0.115,
+    0.037,
+    0.054,
+    0.195,
+    0.058,
+    0.063,
+    0.039,
+    0.191
+   ]
+  },
+  {
+   "frase": "El gerente pidió el crédito para la planta en el banco",
+   "tokens": [
+    " ger",
+    "ente",
+    " p",
+    "idi",
+    "ó",
+    " el",
+    " crédito",
+    " para",
+    " la",
+    " planta",
+    " en",
+    " el",
+    " banco"
+   ],
+   "peso_primer_token": 0.737,
+   "pesos_sin_primer_token": [
+    0.042,
+    0.073,
+    0.031,
+    0.021,
+    0.018,
+    0.028,
+    0.32,
+    0.097,
+    0.037,
+    0.132,
+    0.047,
+    0.03,
+    0.123
+   ]
+  },
+  {
+   "frase": "Cansado después del turno, el técnico se sentó en el banco",
+   "tokens": [
+    "ans",
+    "ado",
+    " después",
+    " del",
+    " turno",
+    ",",
+    " el",
+    " técnico",
+    " se",
+    " sent",
+    "ó",
+    " en",
+    " el",
+    " banco"
+   ],
+   "peso_primer_token": 0.765,
+   "pesos_sin_primer_token": [
+    0.09,
+    0.049,
+    0.024,
+    0.016,
+    0.204,
+    0.117,
+    0.034,
+    0.072,
+    0.034,
+    0.022,
+    0.085,
+    0.064,
+    0.09,
+    0.098
+   ]
+  },
+  {
+   "frase": "Para descansar un rato en el parque, se sentaron en el banco",
+   "tokens": [
+    " desc",
+    "ans",
+    "ar",
+    " un",
+    " r",
+    "ato",
+    " en",
+    " el",
+    " par",
+    "que",
+    ",",
+    " se",
+    " sent",
+    "aron",
+    " en",
+    " el",
+    " banco"
+   ],
+   "peso_primer_token": 0.719,
+   "pesos_sin_primer_token": [
+    0.008,
+    0.021,
+    0.066,
+    0.021,
+    0.013,
+    0.013,
+    0.033,
+    0.048,
+    0.017,
+    0.176,
+    0.134,
+    0.048,
+    0.014,
+    0.086,
+    0.068,
+    0.08,
+    0.154
+   ]
+  }
+ ],
+ "siguiente_token": {
+  "inicio": "Orden de trabajo OT-512. La bomba 3 presenta vibración alta. La causa más probable es un",
+  "temperaturas": {
+   "0.5": [
+    {
+     "token": " problema",
+     "probabilidad": 0.6458
+    },
+    {
+     "token": " defect",
+     "probabilidad": 0.2523
+    },
+    {
+     "token": " error",
+     "probabilidad": 0.0211
+    },
+    {
+     "token": " des",
+     "probabilidad": 0.0176
+    },
+    {
+     "token": " mal",
+     "probabilidad": 0.0055
+    },
+    {
+     "token": " fal",
+     "probabilidad": 0.0054
+    },
+    {
+     "token": " elemento",
+     "probabilidad": 0.0042
+    },
+    {
+     "token": " cambio",
+     "probabilidad": 0.0033
+    }
+   ],
+   "1.0": [
+    {
+     "token": " problema",
+     "probabilidad": 0.1549
+    },
+    {
+     "token": " defect",
+     "probabilidad": 0.0968
+    },
+    {
+     "token": " error",
+     "probabilidad": 0.028
+    },
+    {
+     "token": " des",
+     "probabilidad": 0.0256
+    },
+    {
+     "token": " mal",
+     "probabilidad": 0.0144
+    },
+    {
+     "token": " fal",
+     "probabilidad": 0.0141
+    },
+    {
+     "token": " elemento",
+     "probabilidad": 0.0124
+    },
+    {
+     "token": " cambio",
+     "probabilidad": 0.011
+    }
+   ],
+   "1.5": [
+    {
+     "token": " problema",
+     "probabilidad": 0.0286
+    },
+    {
+     "token": " defect",
+     "probabilidad": 0.0209
+    },
+    {
+     "token": " error",
+     "probabilidad": 0.0092
+    },
+    {
+     "token": " des",
+     "probabilidad": 0.0086
+    },
+    {
+     "token": " mal",
+     "probabilidad": 0.0059
+    },
+    {
+     "token": " fal",
+     "probabilidad": 0.0058
+    },
+    {
+     "token": " elemento",
+     "probabilidad": 0.0053
+    },
+    {
+     "token": " cambio",
+     "probabilidad": 0.0049
+    }
+   ]
+  }
+ },
+ "continuaciones": {
+  "0.2": [
+   " problema de la bomba. El problema es el problema de la bomb",
+   " problema de la bomba. El problema puede ser que la bomba"
+  ],
+  "0.8": [
+   " defecto de carpeta o una rotura en la válvula",
+   " sistema de alimentación altamente cargado. No es necesario compensar"
+  ],
+  "1.3": [
+   " «fechazo ultracreelévoir fiuse». Es.perform",
+   " sistema弨<\\/sup>[Bick]reglo.\r\nOPARIUno"
+  ]
+ }
+}

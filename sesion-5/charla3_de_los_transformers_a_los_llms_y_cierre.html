@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla de cierre · De los transformers a los LLMs — Sesión 5 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .lim .card h4 { font-size: 24px; margin-bottom: 4px; }
+  .lim .card p { font-size: 19px; margin: 0 0 4px; line-height: 1.3; }
+  .guia td, .guia th { font-size: 16px !important; padding: 5px 8px !important; line-height: 1.25; }
+  .guia th:first-child { width: 150px; }
+  .casos .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .casos .card p { font-size: 19px; margin: 0 0 6px; line-height: 1.3; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 5 · Unidad 5 · Charla de cierre</div>
+  <h1>De los transformers a los LLMs</h1>
+  <p class="lead muted">Escala, instrucciones, límites y el lugar de las redes en un sistema inteligente; y el cierre de la sesión</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla2_la_arquitectura_transformer.html">← Charla intermedia</a><a href="index.html">Agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes">
+    <p>Después del Laboratorio 5B. Ya saben cómo aprende una red y cómo lee un transformer. La pregunta de esta charla es cómo se pasa de un transformer pequeño a los LLMs que hemos usado en cada sesión, qué pueden y qué no, y dónde tienen sentido las redes profundas dentro de un sistema inteligente. Al final, el cierre de la sesión.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LO QUE MOSTRÓ EL 5B ============================ -->
+<section data-min="2">
+  <div class="kicker">Del laboratorio</div>
+  <h2>Lo que gana el transformer, y lo que no</h2>
+  <!--DATOS:piloto--><table class="tbl num"><tr><th>Representación</th><th>Aciertos</th><th>«Hay fuga» frente a «No hay fuga»</th></tr><tr><td>Bolsa de palabras (sin orden ni significado)</td><td>5 de 16</td><td>—</td></tr><tr><td>Transformer · Granite (214 MB), el del 5B</td><td class="hi">14 de 16</td><td>0,95</td></tr><tr><td>Transformer · MiniLM multilingüe (471 MB)</td><td>13 de 16</td><td>0,84</td></tr><tr><td>Transformer · e5-small multilingüe (471 MB)</td><td>12 de 16</td><td>0,97</td></tr></table><!--/DATOS:piloto-->
+  <div class="cols" style="margin-top:14px;font-size:22px">
+    <p class="fragment">Con <strong>3 ejemplos</strong> por equipo, entiende órdenes escritas con otras palabras: «escape de lubricante» es una fuga.</p>
+    <p class="fragment">Pero «hay fuga» y «no hay fuga» le parecen <strong>casi lo mismo</strong>: la negación se le escapa.</p>
+  </div>
+  <p class="credit">Prueba piloto del 29 de octubre de 2026: 16 órdenes redactadas con otras palabras, clasificadas con 3 ejemplos por equipo. Generado con <code>ejemplos/codificador_5b.py</code>.</p>
+  <aside class="notes">
+    <p>Empiezo con lo que vieron en el laboratorio, con la prueba que usamos para elegir el modelo. Con solo tres ejemplos por equipo, el transformer preentrenado acertó 14 de 16 órdenes escritas con palabras distintas a las de los ejemplos; la bolsa de palabras, que solo cuenta palabras, acertó 5. El transformer sabe que «escape de lubricante» es una fuga aunque no comparta ninguna palabra con los ejemplos: eso lo aprendió al preentrenarse con mucho texto.</p>
+    <p>Y el límite: «hay fuga de aceite» y «no hay fuga de aceite» le parecen casi la misma frase, con similitud de 0,95. En mantenimiento, esa diferencia importa. Ese contraste, mucho poder y un punto ciego, es el tema de esta charla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · DATOS Y CÓMPUTO ============================ -->
+<section data-min="2">
+  <div class="kicker">Por qué ahora</div>
+  <h2>Datos y cómputo</h2>
+  <div class="cols c64 mid">
+    <div class="imgrow" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <figure class="figure"><img src="assets/img/gpu_a100.png" alt="Tarjeta aceleradora NVIDIA A100 para centros de datos, de color dorado, vista de frente" width="1260" height="709" style="max-height:220px;background:#000;border-radius:8px"><figcaption class="credit">NVIDIA A100. Nvidia, <a href="https://commons.wikimedia.org/wiki/File:Nvidia_Tesla_A100.png">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption></figure>
+      <figure class="figure"><img src="assets/img/centro_de_datos.jpg" alt="Sala de un centro de datos con filas de racks de servidores y piso técnico" width="1920" height="1280" style="max-height:220px"><figcaption class="credit">Racks de servidores. Carl Lender, <a href="https://commons.wikimedia.org/wiki/File:Datacenter_Server_Racks_(22370909788).jpg">Wikimedia Commons</a>, CC BY 2.0.</figcaption></figure>
+    </div>
+    <div>
+      <p class="big-number" style="font-size:72px;margin:0">× 4</p>
+      <p style="font-size:22px">por año creció el cómputo para entrenar los modelos de IA notables entre 2010 y 2024.</p>
+      <p class="fragment muted" style="font-size:20px">En los modelos de lenguaje de frontera, unas <strong>5 veces por año</strong> desde 2020.</p>
+    </div>
+  </div>
+  <p class="credit">Sevilla y Roldán (2024), Epoch AI: 4,1 veces por año (IC 90 %: 3,7 a 4,6). Epoch AI, <em>Trends</em> (feb. 2026). Datos de Epoch AI con licencia CC BY 4.0.</p>
+  <aside class="notes">
+    <p>¿Por qué el aprendizaje profundo despegó en la última década y no antes? Las ideas, la retropropagación de 1986, existían. Lo que cambió fueron los datos y el cómputo. En la Sesión 4 vimos AlexNet en 2012, entrenada en dos GPU de videojuegos; hoy se entrena en tarjetas como esta A100, por miles, en centros de datos.</p>
+    <p>Epoch AI, un instituto que registra el cómputo de los modelos publicados, estima que el cómputo usado para entrenar los modelos notables creció unas cuatro veces por año entre 2010 y 2024; en los modelos de lenguaje de frontera, unas cinco veces por año desde 2020. Cuatro veces por año es multiplicar por más de un millón en diez años.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · PREENTRENAR ============================ -->
+<section data-min="2">
+  <div class="kicker">Preentrenamiento</div>
+  <h2>Predecir el siguiente token, a escala</h2>
+  <svg class="diagram" viewBox="0 0 1150 230" role="img" aria-label="El preentrenamiento: un transformer lee cientos de miles de millones de tokens de texto y en cada posición intenta predecir el siguiente; el error de cada predicción ajusta sus pesos">
+    <defs><style>.t1{font-size:19px;fill:#e8ecf4;font-weight:600}.t2{font-size:16px;fill:#a3adc2}</style>
+    <marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+    <rect x="0" y="40" width="300" height="120" rx="12" fill="#172033" stroke="#2a3550"/><text x="150" y="85" text-anchor="middle" class="t1">texto de internet,</text><text x="150" y="110" text-anchor="middle" class="t1">libros, código</text><text x="150" y="140" text-anchor="middle" class="t2">cientos de miles de millones de tokens</text>
+    <path d="M302,100 H380" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar7)"/>
+    <rect x="390" y="40" width="320" height="120" rx="12" fill="rgba(167,139,250,.14)" stroke="#a78bfa"/><text x="550" y="90" text-anchor="middle" class="t1">transformer decodificador</text><text x="550" y="120" text-anchor="middle" class="t2">«La bomba 3 presenta vibración ▮»</text>
+    <path d="M712,100 H790" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar7)"/>
+    <rect x="800" y="40" width="340" height="120" rx="12" fill="rgba(74,222,128,.12)" stroke="#4ade80"/><text x="970" y="90" text-anchor="middle" class="t1">¿acertó el siguiente token?</text><text x="970" y="120" text-anchor="middle" class="t2">el error ajusta los pesos (charla inicial)</text>
+    <path d="M970,162 C970,215 550,215 550,166" fill="none" stroke="#f5b942" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar7)"/>
+    <text x="760" y="222" text-anchor="middle" class="t2" style="fill:#f5b942">se repite billones de veces</text>
+  </svg>
+  <table class="tbl num fragment" style="font-size:21px;margin-top:10px">
+    <tr><th>Modelo</th><th>Parámetros</th><th>Tokens de entrenamiento</th></tr>
+    <tr><td>GPT-3 (Brown et ál., 2020)</td><td>175 000 millones</td><td>300 000 millones</td></tr>
+    <tr><td>Chinchilla (Hoffmann et ál., 2022)</td><td>70 000 millones</td><td>1,4 billones</td></tr>
+  </table>
+  <aside class="notes">
+    <p>¿Cómo se pasa del transformer de la charla intermedia a un LLM? Con el objetivo más simple que se pueda imaginar: predecir el siguiente token. Se toma una enorme cantidad de texto, se le muestra al modelo frase por frase y, en cada posición, se le pide adivinar el token siguiente. El error ajusta los pesos, con el mismo descenso de gradiente y la misma retropropagación de esta mañana. Se repite billones de veces.</p>
+    <p>Para dar una idea de escala: GPT-3, en 2020, tenía 175 000 millones de parámetros y se entrenó con 300 000 millones de tokens. Chinchilla, en 2022, tenía menos parámetros y cuatro veces más datos. Esa diferencia tiene una historia, que cuenta la siguiente diapositiva.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · LEYES DE ESCALA (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Leyes de escala</div>
+  <h2>Más grande, más datos, más cómputo: menos error</h2>
+  <div class="cols mid">
+    <div style="font-size:21px">
+      <p>«La pérdida escala como una <strong>ley de potencia</strong> con el tamaño del modelo, el de los datos y el cómputo» (Kaplan et ál., 2020).</p>
+      <p class="fragment">Hoffmann et ál. (2022): para un cómputo dado, el modelo y los datos deben crecer <strong>por igual</strong>. Con el cómputo de Gopher, Chinchilla usó 4 veces menos parámetros y 4 veces más datos, y le ganó.</p>
+      <p class="fragment small muted">De su tabla 3 se deduce una regla práctica de unos 20 tokens por parámetro; el artículo no la enuncia así.</p>
+    </div>
+    <svg class="diagram fragment" viewBox="0 0 520 330" role="img" aria-label="Comparación con el mismo cómputo: Gopher tiene 280 mil millones de parámetros y se entrenó con 300 mil millones de tokens; Chinchilla tiene 70 mil millones de parámetros y 1,4 billones de tokens, y supera a Gopher">
+      <defs><style>.g1{font-size:17px;fill:#e8ecf4;font-weight:600}.g2{font-size:15px;fill:#a3adc2}</style></defs>
+      <text x="110" y="24" text-anchor="middle" class="g1">Gopher</text><text x="380" y="24" text-anchor="middle" class="g1" style="fill:#4ade80">Chinchilla</text>
+      <rect x="40" y="40" width="50" height="240" fill="#a78bfa"/><rect x="130" y="226" width="50" height="54" fill="#38bdf8"/>
+      <rect x="310" y="220" width="50" height="60" fill="#a78bfa"/><rect x="400" y="40" width="50" height="240" fill="#38bdf8" opacity=".95"/>
+      <text x="65" y="300" text-anchor="middle" class="g2">280 mil M</text><text x="155" y="300" text-anchor="middle" class="g2">300 mil M</text>
+      <text x="335" y="300" text-anchor="middle" class="g2">70 mil M</text><text x="425" y="300" text-anchor="middle" class="g2">1,4 billones</text>
+      <rect x="130" y="312" width="14" height="12" fill="#a78bfa"/><text x="150" y="323" class="g2">parámetros</text><rect x="250" y="312" width="14" height="12" fill="#38bdf8"/><text x="270" y="323" class="g2">tokens (escala propia)</text>
+    </svg>
+  </div>
+  <p class="credit">Kaplan et ál. (2020); Hoffmann et ál. (2022), tabla 1.</p>
+  <aside class="notes">
+    <p>Opcional. En 2020, Kaplan y coautores, de OpenAI, encontraron una regularidad: el error de un modelo de lenguaje baja de forma muy predecible, como una ley de potencia, cuando crece el modelo, crecen los datos y crece el cómputo. Eso convirtió el escalar en una inversión planificable.</p>
+    <p>En 2022, Hoffmann y coautores, de DeepMind, corrigieron la receta: para un presupuesto de cómputo dado, el modelo y los datos deben crecer por igual. Lo demostraron con Chinchilla: con el mismo cómputo que Gopher, cuatro veces menos parámetros y cuatro veces más datos, y le ganó. De sus tablas sale la regla práctica de unos 20 tokens de entrenamiento por parámetro, aunque el artículo no la escribe así.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · INSTRUCCIONES ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Ajuste por instrucciones y preferencias</div>
+  <h2>De completar texto a seguir instrucciones</h2>
+  <svg class="diagram" viewBox="0 0 1150 250" role="img" aria-label="Los tres pasos de InstructGPT: primero, ajuste supervisado con demostraciones escritas por personas; segundo, un modelo de recompensa entrenado con comparaciones de respuestas hechas por personas; tercero, aprendizaje por refuerzo contra ese modelo de recompensa">
+    <defs><style>.i1{font-size:19px;fill:#e8ecf4;font-weight:700}.i2{font-size:16px;fill:#a3adc2}</style>
+    <marker id="ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+    <rect x="0" y="20" width="200" height="90" rx="12" fill="#172033" stroke="#2a3550"/><text x="100" y="58" text-anchor="middle" class="i1">Modelo base</text><text x="100" y="84" text-anchor="middle" class="i2">completa texto</text>
+    <path d="M202,65 H246" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar8)"/>
+    <g class="fragment"><rect x="250" y="20" width="270" height="90" rx="12" fill="rgba(56,189,248,.14)" stroke="#38bdf8"/><text x="385" y="52" text-anchor="middle" class="i1">1 · Demostraciones</text><text x="385" y="78" text-anchor="middle" class="i2">personas escriben respuestas</text><text x="385" y="98" text-anchor="middle" class="i2">ajuste supervisado</text>
+    <path d="M522,65 H566" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar8)"/></g>
+    <g class="fragment"><rect x="570" y="20" width="270" height="90" rx="12" fill="rgba(245,185,66,.14)" stroke="#f5b942"/><text x="705" y="52" text-anchor="middle" class="i1">2 · Comparaciones</text><text x="705" y="78" text-anchor="middle" class="i2">personas ordenan respuestas</text><text x="705" y="98" text-anchor="middle" class="i2">modelo de recompensa</text>
+    <path d="M842,65 H886" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar8)"/></g>
+    <g class="fragment"><rect x="890" y="20" width="260" height="90" rx="12" fill="rgba(167,139,250,.14)" stroke="#a78bfa"/><text x="1020" y="52" text-anchor="middle" class="i1">3 · Refuerzo</text><text x="1020" y="78" text-anchor="middle" class="i2">optimizar contra</text><text x="1020" y="98" text-anchor="middle" class="i2">esa recompensa (PPO)</text></g>
+    <g class="fragment"><text x="575" y="170" text-anchor="middle" class="i1" style="fill:#4ade80">Las personas prefirieron las respuestas de InstructGPT de 1300 millones de parámetros</text><text x="575" y="200" text-anchor="middle" class="i1" style="fill:#4ade80">a las de GPT-3 de 175 000 millones: 100 veces más pequeño</text></g>
+  </svg>
+  <p class="credit">Ouyang et ál. (2022), InstructGPT. El refuerzo se estudia en la Unidad 6; en la Sesión 3 vimos su uso en los modelos de razonamiento.</p>
+  <aside class="notes">
+    <p>Un modelo preentrenado solo completa texto. Si le escriben una pregunta, puede responder con otra pregunta, porque eso también es texto plausible. Para que siga instrucciones hace falta otro paso; gracias a él, en el Laboratorio 5B el LLM clasificó las órdenes solo con una instrucción, sin ejemplos.</p>
+    <p>El trabajo de referencia es InstructGPT, de OpenAI, 2022, en tres pasos. Primero, personas escriben respuestas de ejemplo y el modelo se ajusta con ellas. Segundo, personas comparan y ordenan varias respuestas del modelo, y con eso se entrena un modelo de recompensa que imita sus preferencias. Tercero, se optimiza el modelo contra esa recompensa con aprendizaje por refuerzo. El resultado fue llamativo: las personas prefirieron las respuestas de un modelo de 1300 millones de parámetros a las de GPT-3, cien veces más grande. El refuerzo lo estudiamos en la Unidad 6.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · CAPACIDADES Y LÍMITES ============================ -->
+<section data-min="3">
+  <div class="kicker">Capacidades y límites</div>
+  <h2>Lo que pueden, y lo que no</h2>
+  <div class="cols lim" style="gap:18px">
+    <div class="stack">
+      <div class="card bad"><h4>Alucinan</h4><p>«Los modelos de lenguaje alucinan porque el entrenamiento y la evaluación <strong>premian adivinar</strong> en lugar de reconocer la incertidumbre» (Kalai et ál., 2025).</p></div>
+      <div class="card amber fragment"><h4>Tienen fecha de corte</h4><p>No saben lo que pasó después de su entrenamiento: junio de 2026 para Claude Haiku 5.5; 18 de mayo de 2026 para GPT-6 Luna.</p></div>
+    </div>
+    <div class="stack">
+      <div class="card accent fragment"><h4>Leen mucho a la vez</h4><p>Una ventana de contexto de alrededor de <strong>un millón de tokens</strong> en los modelos pequeños actuales de Anthropic y OpenAI.</p></div>
+      <div class="card violet fragment"><h4>Cobran por token</h4><p>Claude Haiku 5.5: US$0,10 por millón de tokens de entrada y US$0,50 de salida. En miles de consultas diarias, el costo y la espera cuentan.</p></div>
+    </div>
+  </div>
+  <p class="credit">Documentación oficial de Anthropic y OpenAI, consultada el 29 de octubre de 2026. Kalai, Nachum, Vempala y Zhang (2025), preprint.</p>
+  <aside class="notes">
+    <p>Cuatro rasgos que conviene tener presentes al usarlos. Alucinan: afirman cosas falsas con seguridad. Un trabajo de 2025 de investigadores de OpenAI lo explica así: el entrenamiento y las evaluaciones premian adivinar, como un examen de selección múltiple donde dejar en blanco vale cero, en lugar de premiar decir «no sé». Es un preprint, pero el argumento es claro y útil.</p>
+    <p>Tienen fecha de corte: no saben lo que pasó después de su entrenamiento. Leen mucho a la vez: los modelos pequeños actuales aceptan alrededor de un millón de tokens de contexto, cientos de páginas. Y cobran por token: Claude Haiku 5.5, uno de los más baratos, cuesta diez centavos de dólar por millón de tokens de entrada. Poco por consulta, pero en una operación con miles de consultas diarias, el costo y la latencia pesan. Es la misma cuenta de las sesiones anteriores.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · TOKENS EN ESPAÑOL (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Costo</div>
+  <h2>El mismo texto en español cuesta más tokens</h2>
+  <!--DATOS:conteo--><table class="tbl num"><tr><th>Tokenizador</th><th>Español</th><th>Inglés</th><th>El español cuesta</th></tr><tr><td>GPT-2 (2019, entrenado en inglés)</td><td>24</td><td>13</td><td class="hi">1,8 veces</td></tr><tr><td>Qwen2.5 (2024, multilingüe)</td><td>19</td><td>14</td><td class="hi">1,4 veces</td></tr></table><!--/DATOS:conteo-->
+  <p class="fragment" style="font-size:22px;margin-top:14px">En un estudio de 2023, el español pagó entre <strong>1,55 y 2,23 veces</strong> los tokens del inglés, según el tokenizador (Petrov et ál.).</p>
+  <p class="credit">Frase: «La bomba 3 presenta vibración alta y temperatura elevada en el rodamiento.» Generado con <code>ejemplos/modelo_de_lenguaje.py</code>. Petrov et ál. (2023), NeurIPS, tabla 1.</p>
+  <aside class="notes">
+    <p>Opcional. Un detalle de costo que afecta a cualquier organización hispanohablante. La misma orden de trabajo, en español y en inglés, partida por dos tokenizadores: con el de GPT-2, el español usa 1,8 veces los tokens del inglés; con uno moderno y multilingüe, 1,4 veces.</p>
+    <p>Petrov y coautores lo midieron en 2023 con textos traducidos a muchos idiomas: para el español, la prima frente al inglés fue de 1,55 a 2,23 veces, según el tokenizador. Si una API cobra por token, en español se paga más por lo mismo. Al estimar costos para su proyecto, mídanlo con su propio texto.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · SISTEMAS HÍBRIDOS ============================ -->
+<section data-min="2.5">
+  <div class="kicker">El lugar de las redes profundas</div>
+  <h2>La red propone, otra técnica verifica</h2>
+  <div class="cols c64 mid">
+    <table class="tbl" style="font-size:19px">
+      <tr><th>Sesión</th><th>La red propone o percibe</th><th>Lo verifica</th></tr>
+      <tr><td>2</td><td>un LLM escribe un plan</td><td>un validador de planes</td></tr>
+      <tr class="fragment"><td>3</td><td>un LLM traduce una política</td><td>un solver (Z3)</td></tr>
+      <tr class="fragment"><td>4</td><td>un modelo preentrenado detecta</td><td>el pipeline clásico o una persona</td></tr>
+      <tr class="fragment"><td>5</td><td>un transformer clasifica una orden</td><td>una regla de negocio o una persona, si es urgente</td></tr>
+    </table>
+    <div class="card amber fragment" style="font-size:20px"><h4>En datos de tabla</h4><p>«Los modelos de árboles siguen siendo el estado del arte con datos medianos (unas 10 000 muestras)» (Grinsztajn et ál., 2022).</p><p class="muted">El AI4I del 5A tiene 10 000 registros. Los árboles son tema de la Unidad 6.</p></div>
+  </div>
+  <aside class="notes">
+    <p>¿Dónde encajan las redes profundas en un sistema inteligente? El patrón que hemos repetido todo el curso: la red propone o percibe, y otra técnica verifica. En la Sesión 2, un LLM escribía un plan y un validador lo revisaba. En la 3, un LLM traducía una política y Z3 la verificaba. En la 4, un modelo preentrenado detectaba y el pipeline clásico o una persona confirmaba. Hoy, un transformer clasifica una orden de trabajo, y si es urgente, una regla de negocio o una persona confirma antes de despachar.</p>
+    <p>Y un aviso honesto para datos en tabla, como los del Laboratorio 5A: un estudio de NeurIPS 2022 encontró que con conjuntos medianos, de unas diez mil filas, los modelos de árboles siguen ganándoles a las redes profundas. El AI4I tiene justo diez mil registros. Hay trabajos más recientes que discuten esto, pero la lección se mantiene: no siempre lo más profundo es lo mejor. Los árboles son tema de la Unidad 6.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · DOS CASOS REALES ============================ -->
+<section data-min="2">
+  <div class="kicker">Dos casos reales</div>
+  <h2>Cuándo gana un transformer, y cuándo no</h2>
+  <div class="cols casos" style="gap:18px">
+    <div class="card ok">
+      <h4>Nubank · transacciones como tokens</h4>
+      <figure class="figure" style="margin:4px 0 8px"><img src="assets/img/nubank_tokenizacion.jpg" alt="Diagrama de Nubank: una transacción con monto, fecha y descripción se convierte en una cadena de etiquetas y después en tokens" width="1600" height="621" style="max-height:150px;background:#fff;border-radius:6px"></figure>
+      <p>Un transformer entrenado con unos <strong>500 000 millones de tokens</strong> de transacciones, en uso para todos los clientes de un mercado (más de 100 millones de usuarios). Se extiende a México y Colombia.</p>
+    </div>
+    <div class="card bad fragment">
+      <h4>Órdenes de mantenimiento · pocos datos</h4>
+      <p>3896 órdenes de trabajo de un parque eólico. Un transformer ajustado logró F1 macro de <strong>0,63</strong>; una regresión logística, <strong>0,75</strong>.</p>
+      <p>Los autores lo atribuyen a los pocos datos etiquetados.</p>
+      <p class="muted">Fraunhofer IEE y NIST (Lutz et ál., 2023).</p>
+    </div>
+  </div>
+  <p class="credit">Braithwaite et ál. (2025), nuFormer, fig. 1, arXiv, CC BY 4.0; Nubank, comunicado del 11-jun-2026. Lutz et ál. (2023), <em>Energies</em> 16(24), 7937, CC BY 4.0.</p>
+  <aside class="notes">
+    <p>Dos casos reales, con fuente primaria, que muestran las dos caras. Nubank, el banco digital de Brasil, convirtió las transacciones de sus clientes en tokens, como en la figura: monto, fecha y descripción se vuelven una cadena de etiquetas. Entrenó un transformer con unos 500 000 millones de esos tokens y lo usa para todos los clientes de un mercado, más de cien millones de usuarios, para predecir el riesgo de crédito. Según su comunicado de junio de 2026, se extiende a México y Colombia. Muchos datos: el transformer gana.</p>
+    <p>El otro caso es de mantenimiento, como MantenIA: investigadores de Fraunhofer y del NIST clasificaron 3896 órdenes de trabajo de un parque eólico. Un transformer ajustado quedó por debajo de una regresión logística, 0,63 frente a 0,75. Los autores lo atribuyen a los pocos datos etiquetados. La lección para su proyecto: la técnica depende de los datos que tengan.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · GUÍA DE DECISIÓN ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Para su proyecto</div>
+  <h2>Guía de decisión: ¿qué tipo de modelo?</h2>
+  <table class="tbl guia">
+    <tr><th></th><th>LLM vía API</th><th>Modelo preentrenado pequeño, en el propio equipo</th><th>Red propia, entrenada con sus datos</th><th>Modelo clásico (Unidad 6)</th></tr>
+    <tr><th>Datos</th><td>texto o imágenes; tareas abiertas</td><td>texto o imágenes; tarea acotada: clasificar, buscar</td><td>cualquier tipo, con muchos ejemplos</td><td>tablas</td></tr>
+    <tr><th>Ejemplos etiquetados</th><td>ninguno o pocos</td><td>decenas</td><td>miles o más</td><td>cientos a miles</td></tr>
+    <tr><th>Costo por consulta</th><td>por token, y espera</td><td>casi cero</td><td>casi cero, más el costo de entrenar</td><td>casi cero</td></tr>
+    <tr><th>Explicabilidad</th><td>explica, pero hay que verificar</td><td>baja</td><td>baja</td><td>alta: reglas legibles</td></tr>
+    <tr><th>Privacidad</th><td>los datos salen de la organización</td><td>quedan adentro</td><td>quedan adentro</td><td>quedan adentro</td></tr>
+    <tr><th>En MantenIA</th><td>resumir una orden larga</td><td>enviar cada orden a su equipo (5B)</td><td>predecir fallas con muchos registros (5A)</td><td>predecir fallas con 10 000 registros</td></tr>
+  </table>
+  <aside class="notes">
+    <p>La tabla que se llevan para su proyecto. Cuatro opciones. Un LLM vía API sirve para tareas abiertas con texto o imágenes y casi sin ejemplos, pero cobra por token, tarda, y los datos salen de la organización; su explicación hay que verificarla. Un modelo preentrenado pequeño, en el propio equipo, como el Granite del 5B, sirve para tareas acotadas como clasificar o buscar, con decenas de ejemplos, casi sin costo y sin sacar los datos.</p>
+    <p>Una red propia, entrenada con sus datos, necesita miles de ejemplos etiquetados, pero después cuesta casi nada por consulta. Y un modelo clásico, como los árboles de la Unidad 6, suele ser la mejor opción en datos de tabla y da reglas que se pueden leer. Para cada fila, el ejemplo de MantenIA. Usen los criterios de arriba hacia abajo: qué datos tienen, cuántos ejemplos, cuánto cuesta, cuánto deben explicar y si los datos pueden salir.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · MAPA DE LA UNIDAD ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Cierre de la sesión</div>
+  <h2>El mapa de la Unidad 5</h2>
+  <svg class="diagram" viewBox="0 0 1150 170" role="img" aria-label="Mapa de la unidad: neurona, red, entrenamiento, red profunda, transformer y LLM, con el laboratorio de cada tramo">
+    <defs><style>.u1{font-size:19px;fill:#e8ecf4;font-weight:700}.u2{font-size:15px;fill:#a3adc2}</style>
+    <marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+    <rect x="0" y="30" width="160" height="64" rx="12" fill="rgba(56,189,248,.16)" stroke="#38bdf8"/><text x="80" y="68" text-anchor="middle" class="u1">neurona</text>
+    <rect x="198" y="30" width="160" height="64" rx="12" fill="rgba(56,189,248,.16)" stroke="#38bdf8"/><text x="278" y="68" text-anchor="middle" class="u1">red</text>
+    <rect x="396" y="30" width="160" height="64" rx="12" fill="rgba(56,189,248,.16)" stroke="#38bdf8"/><text x="476" y="68" text-anchor="middle" class="u1">entrenamiento</text>
+    <rect x="594" y="30" width="160" height="64" rx="12" fill="rgba(56,189,248,.16)" stroke="#38bdf8"/><text x="674" y="68" text-anchor="middle" class="u1">red profunda</text>
+    <rect x="792" y="30" width="160" height="64" rx="12" fill="rgba(245,185,66,.16)" stroke="#f5b942"/><text x="872" y="68" text-anchor="middle" class="u1">transformer</text>
+    <rect x="990" y="30" width="160" height="64" rx="12" fill="rgba(167,139,250,.16)" stroke="#a78bfa"/><text x="1070" y="68" text-anchor="middle" class="u1">LLM</text>
+    <path d="M162,62 H194 M360,62 H392 M558,62 H590 M756,62 H788 M954,62 H986" stroke="#a3adc2" stroke-width="2" marker-end="url(#ar9)"/>
+    <path d="M0,118 H754" stroke="#38bdf8" stroke-width="3"/><text x="377" y="146" text-anchor="middle" class="u2">charla inicial y Laboratorio 5A</text>
+    <path d="M792,118 H952" stroke="#f5b942" stroke-width="3"/><text x="872" y="146" text-anchor="middle" class="u2">charla intermedia y 5B</text>
+    <path d="M990,118 H1150" stroke="#a78bfa" stroke-width="3"/><text x="1070" y="146" text-anchor="middle" class="u2">esta charla</text>
+  </svg>
+  <aside class="notes">
+    <p>El mapa de la unidad. Empezamos con una neurona, un puntaje con pesos; muchas neuronas forman una red; la red aprende bajando el valle de la pérdida con la retropropagación; apilada, se vuelve profunda y construye rasgos abstractos. Eso fue la mañana y el Laboratorio 5A. Para leer texto, el transformer y su atención: la charla intermedia y el 5B. Y con escala e instrucciones, el transformer se convierte en los LLMs que usamos cada día: esta charla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · PROYECTO ============================ -->
+<section data-min="2">
+  <div class="kicker">Proyecto del curso · paso de la unidad</div>
+  <h2>¿Qué parte de su proyecto podría resolver una red?</h2>
+  <div class="cols">
+    <ul>
+      <li>¿Hay una parte que una <strong>red neuronal o un LLM</strong> podría resolver: clasificar, predecir, leer texto?</li>
+      <li class="fragment">¿Qué <strong>datos</strong> necesitaría, y cuántos ejemplos etiquetados tienen?</li>
+      <li class="fragment">¿Cómo se <strong>verificaría</strong> su resultado, según la guía de decisión?</li>
+    </ul>
+    <div class="card amber fragment"><h4>En casa · unos 60 min</h4><p>Agreguen estos pasos al plan.md del equipo y revísenlo con la lista de chequeo (J.6). Si su proyecto no necesita una red, expliquen por qué.</p><p><strong>Entrega:</strong> la fecha se anuncia en clase.</p></div>
+  </div>
+  <aside class="notes">
+    <p>El paso del proyecto para esta unidad. Recuerden que el proyecto es libre y se construye con vibe coding. En casa, cada equipo se pregunta si hay una parte de su proyecto que una red neuronal o un LLM podría resolver: clasificar, predecir, leer texto. Qué datos necesitaría, cuántos ejemplos etiquetados tienen, y cómo se verificaría el resultado, con la guía de decisión.</p>
+    <p>Agregan esos pasos al plan.md del equipo y lo revisan con la lista de chequeo J.6. Si su proyecto no necesita una red, que lo expliquen: también es una respuesta válida. La fecha de entrega la anunciamos en clase.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · TRABAJO INDEPENDIENTE ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Trabajo independiente</div>
+  <h2>Dos trabajos, sin programar</h2>
+  <div class="cols">
+    <div class="card"><h4>TI-1 · Entrene una red sin escribir código</h4><p>En TensorFlow Playground, cambie capas, neuronas, activación, tasa de aprendizaje y regularización, y relaciónelo con un problema de su organización. Unos 65 min.</p></div>
+    <div class="card"><h4>TI-2 · Lleve el Laboratorio 5B a su organización</h4><p>Clasifique de 30 a 60 textos cortos de su trabajo con las tres arquitecturas y con un LLM, y compare aciertos y costo. Unos 70 min.</p></div>
+  </div>
+  <p style="margin-top:14px">Sin datos personales ni confidenciales. Entrega al inicio de la semana 4. Detalles en <code>trabajo_independiente.md</code>.</p>
+  <aside class="notes">
+    <p>Dos trabajos independientes, sin escribir código. En el primero entrenan redes en TensorFlow Playground, una herramienta del navegador: cambian capas, neuronas, activación, tasa de aprendizaje y regularización, anotan qué pasa y lo relacionan con un problema de clasificación de su organización. En el segundo llevan el Laboratorio 5B a su trabajo: escriben de 30 a 60 textos cortos, como solicitudes o quejas, sin datos personales, y comparan las tres arquitecturas y un LLM.</p>
+    <p>Una regla: nada de datos personales ni confidenciales en los textos. La entrega es al inicio de la semana 4.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · PRÓXIMA SESIÓN ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Próxima sesión · Unidad 6</div>
+  <h2>Del aprendizaje de una red al agente que aprende</h2>
+  <div class="cols c64 mid">
+    <div><p><strong>Lectura de la sesión 6:</strong> Krakovna, V. et ál. (2020). <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/"><em>Specification gaming: the flip side of AI ingenuity</em></a>. Google DeepMind.</p>
+    <p class="fragment">Hoy vimos cómo aprende una red. La Unidad 6: árboles y reglas que se pueden leer, y el aprendizaje por refuerzo, donde una recompensa mal escrita se «cumple» sin cumplir el objetivo.</p></div>
+    <div class="card violet fragment"><h4>A continuación</h4><p>Club de lectura: <em>The Illustrated Transformer</em>.</p></div>
+  </div>
+  <aside class="notes">
+    <p>La lectura de la sesión 6 es una entrada del blog de Google DeepMind de 2020, sobre el «specification gaming»: sistemas que cumplen al pie de la letra la métrica que les pusimos sin cumplir lo que queríamos. Es corta y llena de ejemplos.</p>
+    <p>El puente: hoy vimos cómo aprende una red neuronal. La Unidad 6 mira el aprendizaje desde el agente: árboles y reglas que se pueden leer, el puente con los sistemas expertos de la Sesión 1, y el aprendizaje por refuerzo, que ya apareció hoy con InstructGPT, donde una recompensa mal escrita se cumple sin cumplir el objetivo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · TRANSICIÓN AL CLUB ============================ -->
+<section data-min="0.5" class="transition-slide">
+  <div class="kicker amber">A continuación · 15 min</div>
+  <h1 style="font-size:60px">Club de lectura</h1>
+  <p class="lead">Alammar, J. (2018). <em>The Illustrated Transformer</em>.</p>
+  <p><a href="club_lectura.html">Ir al club de lectura →</a></p>
+  <aside class="notes"><p>Pasamos al club de lectura, que cierra la sesión.</p></aside>
+</section>
+
+<!-- ============================ 17 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla de cierre</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Sevilla y Roldán (2024). Training compute of frontier AI models grows by 4-5x per year. Epoch AI. <a href="https://epoch.ai/publications/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year">epoch.ai</a> · Epoch AI (2026). <a href="https://epoch.ai/trends">Trends</a>, CC BY 4.0</li>
+    <li>Brown, T. et ál. (2020). Language models are few-shot learners. <em>NeurIPS</em> 33. <a href="https://arxiv.org/abs/2005.14165">arXiv</a> · Kaplan, J. et ál. (2020). Scaling laws for neural language models. <a href="https://arxiv.org/abs/2001.08361">arXiv</a> · Hoffmann, J. et ál. (2022). Training compute-optimal large language models. <em>NeurIPS</em> 35. <a href="https://arxiv.org/abs/2203.15556">arXiv</a></li>
+    <li>Ouyang, L. et ál. (2022). Training language models to follow instructions with human feedback. <em>NeurIPS</em> 35, 27730–27744. <a href="https://arxiv.org/abs/2203.02155">arXiv</a></li>
+    <li>Kalai, A. T., Nachum, O., Vempala, S. S. y Zhang, E. (2025). Why language models hallucinate. <a href="https://arxiv.org/abs/2509.04664">arXiv</a> · Huang, L. et ál. (2025). A survey on hallucination in large language models. <em>ACM TOIS</em> 43(2). <a href="https://arxiv.org/abs/2311.05232">arXiv</a></li>
+    <li>Petrov, A. et ál. (2023). Language model tokenizers introduce unfairness between languages. <em>NeurIPS</em>. <a href="https://arxiv.org/abs/2305.15425">arXiv</a> · Grinsztajn, L., Oyallon, E. y Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? <em>NeurIPS</em> 35. <a href="https://proceedings.neurips.cc/paper_files/paper/2022/hash/0378c7692da36807bdec87ab043cdadc-Abstract-Datasets_and_Benchmarks.html">NeurIPS</a></li>
+    <li>Braithwaite et ál. (2025). nuFormer. <a href="https://arxiv.org/abs/2507.23267">arXiv</a>, CC BY 4.0 · Nubank (2026). <a href="https://nu.com/en/newsroom/company/nubank-details-ai-transformation-strategy-built-on-data-foundation-models-and-democratized-financial-advice">Comunicado</a> · Lutz et ál. (2023). <em>Energies</em> 16(24), 7937. <a href="https://arxiv.org/abs/2311.04064">arXiv</a>, CC BY 4.0</li>
+    <li>Precios, contexto y fecha de corte, consultados el 29-oct-2026: <a href="https://platform.claude.com/docs/en/models/haiku-5-5/overview">Claude Haiku 5.5</a> · <a href="https://developers.openai.com/api/docs/models/gpt-6-luna">GPT-6 Luna</a></li>
+    <li>Krakovna, V. et ál. (2020). Specification gaming: the flip side of AI ingenuity. Google DeepMind. <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/">deepmind.google</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla2_la_arquitectura_transformer.html">← Charla intermedia</a><a href="index.html">Volver a la agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 5 · Charla de cierre · De los transformers a los LLMs</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

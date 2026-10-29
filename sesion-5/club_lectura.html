@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club de lectura · The Illustrated Transformer — Sesión 5 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .preg .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .preg .card p { font-size: 20px; margin: 0; line-height: 1.32; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="15">
+
+<!-- ============================ 1 · FICHA Y PREGUNTA ============================ -->
+<section data-min="2" class="title-slide">
+  <div class="kicker">Sesión 5 · Club de lectura · 15 min</div>
+  <h1 style="font-size:56px">The Illustrated Transformer</h1>
+  <div class="cols c64 mid">
+    <div>
+      <p>Alammar, J. (2018, 27 de junio). <a href="https://jalammar.github.io/illustrated-transformer/"><em>The Illustrated Transformer</em></a>. Blog de Jay Alammar, CC BY-NC-SA 4.0. Se lee junto con las figuras de Vaswani et ál. (2017).</p>
+      <p class="small muted">Traducción al español enlazada desde la entrada: Espejel (2020), <a href="https://hackernoon.com/el-transformador-ilustrado-una-traduccion-al-espanol-0y73wwp">«El transformador ilustrado»</a>.</p>
+    </div>
+    <div class="card amber"><h4>La pregunta</h4><p>¿Qué gana el transformer al leer toda la frase a la vez, y qué siguió sin entender en el Laboratorio 5B?</p></div>
+  </div>
+  <p class="navlinks"><a href="charla3_de_los_transformers_a_los_llms_y_cierre.html">← Charla de cierre</a><a href="index.html">Agenda</a></p>
+  <aside class="notes">
+    <p>Bienvenidos al club, que cierra la sesión. La lectura es The Illustrated Transformer, de Jay Alammar, una explicación visual del artículo original de 2017 que se volvió referencia para aprender la arquitectura. No es un artículo con resultados propios: es una explicación, y así la discutimos. Hay una traducción al español enlazada desde la propia entrada.</p>
+    <p>La pregunta que guía la discusión: ¿qué gana el transformer al leer toda la frase a la vez, y qué siguió sin entender en el laboratorio? Ya vimos la arquitectura en la charla intermedia; aquí no la repetimos: la discutimos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · EL ANCLA ============================ -->
+<section data-min="3">
+  <div class="kicker">La imagen que todos recuerdan</div>
+  <h2>«…because it was too tired»: ¿a qué se refiere «it»?</h2>
+  <div class="cols mid">
+    <figure class="figure"><img src="assets/img/alammar_atencion_it.png" alt="Visualización de Alammar: en la capa 5, la palabra it de la frase The animal didn't cross the street because it was too tired atiende con más fuerza a The animal" width="437" height="413" style="max-height:400px;background:#fff;border-radius:8px"><figcaption class="credit">Alammar (2018), <em>The Illustrated Transformer</em>, CC BY-NC-SA 4.0.</figcaption></figure>
+    <figure class="figure fragment"><img src="assets/img/vaswani_fig4_anafora.png" alt="Figura 4 de Vaswani et al.: en la capa 5, la palabra its de la frase The Law will never be perfect, but its application should be just atiende a Law" width="1330" height="903" style="max-height:330px;background:#fff;border-radius:8px"><figcaption class="credit">Vaswani et ál. (2017), fig. 4: «its» atiende a «Law». Con el permiso de Google para uso académico.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>La imagen más recordada de la lectura. En la frase «The animal didn't cross the street because it was too tired», ¿a qué se refiere «it», al animal o a la calle? Alammar muestra que, en una de las cabezas de la capa 5, «it» atiende con fuerza a «The animal». El artículo original trae un ejemplo parecido, en su figura 4: «its» atiende a «Law».</p>
+    <p>Es la idea que vimos con «banco» y «crédito». Pregunta para abrir: ¿les convenció esta imagen? ¿Qué les hizo entender que no entendían antes de leer? Dejen que respondan dos o tres personas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · LO QUE SIMPLIFICA Y LO QUE CAMBIÓ ============================ -->
+<section data-min="3">
+  <div class="kicker">Leer con criterio</div>
+  <h2>Lo que la lectura simplifica, y lo que cambió desde 2018</h2>
+  <div class="cols" style="gap:20px">
+    <div class="card violet"><h4>La arquitectura cambió de forma</h4><p style="font-size:21px">La lectura explica el original, de traducción: codificador y decodificador. Los LLMs actuales usan <strong>solo el decodificador</strong>, con más bloques, más datos y ajuste por instrucciones.</p></div>
+    <div class="card bad fragment"><h4>¿La atención explica?</h4><p style="font-size:21px">Jain y Wallace (2019): pesos de atención muy distintos pueden dar <strong>la misma predicción</strong>. Wiegreffe y Pinter (2019): depende de qué se exija a una explicación.</p></div>
+  </div>
+  <p class="fragment" style="font-size:22px;margin-top:16px">Como las trazas de razonamiento de la Sesión 3: una imagen convincente no es una explicación fiel.</p>
+  <aside class="notes">
+    <p>Dos cosas para leer con criterio. La primera: la lectura explica la arquitectura original de 2017, que traducía, con codificador y decodificador. Los LLMs actuales usan solo el decodificador, con muchos más bloques, muchos más datos y el ajuste por instrucciones de la charla de cierre. La idea central, la atención, sigue igual.</p>
+    <p>La segunda es más profunda. La figura de «it» invita a pensar que los pesos de atención explican lo que hace el modelo. En 2019, Jain y Wallace mostraron que se pueden encontrar pesos de atención muy distintos que llevan a la misma predicción; si eso pasa, los pesos no son «la» explicación. Ese mismo año, Wiegreffe y Pinter respondieron que la conclusión depende de qué se le exija a una explicación. El debate sigue. Conecta con la Sesión 3: una traza de razonamiento convincente no es necesariamente una explicación fiel. Aquí pasa lo mismo con una imagen convincente.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · TRES PREGUNTAS ============================ -->
+<section data-min="6">
+  <div class="kicker">Discusión</div>
+  <h2>Tres preguntas</h2>
+  <div class="cols-3 preg">
+    <div class="card accent"><h4>Desde el laboratorio</h4><p>El transformer entendió «escape de lubricante» pero confundió «hay fuga» con «no hay fuga». ¿Qué parte de la lectura explica lo primero? ¿Qué le faltó para lo segundo?</p></div>
+    <div class="card amber fragment"><h4>Desde la guía de decisión</h4><p>Si una cabeza va de «banco» a «crédito», ¿lo aceptarían como explicación ante un auditor de su organización? ¿Qué le pedirían además?</p></div>
+    <div class="card violet fragment"><h4>Desde su proyecto</h4><p>¿Dónde usarían un codificador, para entender o clasificar, y dónde un decodificador, para generar? ¿Qué verificarían en cada caso?</p></div>
+  </div>
+  <aside class="notes">
+    <p>Tres preguntas para la discusión. Primera, desde el laboratorio: el transformer entendió que «escape de lubricante» es una fuga, porque al preentrenarse aprendió qué palabras se parecen, y la atención ajusta cada palabra a su contexto. Pero confundió «hay fuga» con «no hay fuga»: ¿por qué? Pistas: el codificador que usaron resume toda la frase en un solo vector, y una palabra corta como «no» pesa poco en ese promedio; además, se entrenó para decir qué frases se parecen, y estas dos hablan de lo mismo.</p>
+    <p>Segunda, desde la guía de decisión: si mostramos que una cabeza va de «banco» a «crédito», ¿eso basta como explicación ante un auditor? Lo que vimos en la diapositiva anterior sugiere que no; ¿qué pedirían: casos de prueba, una regla que verifique, una persona que revise?</p>
+    <p>Tercera, desde su proyecto: ¿dónde usarían un codificador, para entender o clasificar, y dónde un decodificador, para generar texto? ¿Y qué verificarían en cada caso?</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · PRÓXIMA LECTURA ============================ -->
+<section data-min="1">
+  <div class="kicker">Para la próxima sesión</div>
+  <h2>Lectura de la sesión 6</h2>
+  <p>Krakovna, V. et ál. (2020). <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/"><em>Specification gaming: the flip side of AI ingenuity</em></a>. Google DeepMind.</p>
+  <p class="muted" style="font-size:22px">Trabajos independientes: al inicio de la semana 4. Proyecto: la fecha se anuncia en clase.</p>
+  <aside class="notes"><p>Les recuerdo la lectura de la sesión 6, sobre el specification gaming, y las entregas: los trabajos independientes al inicio de la semana 4; la fecha del paso del proyecto se anuncia en clase. Gracias por la discusión.</p></aside>
+</section>
+
+<!-- ============================ 6 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del club de lectura</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Alammar, J. (2018). <em>The Illustrated Transformer</em>. <a href="https://jalammar.github.io/illustrated-transformer/">jalammar.github.io</a>, CC BY-NC-SA 4.0 · Espejel, O. U. (2020). <a href="https://hackernoon.com/el-transformador-ilustrado-una-traduccion-al-espanol-0y73wwp">El transformador ilustrado</a> (traducción)</li>
+    <li>Vaswani, A. et ál. (2017). Attention is all you need. <em>NeurIPS</em> 30. <a href="https://arxiv.org/abs/1706.03762">arXiv (v7)</a></li>
+    <li>Jain, S. y Wallace, B. C. (2019). Attention is not explanation. <em>NAACL</em>, 3543–3556. <a href="https://aclanthology.org/N19-1357/">ACL Anthology</a></li>
+    <li>Wiegreffe, S. y Pinter, Y. (2019). Attention is not not explanation. <em>EMNLP-IJCNLP</em>, 11–20. <a href="https://aclanthology.org/D19-1002/">ACL Anthology</a></li>
+    <li>Krakovna, V. et ál. (2020). Specification gaming: the flip side of AI ingenuity. <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/">Google DeepMind</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla3_de_los_transformers_a_los_llms_y_cierre.html">← Charla de cierre</a><a href="index.html">Volver a la agenda</a></p>
+  <aside class="notes"><p>Referencias del club, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 5 · Club de lectura · The Illustrated Transformer</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

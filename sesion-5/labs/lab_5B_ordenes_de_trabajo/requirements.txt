@@ -1,0 +1,8 @@
+# Laboratorio 5B · librerías (probadas con Python 3.12 y 3.13 el 29-oct-2026)
+# Las mismas versiones del Laboratorio 4B: si ya lo preparó, no se descarga nada
+torch==2.14.1
+transformers==5.19.0
+anthropic==2.1.0
+openai==3.36.0
+python-dotenv==1.2.4
+matplotlib==3.11.2

@@ -1,0 +1,53 @@
+Ejemplos de la Sesión 5 · Material para el docente
+====================================================
+
+Estos scripts producen los números y las imágenes reales que muestran las diapositivas.
+Las gráficas no se dibujaron a mano: salen de modelos que se entrenan o se consultan aquí.
+
+Requisitos: Python 3.12 o 3.13 con
+  python -m pip install torch==2.14.1 torchvision==0.29.2 transformers==5.19.0 sentence-transformers==5.7.0 pandas pillow numpy
+Las descargas van a datos/ (MNIST, unos 12 MB; AI4I 2020, unos 500 KB) y a la caché de Hugging Face
+(Qwen2.5-0.5B, 988 MB; tokenizador de GPT-2; los tres codificadores de codificador_5b.py, 214 + 471 + 471 MB).
+Todo corre en CPU. La carpeta datos/ no se sube al repositorio.
+
+cnn_mnist.py
+  Charla inicial, «Una red convolucional que lee dígitos» y sus dos verticales.
+  Entrena 2 épocas una CNN de dos capas convolucionales sobre MNIST, en unos 10 s.
+  Resultado del 29-oct-2026: 97,83 % de exactitud en las 10 000 imágenes de prueba; lo que más confunde
+  es 2 leído como 7 (18 veces) y 9 leído como 7 (17 veces).
+  Escribe assets/img/cnn_*.png y salidas/cnn_mnist.json.
+
+curvas_5a.py
+  Charla inicial, «Memorizar no es aprender» y «Dos frenos contra la memoria».
+  Una red de 3 capas de 128 neuronas, con solo 400 registros del AI4I 2020 (los mismos datos del Laboratorio 5A).
+  Sin regularización, la pérdida de validación toca su mínimo (0,133) en la época 93 y termina en 0,390;
+  con dropout del 30 % termina en 0,268. Escribe salidas/curvas_5a.json.
+
+modelo_de_lenguaje.py
+  Charla intermedia (tokens, atención, «banco» según el contexto, siguiente token, temperatura,
+  codificación posicional) y charla de cierre (costo de los tokens en español).
+  Usa Qwen/Qwen2.5-0.5B, el modelo base, y el tokenizador de GPT-2.
+  Resultados: la frase de MantenIA usa 24 tokens en español y 13 en inglés con GPT-2, y 19 y 14 con Qwen2.5;
+  «banco» atiende sobre todo a «crédito» (32 %); el siguiente token más probable es «problema»
+  (64,6 % con temperatura 0,5; 15,5 % con 1; 2,9 % con 1,5).
+  Escribe assets/img/tr_codificacion_posicional.png y salidas/modelo_de_lenguaje.json.
+
+codificador_5b.py
+  Charla de cierre, «Lo que gana el transformer, y lo que no». Es la prueba que eligió el modelo del Laboratorio 5B.
+  16 órdenes escritas con otras palabras, clasificadas con 3 ejemplos por equipo:
+  bolsa de palabras 5/16; granite-embedding-107m-multilingual 14/16; MiniLM multilingüe 13/16; e5-small 12/16.
+  Los tres codificadores ven casi igual «Hay fuga» y «No hay fuga» (similitud de 0,84 a 0,97).
+  Escribe salidas/codificador_5b.json.
+
+graficas_en_diapositivas.py
+  Pone en las diapositivas las gráficas hechas con los números de salidas/. Cada gráfica va en el HTML
+  entre <!--DATOS:nombre--> y <!--/DATOS:nombre-->. Solo usa la biblioteca estándar.
+
+Uso, desde esta carpeta:
+  python cnn_mnist.py
+  python curvas_5a.py
+  python modelo_de_lenguaje.py
+  python codificador_5b.py
+  python graficas_en_diapositivas.py
+
+comun.py tiene las rutas, los colores del tema y las funciones para guardar imágenes y JSON.

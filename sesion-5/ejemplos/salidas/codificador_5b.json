@@ -1,0 +1,141 @@
+{
+ "ejemplos_por_equipo": 3,
+ "prueba": 16,
+ "reales": [
+  "eléctrico",
+  "eléctrico",
+  "eléctrico",
+  "eléctrico",
+  "mecánico",
+  "mecánico",
+  "mecánico",
+  "mecánico",
+  "fugas",
+  "fugas",
+  "fugas",
+  "fugas",
+  "instrumentación",
+  "instrumentación",
+  "instrumentación",
+  "instrumentación"
+ ],
+ "textos_prueba": [
+  "Se dispara el interruptor cada vez que encendemos la máquina",
+  "No llega corriente al equipo de la zona de empaque",
+  "Olor a quemado en el cuadro eléctrico",
+  "Corto circuito en la alimentación del horno",
+  "Golpeteo metálico en la transmisión",
+  "La polea hace un chirrido al girar",
+  "Desgaste excesivo en los piñones",
+  "El acople entre motor y bomba está flojo",
+  "Escape de lubricante debajo del equipo",
+  "Charco de líquido junto al tanque",
+  "Se sale el refrigerante por la junta",
+  "Hay goteo constante en la tubería del aire comprimido",
+  "La lectura del termómetro digital no coincide con la real",
+  "El caudalímetro muestra cero aunque hay flujo",
+  "Medidor de presión con aguja pegada",
+  "La sonda de pH da mediciones que saltan"
+ ],
+ "negacion": [
+  "Hay fuga de aceite en la bomba 3",
+  "No hay fuga de aceite en la bomba 3",
+  "Escape de lubricante en la bomba 3"
+ ],
+ "resultados": [
+  {
+   "representacion": "bolsa de palabras",
+   "aciertos": 5,
+   "predicciones": [
+    "eléctrico",
+    "instrumentación",
+    "eléctrico",
+    "eléctrico",
+    "fugas",
+    "fugas",
+    "fugas",
+    "eléctrico",
+    "eléctrico",
+    "instrumentación",
+    "eléctrico",
+    "fugas",
+    "mecánico",
+    "instrumentación",
+    "fugas",
+    "fugas"
+   ]
+  },
+  {
+   "representacion": "ibm-granite/granite-embedding-107m-multilingual",
+   "aciertos": 14,
+   "predicciones": [
+    "eléctrico",
+    "eléctrico",
+    "eléctrico",
+    "eléctrico",
+    "mecánico",
+    "mecánico",
+    "fugas",
+    "mecánico",
+    "fugas",
+    "fugas",
+    "fugas",
+    "fugas",
+    "instrumentación",
+    "instrumentación",
+    "mecánico",
+    "instrumentación"
+   ],
+   "similitud_fuga_no_fuga": 0.95,
+   "similitud_fuga_escape": 0.9
+  },
+  {
+   "representacion": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+   "aciertos": 13,
+   "predicciones": [
+    "eléctrico",
+    "eléctrico",
+    "mecánico",
+    "eléctrico",
+    "eléctrico",
+    "mecánico",
+    "mecánico",
+    "mecánico",
+    "fugas",
+    "fugas",
+    "fugas",
+    "fugas",
+    "instrumentación",
+    "instrumentación",
+    "fugas",
+    "instrumentación"
+   ],
+   "similitud_fuga_no_fuga": 0.84,
+   "similitud_fuga_escape": 0.7
+  },
+  {
+   "representacion": "intfloat/multilingual-e5-small",
+   "aciertos": 12,
+   "predicciones": [
+    "eléctrico",
+    "eléctrico",
+    "eléctrico",
+    "eléctrico",
+    "fugas",
+    "mecánico",
+    "mecánico",
+    "mecánico",
+    "fugas",
+    "fugas",
+    "eléctrico",
+    "eléctrico",
+    "instrumentación",
+    "instrumentación",
+    "mecánico",
+    "instrumentación"
+   ],
+   "similitud_fuga_no_fuga": 0.97,
+   "similitud_fuga_escape": 0.94
+  }
+ ]
+}

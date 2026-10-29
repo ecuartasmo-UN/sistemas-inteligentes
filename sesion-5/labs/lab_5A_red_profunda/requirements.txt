@@ -1,0 +1,4 @@
+# Laboratorio 5A · librerías (probadas con Python 3.12 y 3.13 el 29-oct-2026)
+# Las mismas versiones del Laboratorio 4B: si ya lo preparó, no se descarga nada
+torch==2.14.1
+matplotlib==3.11.2

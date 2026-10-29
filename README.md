@@ -12,6 +12,7 @@ Las diapositivas se abren en el navegador desde **https://ecuartasmo-un.github.i
 - [Sesión 2](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-2/): planificación automática, LLMs y planificación, plan.md
 - [Sesión 3](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-3/): razonamiento automático: solvers, restricciones, lógica y razonamiento en LLMs
 - [Sesión 4](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-4/): visión por computador: procesamiento digital de imágenes, CLIP, YOLO y LLMs multimodales
+- [Sesión 5](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-5/): redes neuronales y aprendizaje profundo: de la neurona a la red profunda, la arquitectura transformer y los LLMs
 
 También funcionan sin internet: descargue el repositorio y abra `sesion-N/index.html` con doble clic. Use las flechas del teclado para avanzar.
 
@@ -32,6 +33,9 @@ También funcionan sin internet: descargue el repositorio y abra `sesion-N/index
 | [`sesion-4/`](sesion-4/) | Diapositivas de la sesión 4 (con el club de lectura), trabajo independiente y ejemplos con OpenCV. La charla inicial rediseña la clase «Procesamiento Digital de Imágenes» (2007); con la flecha ↓ se ve el contenido completo del original |
 | [`sesion-4/labs/lab_4A_pipeline_clasico/`](sesion-4/labs/lab_4A_pipeline_clasico/) | Laboratorio 4A · Procesamiento y análisis clásico de imágenes. No usa LLM |
 | [`sesion-4/labs/lab_4B_modelos_preentrenados/`](sesion-4/labs/lab_4B_modelos_preentrenados/) | Laboratorio 4B · Reconocimiento con modelos preentrenados: CLIP, un LLM multimodal y dos detectores. **Antes de la clase**, ejecute en casa su `preparar.ipynb`, que descarga unos 1,5 GB |
+| [`sesion-5/`](sesion-5/) | Diapositivas de la sesión 5 (con el club de lectura), trabajo independiente y los scripts que producen las gráficas con datos reales |
+| [`sesion-5/labs/lab_5A_red_profunda/`](sesion-5/labs/lab_5A_red_profunda/) | Laboratorio 5A · Del perceptrón a la red profunda: una red en PyTorch que predice la falla de una máquina. No usa LLM. **Antes de la clase**, ejecute en casa su primera celda |
+| [`sesion-5/labs/lab_5B_ordenes_de_trabajo/`](sesion-5/labs/lab_5B_ordenes_de_trabajo/) | Laboratorio 5B · Leer órdenes de trabajo con un transformer: bolsa de palabras, red recurrente, transformer preentrenado y un LLM. **Antes de la clase**, ejecute en casa su `preparar.ipynb`, que descarga unos 220 MB |
 
 Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación está dentro del notebook. Se trabajan en parejas, en VS Code, en su propio computador. Cada uno tiene su propio `README.md` con el tiempo, el modo de trabajo y lo que se entrega. La excepción es el 3A: un solo archivo Markdown con el problema y el prompt, que se usa con su asistente de IA (Claude o Gemini), en VS Code o en el navegador.
 
@@ -42,15 +46,15 @@ Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación e
 3. **Compruebe la instalación** abriendo `entorno/verificar_entorno.ipynb` en VS Code, con el kernel `.venv`, y ejecutándolo completo.
 4. **Abra el laboratorio** de la sesión, en `sesion-N/labs/`, y ejecute sus celdas en orden.
 
-## Acceso a un modelo de lenguaje (2B, 2C, 3B y 4B)
+## Acceso a un modelo de lenguaje (2B, 2C, 3B, 4B y 5B)
 
 Los laboratorios que usan un LLM eligen solos la primera vía disponible:
 
 1. **Una clave de API**, en un archivo `.env` en la carpeta del curso, con una sola línea, sin espacios ni comillas: `ANTHROPIC_API_KEY=su-clave`.
-2. **Un modelo local** con Ollama (`ollama pull qwen3:4b-instruct`), sin clave ni costo. El 4B necesita un modelo que vea imágenes, por ejemplo `ollama pull qwen2.5vl:3b` (unos 3 GB).
+2. **Un modelo local** con Ollama (`ollama pull qwen3:4b-instruct`, unos 2,5 GB), sin clave ni costo; sirve para el 2B, el 2C, el 3B y el 5B. El 4B necesita un modelo que vea imágenes, por ejemplo `ollama pull qwen2.5vl:3b` (unos 3 GB).
 3. **Respuestas grabadas** de una corrida real: el notebook corre completo sin clave y sin internet, aunque no puede probar instrucciones nuevas.
 
-Para forzar una vía, cambie `PROVEEDOR` en la celda ✏️ de la sección 0.1 del notebook; por ejemplo, `PROVEEDOR = "grabado"`.
+Para forzar una vía, cambie `PROVEEDOR` en la celda ✏️ de configuración del LLM, en la sección 0 del notebook; por ejemplo, `PROVEEDOR = "grabado"`.
 
 **Nunca suba su archivo `.env` ni escriba la clave en un notebook.** El `.gitignore` de este repositorio excluye `.env` y `.venv`.
 

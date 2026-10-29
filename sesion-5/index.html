@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sesión 5 · Sistemas Inteligentes — Agenda</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  body { margin: 0; font-family: var(--font); color: var(--text); background: radial-gradient(1200px 700px at 85% -10%, #12203a 0%, var(--bg) 55%) fixed, var(--bg); }
+  main { max-width: 1080px; margin: 0 auto; padding: 56px 28px 64px; }
+  .kicker { font-size: 15px; }
+  h1 { font-size: 46px; line-height: 1.1; margin: 8px 0 10px; font-weight: 800; letter-spacing: -0.02em; }
+  .sub { font-size: 21px; color: var(--muted); margin: 0 0 34px; }
+  h2 { font-size: 24px; margin: 38px 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 18px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--accent); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; border-bottom: 2px solid var(--accent); }
+  td.t { font-family: var(--mono); color: var(--accent-2); white-space: nowrap; }
+  td.k { font-size: 15px; white-space: nowrap; }
+  tr.ext td { color: var(--muted); }
+  .tag { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .tag.exp { color: var(--accent); border-color: rgba(56,189,248,.45); }
+  .tag.lab { color: var(--ok); border-color: rgba(74,222,128,.45); }
+  .tag.dis { color: var(--violet); border-color: rgba(167,139,250,.45); }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(56,189,248,.45); }
+  a:hover { color: #7dd3fc; }
+  .decks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .deck { display: block; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: linear-gradient(180deg, var(--bg-3), var(--bg-2)); border-bottom: 1px solid var(--line); }
+  .deck:hover { border-color: var(--accent); }
+  .deck .n { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .deck .tt { display: block; font-size: 18px; font-weight: 700; color: var(--text); margin: 6px 0; line-height: 1.25; }
+  .deck .m { font-size: 14px; color: var(--accent-2); }
+  .balance { display: flex; height: 14px; border-radius: 8px; overflow: hidden; margin: 10px 0 6px; border: 1px solid var(--line); }
+  .balance .e { background: rgba(56,189,248,.55); width: 46.7%; }
+  .balance .p { background: rgba(74,222,128,.55); width: 53.3%; }
+  .bl { font-size: 15px; color: var(--muted); }
+  ul.tips { font-size: 17px; line-height: 1.6; color: var(--muted); padding-left: 20px; }
+  ul.tips b { color: var(--text); }
+  kbd { font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; color: var(--text); background: var(--bg-3); }
+  footer { margin-top: 44px; font-size: 14px; color: #8790a6; }
+  @media (max-width: 900px) { .decks { grid-template-columns: 1fr 1fr; } h1 { font-size: 34px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales</div>
+  <h1>Sesión 5 · Unidad 5</h1>
+  <p class="sub">Redes Neuronales y Aprendizaje Profundo · 4 horas</p>
+
+  <h2>Presentaciones</h2>
+  <div class="decks">
+    <a class="deck" href="charla1_de_la_neurona_a_la_red_profunda.html"><span class="n">Charla inicial</span><span class="tt">De la neurona a la red profunda</span><span class="m">30 min · con la matemática ↓</span></a>
+    <a class="deck" href="charla2_la_arquitectura_transformer.html"><span class="n">Charla intermedia</span><span class="tt">La arquitectura transformer</span><span class="m">30 min · o la presentación del docente</span></a>
+    <a class="deck" href="charla3_de_los_transformers_a_los_llms_y_cierre.html"><span class="n">Charla de cierre</span><span class="tt">De los transformers a los LLMs</span><span class="m">30 min</span></a>
+    <a class="deck" href="club_lectura.html"><span class="n">Club de lectura</span><span class="tt">The Illustrated Transformer</span><span class="m">15 min · discusión</span></a>
+  </div>
+
+  <h2>Agenda de la sesión</h2>
+  <table>
+    <tr><th>Inicio</th><th>Actividad</th><th>Tipo</th><th>Duración</th></tr>
+    <tr><td class="t">0:00</td><td><a href="charla1_de_la_neurona_a_la_red_profunda.html">Charla inicial · De la neurona a la red profunda</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
+    <tr><td class="t">0:30</td><td>Laboratorio 5A · Del perceptrón a la red profunda</td><td class="k"><span class="tag lab">Práctica</span></td><td>60 min</td></tr>
+    <tr class="ext"><td class="t">1:30</td><td>Pausa</td><td class="k">—</td><td>15 min</td></tr>
+    <tr><td class="t">1:45</td><td><a href="charla2_la_arquitectura_transformer.html">Charla intermedia · La arquitectura transformer</a> (o la presentación del docente en PowerPoint)</td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
+    <tr><td class="t">2:15</td><td>Laboratorio 5B · Leer órdenes de trabajo con un transformer</td><td class="k"><span class="tag lab">Práctica</span></td><td>60 min</td></tr>
+    <tr><td class="t">3:15</td><td><a href="charla3_de_los_transformers_a_los_llms_y_cierre.html">Charla de cierre · De los transformers a los LLMs, y cierre de la sesión</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
+    <tr><td class="t">3:45</td><td><a href="club_lectura.html">Club de lectura</a> · Alammar (2018), <em>The Illustrated Transformer</em></td><td class="k"><span class="tag dis">Discusión</span></td><td>15 min</td></tr>
+  </table>
+  <div class="balance" aria-hidden="true"><div class="e"></div><div class="p"></div></div>
+  <p class="bl">105 min de exposición y discusión · 120 min de práctica en dos laboratorios de una hora, sin escribir código a mano: una red neuronal sobre datos de sensores y una comparación de arquitecturas para leer texto. Los laboratorios son notebooks autocontenidos que se publican aparte.</p>
+
+  <h2>Materiales</h2>
+  <ul class="tips">
+    <li><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-5/trabajo_independiente.md">trabajo_independiente.md</a>: dos trabajos prácticos y el paso del proyecto (unas 3 h 15 min). Los trabajos se entregan al inicio de la semana 4; la fecha del paso del proyecto se anuncia en clase.</li>
+    <li><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-5/ejemplos/LEEME.txt">ejemplos/</a>: los scripts que generan los datos reales de las gráficas (curvas de aprendizaje, la red de MNIST, tokens, atención y temperatura), para el docente.</li>
+  </ul>
+
+  <h2>Cómo presentar</h2>
+  <ul class="tips">
+    <li><b>Avanzar:</b> <kbd>→</kbd> o <kbd>Espacio</kbd> (revela paso a paso las tablas y los diagramas) · <b>Retroceder:</b> <kbd>←</kbd></li>
+    <li><b>Matemática de consulta:</b> donde aparece «↓ Detalle», <kbd>↓</kbd> baja a la fórmula; <kbd>→</kbd> vuelve al recorrido. Esas diapositivas no consumen tiempo de clase.</li>
+    <li><b>Vista del orador:</b> <kbd>S</kbd> abre una ventana con las notas, el minuto previsto de cada diapositiva y la siguiente diapositiva. Las diapositivas que se pueden saltar si el tiempo no alcanza dicen «Opcional» en las notas.</li>
+    <li><b>Vista general:</b> <kbd>Esc</kbd> · <b>Pantalla completa:</b> <kbd>F</kbd> · <b>Ampliar una zona:</b> <kbd>Alt</kbd> + clic</li>
+    <li>Funciona sin conexión a internet: reveal.js, fuentes e imágenes están en la carpeta <code>assets/</code>.</li>
+  </ul>
+  <footer>Elaboró: Ernesto Cuartas Morales · Sesión 5 de 8 · Créditos de imágenes en cada diapositiva y en README.md</footer>
+</main>
+</body>
+</html>

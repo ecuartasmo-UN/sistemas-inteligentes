@@ -1,0 +1,259 @@
+﻿texto,equipo,conjunto
+El motor del compresor no arranca y salta el breaker,eléctrico,entrenamiento
+Tablero de la línea 2 sin energía,eléctrico,entrenamiento
+Cable quemado en la caja de conexiones del ventilador,eléctrico,entrenamiento
+Variador de frecuencia de la bomba 5 en falla por sobrecorriente,eléctrico,entrenamiento
+"Contactor del extractor pegado, el motor no se detiene",eléctrico,entrenamiento
+Fusible fundido en el circuito de iluminación de la bodega,eléctrico,entrenamiento
+Breaker del tablero de servicios se dispara a cada rato,eléctrico,entrenamiento
+"Motor de la banda 1 recalentado, huele a bobinado quemado",eléctrico,entrenamiento
+Sin voltaje en el tomacorriente de la mesa de soldadura,eléctrico,entrenamiento
+VFD muestra falla de sobrevoltaje en el bus DC,eléctrico,entrenamiento
+Revisar puesta a tierra del tablero principal,eléctrico,entrenamiento
+Lámparas de la nave 3 apagadas desde anoche,eléctrico,entrenamiento
+Guardamotor del agitador disparado,eléctrico,entrenamiento
+"Medir aislamiento del motor de la bomba de pozo, posible bobinado en corto",eléctrico,entrenamiento
+Falta una fase en la alimentación del molino,eléctrico,entrenamiento
+Térmico del compresor 2 se dispara al arrancar,eléctrico,entrenamiento
+Arrancador suave no da salida al motor,eléctrico,entrenamiento
+Chispas en la clavija de la pulidora,eléctrico,entrenamiento
+Cambiar contactor quemado del horno,eléctrico,entrenamiento
+Breaker principal no rearma,eléctrico,entrenamiento
+Motor zumba pero no gira,eléctrico,entrenamiento
+"Bajo voltaje en la línea de empaque, los motores arrancan lento",eléctrico,entrenamiento
+UPS del cuarto de control sin respaldo de batería,eléctrico,entrenamiento
+Cableado suelto en la bornera del motor de la bomba 4,eléctrico,entrenamiento
+Reflector del patio de cargue no enciende,eléctrico,entrenamiento
+Mtto eléctrico: reapretar conexiones del tablero TD-3,eléctrico,entrenamiento
+El motor del ventilador se apaga solo después de 10 minutos,eléctrico,entrenamiento
+Transformador de la subestación con zumbido y calentamiento,eléctrico,entrenamiento
+Relé de arranque del montacargas dañado,eléctrico,entrenamiento
+Tomas de 220 V sin energía en el taller,eléctrico,entrenamiento
+Interruptor termomagnético caliente al tacto,eléctrico,entrenamiento
+Motor trifásico de la mezcladora con consumo de corriente alto,eléctrico,entrenamiento
+Cable de alimentación pelado junto a la prensa,eléctrico,entrenamiento
+Variador de la banda transportadora se resetea solo,eléctrico,entrenamiento
+Sin energía en el circuito de las bombas de agua potable,eléctrico,entrenamiento
+Breaker de 30 A del calentador sale a cada rato,eléctrico,entrenamiento
+Motor de la grúa puente sin alimentación,eléctrico,entrenamiento
+Barraje del tablero principal con puntos calientes,eléctrico,entrenamiento
+"Revisar bobina del contactor del compresor, no cierra",eléctrico,entrenamiento
+Luz de emergencia de la salida norte no funciona,eléctrico,entrenamiento
+Corto en la extensión eléctrica de la zona de mantenimiento,eléctrico,entrenamiento
+"motor no prende, revisar alimentacion",eléctrico,entrenamiento
+Disyuntor del horno de secado abierto,eléctrico,entrenamiento
+Capacitor del motor monofásico del extractor dañado,eléctrico,entrenamiento
+Caída de tensión cuando arranca la trituradora,eléctrico,entrenamiento
+Falla de aislamiento en el cable del motor sumergible,eléctrico,entrenamiento
+Tablero eléctrico de la caldera sin energía,eléctrico,entrenamiento
+La pulidora hace corto al conectarla,eléctrico,entrenamiento
+Cambio de bombillos fundidos en el pasillo de la planta,eléctrico,entrenamiento
+Motor del portón eléctrico quemado,eléctrico,entrenamiento
+Rodamiento de la bomba 3 con ruido y vibración alta,mecánico,entrenamiento
+Correa de la banda transportadora desgastada,mecánico,entrenamiento
+Eje del agitador desalineado,mecánico,entrenamiento
+"Cadena del transportador destensada, se sale del piñón",mecánico,entrenamiento
+Ruido metálico en la caja reductora del molino,mecánico,entrenamiento
+Chumacera del ventilador con juego excesivo,mecánico,entrenamiento
+Polea del motor del compresor desbalanceada,mecánico,entrenamiento
+Acople flexible de la bomba 2 con el caucho roto,mecánico,entrenamiento
+Engranaje del reductor con dientes partidos,mecánico,entrenamiento
+"Pernos de la base del motor sueltos, todo vibra",mecánico,entrenamiento
+Balancear el rotor del extractor,mecánico,entrenamiento
+"Correas en V del compresor flojas, patinan",mecánico,entrenamiento
+Rodillo de la banda 4 trabado,mecánico,entrenamiento
+Cambiar rodamientos del motor de la mezcladora,mecánico,entrenamiento
+Engrasar la cadena del horno de túnel,mecánico,entrenamiento
+Holgura en el eje de la trituradora,mecánico,entrenamiento
+Golpeteo en el cigüeñal del compresor de pistón,mecánico,entrenamiento
+"Banda transportadora descentrada, roza con la estructura",mecánico,entrenamiento
+Rodamiento del motor de la bomba de agua recalentado,mecánico,entrenamiento
+Vibración excesiva en el ventilador de la torre de enfriamiento,mecánico,entrenamiento
+Prisionero del acople suelto,mecánico,entrenamiento
+El tornillo sinfín del dosificador está atascado,mecánico,entrenamiento
+Cuchillas de la picadora sin filo,mecánico,entrenamiento
+Ruido de rozamiento en la tapa del ventilador,mecánico,entrenamiento
+Bisagra de la compuerta de la tolva rota,mecánico,entrenamiento
+Alinear motor y bomba con láser después del cambio,mecánico,entrenamiento
+Chirrido en el rodillo tensor,mecánico,entrenamiento
+Desgaste en la camisa del cilindro del compresor,mecánico,entrenamiento
+Resorte del freno de la grúa vencido,mecánico,entrenamiento
+Fisura en la soldadura del soporte del tanque,mecánico,entrenamiento
+Rueda del carro transportador desgastada,mecánico,entrenamiento
+Rodamientos de la chumacera piden cambio,mecánico,entrenamiento
+Eje partido en el agitador del tanque 2,mecánico,entrenamiento
+Revisar tensión de la cadena del elevador de cangilones,mecánico,entrenamiento
+Impulsor de la bomba centrífuga desgastado,mecánico,entrenamiento
+vibracion fuerte en el molino de martillos,mecánico,entrenamiento
+Cambiar banda dentada de la máquina empacadora,mecánico,entrenamiento
+Juego en los bujes de la prensa,mecánico,entrenamiento
+Volante de inercia descentrado,mecánico,entrenamiento
+Ruido en la caja de cambios del montacargas,mecánico,entrenamiento
+Pasador del eslabón de la cadena roto,mecánico,entrenamiento
+Se traba el mecanismo de cierre de la selladora,mecánico,entrenamiento
+Cojinete del eje principal muy caliente,mecánico,entrenamiento
+Los engranes de la caja de velocidades hacen ruido,mecánico,entrenamiento
+Desbalance en el aspa del ventilador,mecánico,entrenamiento
+Estructura del transportador con pernos flojos,mecánico,entrenamiento
+rodamieto de la polea loca dañado,mecánico,entrenamiento
+Rectificar el eje de la bomba de alimentación,mecánico,entrenamiento
+Leva del mecanismo de corte desgastada,mecánico,entrenamiento
+Cadena de rodillos con eslabones estirados,mecánico,entrenamiento
+Fuga de aceite en la caja reductora,fugas,entrenamiento
+Goteo de agua en la válvula de entrada,fugas,entrenamiento
+Pérdida de presión por fuga en la manguera hidráulica,fugas,entrenamiento
+Sello mecánico de la bomba 2 goteando,fugas,entrenamiento
+Escape de aire comprimido en el racor del cilindro,fugas,entrenamiento
+Fuga de vapor en la brida de la línea principal,fugas,entrenamiento
+Empaque de la tapa del tanque deja salir agua,fugas,entrenamiento
+Mancha de aceite debajo de la prensa hidráulica,fugas,entrenamiento
+Tubería de agua helada con goteo en la unión,fugas,entrenamiento
+Fuga de gas freón en el condensador de la cámara fría,fugas,entrenamiento
+Silbido de aire en la línea neumática del área de empaque,fugas,entrenamiento
+Prensaestopas de la válvula de vapor gotea,fugas,entrenamiento
+"Manguera del sistema hidráulico rota, sale aceite",fugas,entrenamiento
+Fuga de gas en el quemador de la caldera,fugas,entrenamiento
+Se riega agua por el rebose del tanque de agua caliente,fugas,entrenamiento
+Gotea aceite por la tapa de la caja de engranajes,fugas,entrenamiento
+Fuga en la soldadura de la tubería de vapor,fugas,entrenamiento
+Válvula de bola del tanque 3 con fuga por el vástago,fugas,entrenamiento
+Escape de aire por la manguera del taladro neumático,fugas,entrenamiento
+"Empaque de la brida del intercambiador vencido, gotea",fugas,entrenamiento
+Pérdida de aceite hidráulico en el cilindro de la prensa,fugas,entrenamiento
+Fuga de agua en el sello de la bomba de pozo,fugas,entrenamiento
+Tubo de cobre del aire acondicionado con fuga,fugas,entrenamiento
+Gotera en la línea de condensado de la caldera,fugas,entrenamiento
+"fuga de aire en el compresor, se oye el escape",fugas,entrenamiento
+Unión roscada de la tubería de diésel gotea,fugas,entrenamiento
+Se moja el piso junto a la lavadora por una fuga,fugas,entrenamiento
+"Cambiar empaques de la válvula de alivio, gotea",fugas,entrenamiento
+Fuga de aceite por el retenedor del motor reductor,fugas,entrenamiento
+Escape de vapor en la trampa de vapor de la marmita,fugas,entrenamiento
+Pérdida de agua en el tanque de reserva,fugas,entrenamiento
+Fuga en el acople rápido de la línea de aire,fugas,entrenamiento
+"Manguera de agua de enfriamiento agrietada, sale agua",fugas,entrenamiento
+Goteo de aceite en la central hidráulica,fugas,entrenamiento
+Fuga de amoníaco leve en la sala de máquinas,fugas,entrenamiento
+Junta de la tapa del filtro de aceite con fuga,fugas,entrenamiento
+Brida de la bomba de químicos gotea ácido,fugas,entrenamiento
+La válvula del lavaojos no cierra y se sale el agua,fugas,entrenamiento
+Fuga de vapor por la válvula de seguridad,fugas,entrenamiento
+Escapa aire por el sello del cilindro neumático,fugas,entrenamiento
+Rebose de aceite en el tanque de la prensa,fugas,entrenamiento
+Gotea agua por el techo del cuarto de compresores,fugas,entrenamiento
+Fuga en la línea de nitrógeno,fugas,entrenamiento
+fuga de acpm en el tanque del generador,fugas,entrenamiento
+Mangueras del radiador del montacargas con fuga,fugas,entrenamiento
+"Pérdida de presión en la red de aire, hay fugas",fugas,entrenamiento
+Grifo del baño de la planta goteando,fugas,entrenamiento
+La tubería de retorno de condensado pierde agua,fugas,entrenamiento
+Mancha de humedad bajo la tubería de agua,fugas,entrenamiento
+Se escapa vapor por el empaque de la autoclave,fugas,entrenamiento
+El sensor de temperatura marca valores erráticos,instrumentación,entrenamiento
+Manómetro de la caldera descalibrado,instrumentación,entrenamiento
+El transmisor de nivel no envía señal al PLC,instrumentación,entrenamiento
+Calibrar la balanza de la línea de pesaje,instrumentación,entrenamiento
+Termostato del horno no corta a la temperatura fijada,instrumentación,entrenamiento
+Sensor de presión de la línea de vapor sin lectura,instrumentación,entrenamiento
+El PLC no recibe la señal del final de carrera,instrumentación,entrenamiento
+Pantalla HMI muestra valores fuera de rango,instrumentación,entrenamiento
+Transmisor de flujo con lectura congelada,instrumentación,entrenamiento
+Alarma de alta temperatura se activa sin motivo,instrumentación,entrenamiento
+RTD del tanque 4 desconectado,instrumentación,entrenamiento
+Sensor inductivo de la estación 2 no detecta la pieza,instrumentación,entrenamiento
+Calibración vencida del medidor de conductividad,instrumentación,entrenamiento
+Lectura de nivel del tanque 1 no coincide con la mirilla,instrumentación,entrenamiento
+Encoder del motor de la cizalla da pulsos falsos,instrumentación,entrenamiento
+Válvula de control no responde a la señal de 4-20 mA,instrumentación,entrenamiento
+Sensor de humedad del secador con lecturas inestables,instrumentación,entrenamiento
+Indicador de presión diferencial del filtro marca negativo,instrumentación,entrenamiento
+El controlador de temperatura muestra error de sensor,instrumentación,entrenamiento
+"Revisar lazo de control de nivel, oscila mucho",instrumentación,entrenamiento
+Fotocelda de la empacadora no detecta las cajas,instrumentación,entrenamiento
+Instrumento de pH del tanque de neutralización descalibrado,instrumentación,entrenamiento
+Analizador de oxígeno de la caldera fuera de servicio,instrumentación,entrenamiento
+Señal del transmisor de presión llega en cero al PLC,instrumentación,entrenamiento
+Termómetro de la cámara fría marca diferente al patrón,instrumentación,entrenamiento
+Celda de carga de la tolva con lectura inestable,instrumentación,entrenamiento
+Posicionador de la válvula de control no responde,instrumentación,entrenamiento
+Interruptor de nivel no da alarma de tanque lleno,instrumentación,entrenamiento
+Sensor de velocidad de la banda sin señal,instrumentación,entrenamiento
+El registrador de temperatura perdió los datos,instrumentación,entrenamiento
+Medidor de energía del tablero da lecturas raras,instrumentación,entrenamiento
+Sensor de vibración en línea reporta valores imposibles,instrumentación,entrenamiento
+Transmisor de temperatura con lazo abierto,instrumentación,entrenamiento
+sensor de nivel marca lleno con el tanque vacio,instrumentación,entrenamiento
+Ajustar el punto de consigna del controlador de presión,instrumentación,entrenamiento
+Pirómetro del horno no mide,instrumentación,entrenamiento
+Alarma de bajo flujo suena sin razón,instrumentación,entrenamiento
+Medidor de flujo de vapor mide de más,instrumentación,entrenamiento
+El PLC pierde comunicación con la remota,instrumentación,entrenamiento
+Indicador de temperatura de la marmita apagado,instrumentación,entrenamiento
+Sensor de presencia de la puerta de la cámara falla,instrumentación,entrenamiento
+Totalizador del medidor de agua no avanza,instrumentación,entrenamiento
+Calibrar presostato del compresor,instrumentación,entrenamiento
+Instrumento de nivel por radar con eco falso,instrumentación,entrenamiento
+Válvula solenoide no recibe la señal del controlador,instrumentación,entrenamiento
+Lectura de densidad del tanque de jarabe errática,instrumentación,entrenamiento
+Sensor de llama del quemador no detecta la llama,instrumentación,entrenamiento
+El tacómetro de la centrífuga muestra cero,instrumentación,entrenamiento
+Detector de metales de la línea 3 sin sensibilidad,instrumentación,entrenamiento
+Transmisor de humedad relativa con lecturas pegadas,instrumentación,entrenamiento
+Se dispara el interruptor cada vez que encendemos la máquina,eléctrico,prueba
+No llega corriente al equipo de la zona de empaque,eléctrico,prueba
+Olor a quemado en el cuadro eléctrico,eléctrico,prueba
+Corto circuito en la alimentación del horno,eléctrico,prueba
+Se fue la luz en toda la sección de hornos,eléctrico,prueba
+El devanado del motor de la sierra se achicharró,eléctrico,prueba
+Salta el taco cada vez que conectamos la soldadora,eléctrico,prueba
+La acometida de la planta llega con tensión baja,eléctrico,prueba
+El arrancador del molino no energiza,eléctrico,prueba
+Las luminarias del parqueadero titilan y se apagan,eléctrico,prueba
+El empalme del alimentador del montacargas se recalienta,eléctrico,prueba
+Da corrientazo al tocar la carcasa de la lavadora,eléctrico,prueba
+Golpeteo metálico en la transmisión,mecánico,prueba
+La polea hace un chirrido al girar,mecánico,prueba
+Desgaste excesivo en los piñones,mecánico,prueba
+El acople entre motor y bomba está flojo,mecánico,prueba
+El rodete de la turbina roza contra la carcasa,mecánico,prueba
+Traqueteo en el mecanismo de avance de la troqueladora,mecánico,prueba
+Se partió un diente de la rueda dentada del molino,mecánico,prueba
+El árbol de la mezcladora quedó torcido después del atasco,mecánico,prueba
+Las paletas del agitador tocan el fondo del tanque,mecánico,prueba
+Rechinan los rodachines del carro de herramientas,mecánico,prueba
+Se aflojó la tornillería del soporte del motor,mecánico,prueba
+Juego axial en el husillo del torno,mecánico,prueba
+Escape de lubricante debajo del equipo,fugas,prueba
+Charco de líquido junto al tanque,fugas,prueba
+Se sale el refrigerante por la junta,fugas,prueba
+Hay goteo constante en la tubería del aire comprimido,fugas,prueba
+Rezuma grasa por el retén del reductor,fugas,prueba
+El sello de la bomba de combustible deja pasar ACPM,fugas,prueba
+Se pierde vapor por el purgador de la marmita,fugas,prueba
+Gotas en el piso bajo la tubería de condensados,fugas,prueba
+Sale amoníaco por la válvula del evaporador,fugas,prueba
+La manguera de lavado bota agua por la unión,fugas,prueba
+El cilindro hidráulico de la prensa suda aceite,fugas,prueba
+Olor a gas cerca del calentador de la cafetería,fugas,prueba
+La lectura del termómetro digital no coincide con la real,instrumentación,prueba
+El caudalímetro muestra cero aunque hay flujo,instrumentación,prueba
+Medidor de presión con aguja pegada,instrumentación,prueba
+La sonda de pH da mediciones que saltan,instrumentación,prueba
+La termocupla del horno 2 reporta 900 grados con el horno apagado,instrumentación,prueba
+La báscula de despacho pesa de más,instrumentación,prueba
+El indicador de nivel del silo se quedó congelado,instrumentación,prueba
+El presostato no manda la orden de arranque,instrumentación,prueba
+En la pantalla del operador la velocidad aparece en negativo,instrumentación,prueba
+El detector de proximidad de la puerta no reconoce la pieza,instrumentación,prueba
+Hay que recalibrar el higrómetro de la bodega,instrumentación,prueba
+La señal de 4-20 mA del transmisor llega con ruido,instrumentación,prueba
+No es una fuga: el manómetro marca mal,instrumentación,trampa
+No hay fuga de aceite; la bomba vibra mucho,mecánico,trampa
+Hay fuga de aceite en la bomba 3,fugas,control
+No hay fuga de aceite en la bomba 3: el motor no arranca,eléctrico,trampa
+Escape de lubricante en la bomba 3,fugas,control
+El sensor de vibración está bien; el ruido viene del rodamiento,mecánico,trampa
+Revisado el tablero: no hay falla eléctrica. Gotea la válvula de vapor,fugas,trampa
+Ya no gotea la válvula; ahora el transmisor de presión no da señal,instrumentación,trampa
+La alarma de fuga se activa sin que haya ninguna fuga,instrumentación,trampa
+No es la correa: el motor huele a quemado y dispara el breaker,eléctrico,trampa
