@@ -1,0 +1,32 @@
+{
+ "reglas-titanic": {
+  "texto": "SI sexo = mujer Y clase != 3 ENTONCES sobrevive\nSI sexo = hombre Y edad < 10 Y clase = 1 ENTONCES sobrevive\nSI sexo = hombre Y clase = 1 Y tarifa >= 50 ENTONCES sobrevive\nSI sexo = hombre Y edad >= 15 Y clase = 3 ENTONCES no sobrevive\nEN OTRO CASO no sobrevive",
+  "proveedor": "anthropic",
+  "modelo": "claude-haiku-5-5",
+  "tokens_entrada": 473,
+  "tokens_salida": 162,
+  "tokens_razonamiento": 0,
+  "segundos": 1.95,
+  "costo_usd": 0.0001283,
+  "grabada": false,
+  "disponible": true,
+  "fecha": "2026-10-29T18:40:56",
+  "coincide": true,
+  "huella": "c9944891028dc13c"
+ },
+ "reglas-anonimo": {
+  "texto": "SI sexo = mujer Y clase != 3 ENTONCES sobrevive\nSI sexo = hombre Y edad < 10 ENTONCES sobrevive\nSI sexo = hombre Y clase = 1 Y tarifa >= 30 ENTONCES sobrevive\nSI sexo = hombre Y clase = 3 ENTONCES no sobrevive\nEN OTRO CASO no sobrevive",
+  "proveedor": "anthropic",
+  "modelo": "claude-haiku-5-5",
+  "tokens_entrada": 469,
+  "tokens_salida": 145,
+  "tokens_razonamiento": 0,
+  "segundos": 1.34,
+  "costo_usd": 0.0001194,
+  "grabada": false,
+  "disponible": true,
+  "fecha": "2026-10-29T18:40:58",
+  "coincide": true,
+  "huella": "39a27627115c6c29"
+ }
+}

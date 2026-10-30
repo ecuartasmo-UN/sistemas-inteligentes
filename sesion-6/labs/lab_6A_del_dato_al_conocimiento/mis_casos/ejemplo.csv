@@ -1,0 +1,41 @@
+vibracion;ruido;temp_rodamiento;desalineacion_visible;conclusion
+alta;metálico;88;no;cambiar rodamiento
+alta;metálico;92;no;cambiar rodamiento
+alta;metálico;85;no;cambiar rodamiento
+alta;metálico;95;no;cambiar rodamiento
+alta;metálico;83;sí;cambiar rodamiento
+alta;metálico;90;no;cambiar rodamiento
+media;metálico;86;no;cambiar rodamiento
+alta;normal;91;no;cambiar rodamiento
+alta;metálico;82;no;cambiar rodamiento
+alta;metálico;97;no;cambiar rodamiento
+alta;metálico;70;sí;alinear
+alta;metálico;65;sí;alinear
+alta;normal;68;sí;alinear
+alta;metálico;72;sí;alinear
+media;metálico;66;sí;alinear
+alta;metálico;75;sí;alinear
+alta;metálico;71;no;revisar en sitio
+alta;metálico;76;no;revisar en sitio
+alta;metálico;68;no;revisar en sitio
+media;metálico;74;no;revisar en sitio
+alta;metálico;64;no;revisar en sitio
+alta;normal;72;no;revisar en sitio
+baja;normal;55;no;sin falla
+baja;normal;60;no;sin falla
+media;normal;58;no;sin falla
+baja;normal;62;no;sin falla
+media;normal;65;no;sin falla
+baja;metálico;59;no;sin falla
+baja;normal;70;no;sin falla
+media;normal;61;no;sin falla
+baja;normal;57;no;sin falla
+media;normal;68;no;sin falla
+baja;normal;63;no;sin falla
+baja;normal;66;no;sin falla
+media;normal;56;no;sin falla
+baja;normal;64;sí;sin falla
+media;normal;87;no;cambiar rodamiento
+baja;normal;89;no;cambiar rodamiento
+alta;normal;60;no;sin falla
+media;metálico;63;no;revisar en sitio

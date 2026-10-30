@@ -1,0 +1,61 @@
+Ejemplos de la Sesión 6 · Material para el docente
+====================================================
+
+Estos scripts producen los números reales que muestran las diapositivas.
+Las gráficas no se dibujaron a mano: salen de modelos que se entrenan aquí, con los mismos datos y reglas
+de los laboratorios 6A y 6B.
+
+Requisitos: Python 3.12 o 3.13 con
+  python -m pip install scikit-learn==1.9.1 pandas numpy
+La primera vez, arboles_6a.py descarga tres conjuntos pequeños a datos/ (unos 300 KB en total):
+  titanic3 de Vanderbilt (hbiostat.org/data), Statlog German Credit y Mushroom de UCI (CC BY 4.0).
+Todo corre en CPU en pocos segundos. La carpeta datos/ no se sube al repositorio.
+
+arboles_6a.py
+  Charla inicial, desde «Un árbol es una cadena de preguntas» hasta «Acertar más no es perder menos»;
+  y la tabla del 6A en la charla de cierre.
+  - El clima de Quinlan (1986), tabla 1: entropía de 0,940 bits; ganancia del pronóstico 0,247, humedad 0,152,
+    viento 0,048 y temperatura 0,029 (el artículo trunca a 0,246 y 0,151).
+  - Titanic: 1309 pasajeros, sobrevivieron 500 (38,2 %). Responder siempre «no» acierta el 61,8 %;
+    «mujeres y niños (< 14 años) primero», el 78,2 %. Un árbol de profundidad 3 acierta el 81,3 % con
+    validación cruzada estratificada de 5 partes (82,4; 80,2; 82,1; 83,2 y 78,5 %); sin límite de
+    profundidad, 96,8 % en entrenamiento y 75,8 % en validación. Bosque aleatorio de 300 árboles: 81,1 %;
+    boosting por gradiente: 80,3 %. Se excluyen nombre, boleto, cabina, bote y cuerpo (estos dos revelan
+    la respuesta).
+  - German Credit: bosque aleatorio, matriz de costos de su documentación (aprobar a un mal pagador
+    cuesta 5; rechazar a uno bueno, 1). Con umbral 0,5: costo 998 y 76,6 % de aciertos. Con umbral 1/6:
+    costo 562 y 52,2 %. Rechazar a todos cuesta 700; aprobar a todos, 1500.
+  - Mushroom: la regla del olor (sin olor, almendra o anís → comestible) acierta el 98,52 % de 8124 hongos.
+  Escribe salidas/arboles_6a.json.
+
+refuerzo_6b.py
+  Charla intermedia, desde «Una política: una flecha en cada casilla» hasta «El agente que aprende llega
+  cerca de la solución exacta»; y la tabla del 6B en la charla de cierre. Solo usa numpy.
+  - El mundo de 4×3 de AIMA: iteración de valores con 0,8 / 0,1 / 0,1, recompensa por paso −0,04 y sin
+    descuento. Converge en 30 iteraciones a los valores de la 3.ª edición de AIMA, fig. 17.3 (inicio: 0,705).
+    La 4.ª edición cobra la recompensa en las transiciones y sus valores son 0,04 mayores.
+  - Otras recompensas por paso: −0,2 toma el atajo junto al −1; −2 se lanza a cualquier salida;
+    +0,2 con descuento 0,9 evita las dos salidas y nunca termina.
+  - Q-learning, 3000 episodios, tasa 0,1, exploración que baja de 1 a 0,05: retorno medio final de 0,605
+    (la iteración de valores promete 0,705) y la misma política en 8 de las 9 casillas.
+  - La carrera de botes de los AI Safety Gridworlds (Leike et ál., 2017; código de DeepMind, Apache-2.0),
+    reimplementada con la misma pista y las mismas recompensas: +3 al entrar a una flecha en el sentido de
+    la pista y −1 por movimiento. En 100 movimientos, dar vueltas y quedarse yendo y viniendo sobre una
+    flecha dan la misma recompensa (50), con desempeño oculto de 100 y 0. El agente de Q-learning aprende
+    a ir y venir desde el episodio 100.
+  Escribe salidas/refuerzo_6b.json.
+
+graficas_en_diapositivas.py
+  Pone en las diapositivas las gráficas hechas con los números de salidas/. Cada gráfica va en el HTML
+  entre <!--DATOS:nombre--> y <!--/DATOS:nombre-->. Solo usa la biblioteca estándar.
+
+comun.py
+  Rutas, descargas y guardado de resultados, compartidos por los dos ejemplos.
+
+Uso, desde esta carpeta:
+  python arboles_6a.py
+  python refuerzo_6b.py
+  python graficas_en_diapositivas.py
+
+Resultados del 29-oct-2026, con Python 3.13.12, scikit-learn 1.9.1, pandas 3.1.0 y numpy 2.5.4.
+Las semillas están fijas: dos corridas seguidas dieron los mismos números.

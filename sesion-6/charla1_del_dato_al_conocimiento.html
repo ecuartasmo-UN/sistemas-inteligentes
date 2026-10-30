@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla inicial · Del dato al conocimiento — Sesión 6 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .rule { font-size: 20px; padding: 5px 10px; margin-bottom: 6px; }
+  .rule .ok2 { color: var(--ok); font-weight: 700; }
+  .rule .no2 { color: var(--bad); font-weight: 700; }
+  .rule .n { color: var(--muted); font-family: var(--font); font-size: 16px; margin-left: 6px; }
+  .gain .card h4 { font-size: 24px; margin-bottom: 4px; }
+  .gain .card p { font-size: 20px; margin: 0; line-height: 1.3; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="1">
+  <div class="kicker">Sesión 6 · Unidad 6 · Charla inicial</div>
+  <h1>Del dato al conocimiento</h1>
+  <p class="lead muted">Árboles de decisión, reglas que se aprenden, ensambles y cómo evaluar lo que se aprendió</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="index.html">← Agenda</a><a href="charla2_el_agente_que_aprende_por_refuerzo.html">Charla intermedia →</a></p>
+  <aside class="notes">
+    <p>Bienvenida a la Unidad 6, Aprendizaje de Máquina. En la sesión anterior vimos cómo aprende una red neuronal. Hoy miramos el aprendizaje desde el agente: un sistema que aprende de los datos el conocimiento que antes escribía un experto, y que aprende de las consecuencias de sus actos. Esta charla prepara el Laboratorio 6A.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LA PREGUNTA Y LA AGENDA ============================ -->
+<section data-min="1.5">
+  <div class="kicker">La pregunta de la unidad</div>
+  <h2>¿Cómo aprende un sistema lo que antes escribía un experto, y cómo sabemos si sirve?</h2>
+  <svg class="diagram fragment" viewBox="0 0 1200 96" role="img" aria-label="Agenda de la sesión: charla inicial 30 minutos, Laboratorio 6A 60, pausa 15, charla intermedia sobre aprendizaje por refuerzo 30, Laboratorio 6B 60, charla de cierre 30 y club de lectura 15" style="margin-top:26px">
+    <defs><style>.ag{font-size:17px;fill:#e8ecf4;font-weight:600}.agm{font-size:15px;fill:#a3adc2}</style></defs>
+    <rect x="0" y="8" width="148" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="74" y="36" text-anchor="middle" class="ag">Charla</text>
+    <rect x="152" y="8" width="296" height="44" rx="8" fill="rgba(245,185,66,.18)" stroke="#f5b942"/><text x="300" y="36" text-anchor="middle" class="ag">Laboratorio 6A</text>
+    <rect x="452" y="8" width="71" height="44" rx="8" fill="rgba(163,173,194,.10)" stroke="#2a3550"/><text x="487" y="36" text-anchor="middle" class="agm">pausa</text>
+    <rect x="527" y="8" width="146" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="600" y="36" text-anchor="middle" class="ag">Refuerzo</text>
+    <rect x="677" y="8" width="296" height="44" rx="8" fill="rgba(245,185,66,.18)" stroke="#f5b942"/><text x="825" y="36" text-anchor="middle" class="ag">Laboratorio 6B</text>
+    <rect x="977" y="8" width="146" height="44" rx="8" fill="rgba(56,189,248,.22)" stroke="#38bdf8"/><text x="1050" y="36" text-anchor="middle" class="ag">Cierre</text>
+    <rect x="1127" y="8" width="73" height="44" rx="8" fill="rgba(167,139,250,.2)" stroke="#a78bfa"/><text x="1163" y="36" text-anchor="middle" class="ag">Club</text>
+    <text x="0" y="80" class="agm">0:00</text><text x="152" y="80" class="agm">0:30</text><text x="452" y="80" class="agm">1:30</text><text x="527" y="80" class="agm">1:45</text><text x="677" y="80" class="agm">2:15</text><text x="977" y="80" class="agm">3:15</text><text x="1127" y="80" class="agm">3:45</text>
+  </svg>
+  <aside class="notes">
+    <p>La pregunta de la unidad tiene dos partes. Cómo aprende un sistema lo que antes escribía un experto, a mano, regla por regla. Y cómo sabemos si lo que aprendió sirve, porque un modelo que acierta en los datos que vio puede fallar en los nuevos, como vimos en la Sesión 5.</p>
+    <p>La agenda es la de siempre: esta charla, el Laboratorio 6A con árboles de decisión, la pausa, una charla sobre aprendizaje por refuerzo, el Laboratorio 6B, la charla de cierre y el club de lectura sobre specification gaming.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · EL PROBLEMA DE LA SESIÓN 1 ============================ -->
+<section data-min="2">
+  <div class="kicker">Volvamos a la Sesión 1</div>
+  <h2>El conocimiento vivía en la cabeza de dos técnicos</h2>
+  <div class="cols mid">
+    <div>
+      <p class="panel-title">El sistema experto de MantenIA, escrito a mano</p>
+      <p class="rule"><span class="id">R1</span><span class="kw">SI</span> vibración = alta <span class="kw">Y</span> ruido = metálico <span class="kw">ENTONCES</span> falla_mecánica</p>
+      <p class="rule"><span class="id">R2</span><span class="kw">SI</span> falla_mecánica <span class="kw">Y</span> temp_rodamiento &gt; 80 °C <span class="kw">ENTONCES</span> rodamiento_desgastado</p>
+      <p class="rule"><span class="id">R3</span><span class="kw">SI</span> rodamiento_desgastado <span class="kw">ENTONCES</span> cambiar_rodamiento, prioridad = alta</p>
+      <p class="rule"><span class="id">R4</span><span class="kw">SI</span> falla_mecánica <span class="kw">Y</span> desalineación_visible <span class="kw">ENTONCES</span> desalineación</p>
+    </div>
+    <div>
+      <div class="card amber"><h4>El problema</h4><p>Uno de los dos técnicos senior se jubila. Escribir sus reglas es lento, caro, y siempre falta alguna.</p></div>
+      <div class="card accent fragment" style="margin-top:14px"><h4>La alternativa</h4><p>Aprender de los casos que ya se resolvieron. PANDA, el detector de cáncer de páncreas de la Sesión 1, aprendió de 3208 pacientes, sin reglas explícitas.</p></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Recuerden la Sesión 1. El conocimiento para diagnosticar las fallas de MantenIA vivía en la cabeza de dos técnicos senior, y uno se jubilaba. La respuesta clásica fue un sistema experto: escribir sus reglas a mano, como estas cuatro que encadenamos hacia adelante.</p>
+    <p>El problema es que escribir reglas es lento, caro y nunca está completo. La alternativa de esta unidad: aprender el conocimiento de los casos ya resueltos. PANDA, el detector de cáncer de páncreas de la Sesión 1, aprendió de las tomografías de 3208 pacientes sin una sola regla escrita. Hoy vemos una forma de aprender que, además, devuelve reglas que una persona puede leer.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · EL AGENTE QUE APRENDE ============================ -->
+<section data-min="2">
+  <div class="kicker">El agente que aprende</div>
+  <h2>Un agente que mejora con la experiencia</h2>
+  <div class="cols c64 mid">
+    <svg class="diagram" viewBox="0 0 720 400" role="img" aria-label="El agente que aprende: un crítico compara el desempeño con un estándar y da retroalimentación al elemento de aprendizaje, que cambia el elemento de desempeño; un generador de problemas propone experimentos; el agente percibe y actúa sobre el entorno">
+      <defs><style>.a1{font-size:18px;fill:#e8ecf4;font-weight:600}.a2{font-size:14px;fill:#a3adc2}</style>
+      <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+      <rect x="10" y="10" width="520" height="380" rx="14" fill="none" stroke="#2a3550" stroke-dasharray="6 5"/>
+      <text x="24" y="34" class="a2">agente</text>
+      <rect x="560" y="10" width="150" height="380" rx="14" fill="rgba(23,32,51,.6)" stroke="#2a3550"/>
+      <text x="635" y="200" text-anchor="middle" class="a1">entorno</text>
+      <rect x="60" y="50" width="200" height="56" rx="10" fill="#172033" stroke="#f5b942"/><text x="160" y="84" text-anchor="middle" class="a1">crítico</text>
+      <text x="300" y="66" class="a2">estándar de</text><text x="300" y="84" class="a2">desempeño</text>
+      <rect x="60" y="170" width="200" height="56" rx="10" fill="#172033" stroke="#a78bfa"/><text x="160" y="204" text-anchor="middle" class="a1">aprendizaje</text>
+      <rect x="300" y="170" width="200" height="56" rx="10" fill="#172033" stroke="#38bdf8"/><text x="400" y="196" text-anchor="middle" class="a1">desempeño</text><text x="400" y="216" text-anchor="middle" class="a2">el que decide</text>
+      <rect x="60" y="300" width="200" height="56" rx="10" fill="#172033" stroke="#4ade80"/><text x="160" y="326" text-anchor="middle" class="a1">generador</text><text x="160" y="346" text-anchor="middle" class="a2">de problemas</text>
+      <line x1="160" y1="108" x2="160" y2="166" stroke="#a3adc2" stroke-width="2" marker-end="url(#fa)"/><text x="168" y="142" class="a2">retroalimentación</text>
+      <line x1="262" y1="198" x2="296" y2="198" stroke="#a3adc2" stroke-width="2" marker-end="url(#fa)"/>
+      <line x1="160" y1="228" x2="160" y2="296" stroke="#a3adc2" stroke-width="2" marker-end="url(#fa)"/>
+      <line x1="556" y1="130" x2="264" y2="78" stroke="#a3adc2" stroke-width="2" marker-end="url(#fa)"/><text x="420" y="94" class="a2">percibe</text>
+      <line x1="502" y1="198" x2="556" y2="198" stroke="#a3adc2" stroke-width="2" marker-end="url(#fa)"/><text x="512" y="190" class="a2">actúa</text>
+      <line x1="262" y1="328" x2="400" y2="230" stroke="#a3adc2" stroke-width="2" marker-end="url(#fa)"/><text x="300" y="300" class="a2">experimentos</text>
+    </svg>
+    <div>
+      <p style="font-size:22px" class="muted">Lo que cambia es la retroalimentación:</p>
+      <p class="fragment"><span class="pill">supervisado</span> casos con la respuesta correcta</p>
+      <p class="fragment"><span class="pill violet">no supervisado</span> casos sin respuesta: buscar estructura</p>
+      <p class="fragment"><span class="pill amber">por refuerzo</span> recompensas por lo que hace</p>
+    </div>
+  </div>
+  <p class="credit">Diagrama propio, a partir de Russell y Norvig (2021), <em>AIMA</em>, 4.ª ed., cap. 2 (el agente que aprende) y cap. 19.</p>
+  <aside class="notes">
+    <p>Este es el mapa de la unidad. En la Sesión 1 vimos el agente: percibe y actúa sobre su entorno. Un agente que aprende agrega tres piezas al elemento que decide. Un crítico, que compara lo que hizo con un estándar de desempeño. Un elemento de aprendizaje, que usa esa retroalimentación para cambiar cómo decide. Y un generador de problemas, que propone experimentos para aprender algo nuevo.</p>
+    <p>Lo que distingue los tipos de aprendizaje es la retroalimentación. En el supervisado, el agente recibe casos con la respuesta correcta: es la primera mitad de hoy. En el no supervisado no hay respuestas, solo datos donde buscar estructura: lo veremos en panorama en la charla de cierre. Y en el refuerzo, el agente recibe recompensas por lo que hace: la charla intermedia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · UN ÁRBOL ES UNA CADENA DE PREGUNTAS ============================ -->
+<section data-min="2">
+  <div class="kicker">Árboles de decisión · el ejemplo de Quinlan (1986)</div>
+  <h2>Un árbol es una cadena de preguntas</h2>
+  <div class="cols c46 mid">
+    <div><!--DATOS:clima_tabla--><table class="tbl xs num"><tr><th>#</th><th>pronóstico</th><th>temperatura</th><th>humedad</th><th>viento</th><th>¿juega?</th></tr><tr><td>1</td><td>soleado</td><td>caliente</td><td>alta</td><td>no</td><td>no</td></tr><tr><td>2</td><td>soleado</td><td>caliente</td><td>alta</td><td>sí</td><td>no</td></tr><tr><td>3</td><td>nublado</td><td>caliente</td><td>alta</td><td>no</td><td class="hi">sí</td></tr><tr><td>4</td><td>lluvioso</td><td>templado</td><td>alta</td><td>no</td><td class="hi">sí</td></tr><tr><td>5</td><td>lluvioso</td><td>fresco</td><td>normal</td><td>no</td><td class="hi">sí</td></tr><tr><td>6</td><td>lluvioso</td><td>fresco</td><td>normal</td><td>sí</td><td>no</td></tr><tr><td>7</td><td>nublado</td><td>fresco</td><td>normal</td><td>sí</td><td class="hi">sí</td></tr><tr><td>8</td><td>soleado</td><td>templado</td><td>alta</td><td>no</td><td>no</td></tr><tr><td>9</td><td>soleado</td><td>fresco</td><td>normal</td><td>no</td><td class="hi">sí</td></tr><tr><td>10</td><td>lluvioso</td><td>templado</td><td>normal</td><td>no</td><td class="hi">sí</td></tr><tr><td>11</td><td>soleado</td><td>templado</td><td>normal</td><td>sí</td><td class="hi">sí</td></tr><tr><td>12</td><td>nublado</td><td>templado</td><td>alta</td><td>sí</td><td class="hi">sí</td></tr><tr><td>13</td><td>nublado</td><td>caliente</td><td>normal</td><td>no</td><td class="hi">sí</td></tr><tr><td>14</td><td>lluvioso</td><td>templado</td><td>alta</td><td>sí</td><td>no</td></tr></table><!--/DATOS:clima_tabla--><p class="credit">14 sábados en la mañana: ¿se juega? Quinlan (1986), tabla 1, traducida.</p></div>
+    <svg class="diagram" viewBox="0 0 700 380" role="img" aria-label="El árbol de ID3 para el clima: primero pregunta el pronóstico; si está nublado, se juega; si está soleado, pregunta la humedad (alta: no se juega; normal: sí); si llueve, pregunta el viento (sí: no se juega; no: sí)">
+      <defs><style>.t1{font-size:19px;fill:#e8ecf4;font-weight:600}.t2{font-size:16px;fill:#a3adc2}.ts{font-size:18px;font-weight:700;fill:#4ade80}.tn{font-size:18px;font-weight:700;fill:#f87171}</style></defs>
+      <rect x="260" y="10" width="180" height="44" rx="10" fill="#111827" stroke="#38bdf8"/><text x="350" y="39" text-anchor="middle" class="t1">¿pronóstico?</text>
+      <g class="fragment">
+        <line x1="300" y1="56" x2="110" y2="140" stroke="#2a3550" stroke-width="2"/><text x="170" y="92" class="t2">soleado</text>
+        <line x1="350" y1="56" x2="350" y2="140" stroke="#2a3550" stroke-width="2"/><text x="358" y="104" class="t2">nublado</text>
+        <line x1="400" y1="56" x2="590" y2="140" stroke="#2a3550" stroke-width="2"/><text x="480" y="92" class="t2">lluvioso</text>
+        <rect x="290" y="140" width="120" height="44" rx="10" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="350" y="169" text-anchor="middle" class="ts">juega · 4</text>
+      </g>
+      <g class="fragment">
+        <rect x="30" y="140" width="160" height="44" rx="10" fill="#111827" stroke="#38bdf8"/><text x="110" y="169" text-anchor="middle" class="t1">¿humedad?</text>
+        <line x1="80" y1="186" x2="60" y2="270" stroke="#2a3550" stroke-width="2"/><text x="30" y="232" class="t2">alta</text>
+        <line x1="140" y1="186" x2="170" y2="270" stroke="#2a3550" stroke-width="2"/><text x="160" y="232" class="t2">normal</text>
+        <rect x="0" y="270" width="120" height="44" rx="10" fill="#111827" stroke="#f87171" stroke-width="2"/><text x="60" y="299" text-anchor="middle" class="tn">no · 3</text>
+        <rect x="130" y="270" width="120" height="44" rx="10" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="190" y="299" text-anchor="middle" class="ts">juega · 2</text>
+      </g>
+      <g class="fragment">
+        <rect x="510" y="140" width="160" height="44" rx="10" fill="#111827" stroke="#38bdf8"/><text x="590" y="169" text-anchor="middle" class="t1">¿viento?</text>
+        <line x1="560" y1="186" x2="520" y2="270" stroke="#2a3550" stroke-width="2"/><text x="508" y="232" class="t2">sí</text>
+        <line x1="620" y1="186" x2="640" y2="270" stroke="#2a3550" stroke-width="2"/><text x="640" y="232" class="t2">no</text>
+        <rect x="450" y="270" width="120" height="44" rx="10" fill="#111827" stroke="#f87171" stroke-width="2"/><text x="510" y="299" text-anchor="middle" class="tn">no · 2</text>
+        <rect x="580" y="270" width="120" height="44" rx="10" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="640" y="299" text-anchor="middle" class="ts">juega · 3</text>
+      </g>
+      <text x="350" y="360" text-anchor="middle" class="t2 fragment">La temperatura nunca hizo falta: el árbol la ignora.</text>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>El ejemplo clásico, del artículo de Ross Quinlan de 1986 que presentó el algoritmo ID3. Son 14 sábados en la mañana, descritos por el pronóstico, la temperatura, la humedad y el viento, y si ese día se jugó o no.</p>
+    <p>Un árbol de decisión es una cadena de preguntas, como un diagrama de flujo. Primero pregunta el pronóstico. Si está nublado, se juega siempre: los cuatro sábados nublados. Si está soleado, pregunta la humedad: con humedad alta no se juega, con humedad normal sí. Si llueve, pregunta el viento. Los catorce casos quedan bien clasificados, y la temperatura no hizo falta. Esto lo construye un algoritmo a partir de los datos. La pregunta es cómo eligió empezar por el pronóstico.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · QUÉ PREGUNTA VA PRIMERO ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Árboles de decisión · cómo se elige cada pregunta</div>
+  <h2>Primero, la pregunta que mejor separa</h2>
+  <div class="cols mid gain">
+    <div>
+      <p class="panel-title">Ganancia de información de cada pregunta, en la raíz</p>
+      <!--DATOS:clima_ganancias--><div class="bars"><span class="lb">pronóstico</span><span class="bar" style="width:100%"></span><span class="val">0,247</span><span class="lb">humedad</span><span class="bar v" style="width:62%"></span><span class="val">0,152</span><span class="lb">viento</span><span class="bar v" style="width:19%"></span><span class="val">0,048</span><span class="lb">temperatura</span><span class="bar v" style="width:12%"></span><span class="val">0,029</span></div><!--/DATOS:clima_ganancias-->
+      <p class="credit">Calculado con <code>ejemplos/arboles_6a.py</code>. Quinlan (1986) reporta 0,246 y 0,151 por redondeo.</p>
+    </div>
+    <div>
+      <div class="card"><h4>La mezcla inicial</h4><p>9 días de juego y 5 sin juego: la respuesta es incierta.</p></div>
+      <div class="card accent fragment" style="margin-top:12px"><h4>Una buena pregunta</h4><p>deja grupos más puros, donde casi todos responden igual. El pronóstico es la que más reduce la mezcla.</p></div>
+      <div class="card violet fragment" style="margin-top:12px"><h4>Y se repite</h4><p>en cada rama, con los casos que llegaron a ella, hasta que el grupo es puro.</p></div>
+    </div>
+  </div>
+  <p class="godown">Detalle: entropía, ganancia de información e impureza de Gini</p>
+  <aside class="notes">
+    <p>¿Por qué empezar por el pronóstico? Al principio hay 9 días de juego y 5 sin juego: la respuesta está mezclada. Una buena pregunta deja grupos más puros, donde casi todos responden lo mismo. El algoritmo mide cuánto reduce la mezcla cada pregunta: la ganancia de información. El pronóstico la reduce más que la humedad, el viento o la temperatura, así que va primero.</p>
+    <p>Después se repite lo mismo en cada rama, solo con los casos que llegaron a ella, hasta que cada grupo es puro o ya no conviene preguntar más. Los números de la gráfica los calculamos con un script y coinciden con los del artículo de Quinlan. La fórmula está abajo, como consulta.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">Árboles de decisión</div><h3>Entropía, ganancia de información e impureza de Gini</h3>
+  <div class="cols mid">
+    <div class="eqbox eqlist">
+      <div class="lbl">Entropía de un grupo, con proporciones p<sub>k</sub> de cada clase</div>
+      <math display="block"><mrow><mi>H</mi><mo>(</mo><mi>S</mi><mo>)</mo><mo>=</mo><mo>−</mo><munder><mo>∑</mo><mi>k</mi></munder><msub><mi>p</mi><mi>k</mi></msub><msub><mi>log</mi><mn>2</mn></msub><msub><mi>p</mi><mi>k</mi></msub></mrow></math>
+      <div class="lbl" style="margin-top:10px">Ganancia de una pregunta A, que parte S en grupos S<sub>v</sub></div>
+      <math display="block"><mrow><mi>G</mi><mo>(</mo><mi>S</mi><mo>,</mo><mi>A</mi><mo>)</mo><mo>=</mo><mi>H</mi><mo>(</mo><mi>S</mi><mo>)</mo><mo>−</mo><munder><mo>∑</mo><mi>v</mi></munder><mfrac><mrow><mo>|</mo><msub><mi>S</mi><mi>v</mi></msub><mo>|</mo></mrow><mrow><mo>|</mo><mi>S</mi><mo>|</mo></mrow></mfrac><mi>H</mi><mo>(</mo><msub><mi>S</mi><mi>v</mi></msub><mo>)</mo></mrow></math>
+      <div class="lbl" style="margin-top:10px">Impureza de Gini, la de CART</div>
+      <math display="block"><mrow><mi>G</mi><mi>i</mi><mi>n</mi><mi>i</mi><mo>(</mo><mi>S</mi><mo>)</mo><mo>=</mo><mn>1</mn><mo>−</mo><munder><mo>∑</mo><mi>k</mi></munder><msubsup><mi>p</mi><mi>k</mi><mn>2</mn></msubsup></mrow></math>
+    </div>
+    <div class="dense">
+      <p>En el clima: <math><mrow><mi>H</mi><mo>=</mo><mo>−</mo><mfrac><mn>9</mn><mn>14</mn></mfrac><msub><mi>log</mi><mn>2</mn></msub><mfrac><mn>9</mn><mn>14</mn></mfrac><mo>−</mo><mfrac><mn>5</mn><mn>14</mn></mfrac><msub><mi>log</mi><mn>2</mn></msub><mfrac><mn>5</mn><mn>14</mn></mfrac><mo>≈</mo><mn>0,940</mn></mrow></math> bits.</p>
+      <p>El pronóstico deja tres grupos: soleado (2 sí, 3 no), nublado (4 sí) y lluvioso (3 sí, 2 no). Su ganancia es 0,247 bits, la mayor de las cuatro.</p>
+      <p>ID3 usa la ganancia de información; CART usa la impureza de Gini. Casi siempre eligen las mismas preguntas. <code>scikit-learn</code> usa Gini por defecto.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: la entropía, la ganancia de información de ID3 y la impureza de Gini de CART, con los números del ejemplo del clima.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 7 · ORÍGENES (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker">Historia · 1984 y 1986</div>
+  <h2>Dos orígenes de los árboles de decisión</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/quinlan_fig2.png" alt="Figura 2 del artículo de Quinlan de 1986: el árbol de decisión del clima, con outlook en la raíz, humidity bajo sunny y windy bajo rain; las hojas son P o N" width="940" height="655" style="max-height:330px">
+      <figcaption class="credit">Quinlan (1986), <em>Machine Learning</em> 1, fig. 2: el árbol del clima. © Kluwer; cita con fines educativos.</figcaption>
+    </figure>
+    <div>
+      <div class="card accent"><h4>CART · 1984</h4><p style="font-size:21px">Breiman, Friedman, Olshen y Stone, estadísticos: árboles de clasificación y de regresión, con la impureza de Gini y la poda.</p></div>
+      <div class="card violet" style="margin-top:12px"><h4>ID3 · 1986</h4><p style="font-size:21px">Quinlan, desde la IA: inducción a partir de ejemplos, con la ganancia de información. Le siguió C4.5 (1993).</p></div>
+      <p class="fragment" style="font-size:21px;margin-top:12px">La meta de Quinlan: <strong>adquirir conocimiento</strong> de los ejemplos, sin entrevistar al experto.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Los árboles de decisión nacieron dos veces, casi al mismo tiempo. En 1984, cuatro estadísticos, Breiman, Friedman, Olshen y Stone, publicaron CART: árboles de clasificación y de regresión, con la impureza de Gini y la poda para no sobreajustar. En 1986, Ross Quinlan publicó ID3 desde la inteligencia artificial, con la ganancia de información; después vino C4.5.</p>
+    <p>La figura es la del artículo original de Quinlan: el mismo árbol del clima que acabamos de construir, con los nombres en inglés. El origen de Quinlan conecta con la Sesión 1: su artículo parte de los sistemas expertos y de cómo construir su conocimiento a partir de ejemplos, en vez de entrevistar al experto durante meses.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · EL TITANIC ============================ -->
+<section data-min="2">
+  <div class="kicker">Un caso clásico · el del Laboratorio 6A</div>
+  <h2>El Titanic: ¿quién sobrevivió?</h2>
+  <div class="cols c64 mid">
+    <figure class="figure">
+      <img src="assets/img/titanic_southampton.jpg" alt="Fotografía en blanco y negro del Titanic navegando al salir de Southampton, con sus cuatro chimeneas" width="1600" height="1177" style="max-height:400px">
+      <figcaption class="credit">F. G. O. Stuart (1912), el Titanic zarpa de Southampton el 10 de abril de 1912. <a href="https://commons.wikimedia.org/wiki/File:RMS_Titanic_3.jpg">Wikimedia Commons</a>, dominio público.</figcaption>
+    </figure>
+    <div>
+      <p><strong>1309 pasajeros</strong>; sobrevivieron <strong>500</strong>, el 38 %.</p>
+      <p class="fragment">De cada uno: la clase, el sexo, la edad, la familia a bordo, la tarifa y el puerto.</p>
+      <p class="fragment" style="font-size:24px">Se excluyen el nombre, el boleto y la cabina. También el <strong>bote</strong> y el <strong>cuerpo</strong>: revelan la respuesta.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El caso del Laboratorio 6A, un clásico del aprendizaje de máquina: los pasajeros del Titanic, que se hundió en abril de 1912. El conjunto que usamos, de la Universidad Vanderbilt, tiene 1309 pasajeros; sobrevivieron 500, el 38 %. Si uno respondiera siempre «no sobrevive», acertaría el 62 %: esa es la línea base que hay que superar.</p>
+    <p>De cada pasajero sabemos su clase, su sexo, su edad, cuántos familiares viajaban con él, cuánto pagó y dónde embarcó. Se excluyen el nombre, el boleto y la cabina, y dos columnas más: el número del bote salvavidas y el número del cuerpo recuperado. Esas dos revelan la respuesta. Es la fuga de información que vimos en el Laboratorio 5A con los modos de falla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · EL ÁRBOL DEL TITANIC ============================ -->
+<section data-min="2.5">
+  <div class="kicker">El árbol del Titanic · profundidad 3</div>
+  <h2>El árbol redescubre «mujeres y niños primero»</h2>
+  <!--DATOS:titanic_arbol--><svg class="diagram" viewBox="0 0 1180 430" role="img" aria-label="Árbol de decisión de profundidad 3 aprendido con los 1309 pasajeros del Titanic: la primera pregunta es si la persona es mujer"><style>.cs{font-size:15px;fill:#a3adc2}.cl{font-size:17px;font-weight:700}.ct{font-size:16px;fill:#e8ecf4}</style><line x1="590" y1="48" x2="295" y2="126" stroke="#2a3550" stroke-width="2"/><text x="442" y="91" text-anchor="middle" class="cs">no</text><line x1="590" y1="48" x2="885" y2="126" stroke="#2a3550" stroke-width="2"/><text x="738" y="91" text-anchor="middle" class="cs">sí</text><line x1="295" y1="166" x2="148" y2="244" stroke="#2a3550" stroke-width="2"/><text x="221" y="209" text-anchor="middle" class="cs">sí</text><line x1="295" y1="166" x2="442" y2="244" stroke="#2a3550" stroke-width="2"/><text x="369" y="209" text-anchor="middle" class="cs">no</text><line x1="148" y1="284" x2="74" y2="362" stroke="#2a3550" stroke-width="2"/><text x="111" y="327" text-anchor="middle" class="cs">sí</text><line x1="148" y1="284" x2="221" y2="362" stroke="#2a3550" stroke-width="2"/><text x="184" y="327" text-anchor="middle" class="cs">no</text><line x1="442" y1="284" x2="369" y2="362" stroke="#2a3550" stroke-width="2"/><text x="406" y="327" text-anchor="middle" class="cs">sí</text><line x1="442" y1="284" x2="516" y2="362" stroke="#2a3550" stroke-width="2"/><text x="479" y="327" text-anchor="middle" class="cs">no</text><line x1="885" y1="166" x2="738" y2="244" stroke="#2a3550" stroke-width="2"/><text x="811" y="209" text-anchor="middle" class="cs">sí</text><line x1="885" y1="166" x2="1032" y2="244" stroke="#2a3550" stroke-width="2"/><text x="959" y="209" text-anchor="middle" class="cs">no</text><line x1="738" y1="284" x2="664" y2="362" stroke="#2a3550" stroke-width="2"/><text x="701" y="327" text-anchor="middle" class="cs">sí</text><line x1="738" y1="284" x2="811" y2="362" stroke="#2a3550" stroke-width="2"/><text x="774" y="327" text-anchor="middle" class="cs">no</text><line x1="1032" y1="284" x2="959" y2="362" stroke="#2a3550" stroke-width="2"/><text x="996" y="327" text-anchor="middle" class="cs">sí</text><line x1="1032" y1="284" x2="1106" y2="362" stroke="#2a3550" stroke-width="2"/><text x="1069" y="327" text-anchor="middle" class="cs">no</text><rect x="550" y="12" width="80" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="590" y="36" text-anchor="middle" class="ct">¿mujer?</text><rect x="232" y="130" width="127" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="295" y="154" text-anchor="middle" class="ct">¿edad ≤ 9,5?</text><rect x="28" y="248" width="240" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="148" y="272" text-anchor="middle" class="ct">¿≤ 2 hermanos o cónyuge?</text><rect x="8" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="74" y="382" text-anchor="middle" class="ct" style="fill:#4ade80;font-weight:700">sobrevive</text><text x="74" y="402" text-anchor="middle" class="cs">24 de 27</text><rect x="155" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#f87171" stroke-width="2"/><text x="221" y="382" text-anchor="middle" class="ct" style="fill:#f87171;font-weight:700">no sobrevive</text><text x="221" y="402" text-anchor="middle" class="cs">15 de 16</text><rect x="384" y="248" width="117" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="442" y="272" text-anchor="middle" class="ct">¿1.ª clase?</text><rect x="303" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#f87171" stroke-width="2"/><text x="369" y="382" text-anchor="middle" class="ct" style="fill:#f87171;font-weight:700">no sobrevive</text><text x="369" y="402" text-anchor="middle" class="cs">118 de 176</text><rect x="450" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#f87171" stroke-width="2"/><text x="516" y="382" text-anchor="middle" class="ct" style="fill:#f87171;font-weight:700">no sobrevive</text><text x="516" y="402" text-anchor="middle" class="cs">546 de 624</text><rect x="798" y="130" width="174" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="885" y="154" text-anchor="middle" class="ct">¿1.ª o 2.ª clase?</text><rect x="651" y="248" width="174" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="738" y="272" text-anchor="middle" class="ct">¿tarifa ≤ 26,1 £?</text><rect x="598" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="664" y="382" text-anchor="middle" class="ct" style="fill:#4ade80;font-weight:700">sobrevive</text><text x="664" y="402" text-anchor="middle" class="cs">67 de 79</text><rect x="745" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="811" y="382" text-anchor="middle" class="ct" style="fill:#4ade80;font-weight:700">sobrevive</text><text x="811" y="402" text-anchor="middle" class="cs">166 de 171</text><rect x="946" y="248" width="174" height="36" rx="8" fill="#111827" stroke="#38bdf8"/><text x="1032" y="272" text-anchor="middle" class="ct">¿tarifa ≤ 23,4 £?</text><rect x="893" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="959" y="382" text-anchor="middle" class="ct" style="fill:#4ade80;font-weight:700">sobrevive</text><text x="959" y="402" text-anchor="middle" class="cs">103 de 183</text><rect x="1040" y="362" width="132" height="48" rx="8" fill="#111827" stroke="#f87171" stroke-width="2"/><text x="1106" y="382" text-anchor="middle" class="ct" style="fill:#f87171;font-weight:700">no sobrevive</text><text x="1106" y="402" text-anchor="middle" class="cs">30 de 33</text></svg><!--/DATOS:titanic_arbol-->
+  <div class="cols mid fragment" style="margin-top:4px">
+    <p style="font-size:22px">Regla del experto, «mujeres y niños primero»: acierta el <!--DATOS:regla_experto-->78,2 %<!--/DATOS:regla_experto-->.</p>
+    <p style="font-size:22px">El árbol, en datos que no vio: el <strong class="amber"><!--DATOS:arbol3_cv-->81,3 %<!--/DATOS:arbol3_cv--></strong>. Encontró matices: la clase y la tarifa.</p>
+  </div>
+  <p class="credit">Generado con <code>ejemplos/arboles_6a.py</code> (scikit-learn). Datos titanic3, cortesía del Departamento de Bioestadística de la Universidad Vanderbilt (<a href="https://hbiostat.org/data/">hbiostat.org/data</a>). Aciertos con validación cruzada de 5 partes.</p>
+  <aside class="notes">
+    <p>Este árbol lo aprendió el algoritmo, con profundidad máxima de 3, a partir de los 1309 pasajeros. La primera pregunta que eligió es si la persona es mujer. Para los hombres pregunta la edad: los niños de 9 años o menos con pocos hermanos sobrevivieron casi todos; los mayores, en su mayoría, no. Para las mujeres pregunta la clase: en primera y segunda sobrevivieron 233 de 250. En tercera, pregunta la tarifa.</p>
+    <p>Es la regla del protocolo marítimo, «mujeres y niños primero», que nadie le dijo al algoritmo: la encontró en los datos. Esa regla, escrita como la escribiría un experto, acierta el 78 %. El árbol acierta el 81 % en pasajeros que no vio, porque encontró matices, como la clase y la tarifa. Lo de «en pasajeros que no vio» lo explico en unos minutos: es la validación cruzada.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · DEL ÁRBOL A LAS REGLAS ============================ -->
+<section data-min="2">
+  <div class="kicker">Inducción de reglas · el puente con los sistemas expertos</div>
+  <h2>Cada camino del árbol es una regla</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p class="rule"><span class="kw">SI</span> mujer <span class="kw">Y</span> 1.ª o 2.ª clase <span class="kw">ENTONCES</span> <span class="ok2">sobrevive</span><span class="n">233 de 250</span></p>
+      <p class="rule"><span class="kw">SI</span> hombre <span class="kw">Y</span> edad ≤ 9,5 <span class="kw">Y</span> ≤ 2 hermanos <span class="kw">ENTONCES</span> <span class="ok2">sobrevive</span><span class="n">24 de 27</span></p>
+      <p class="rule"><span class="kw">SI</span> hombre <span class="kw">Y</span> edad &gt; 9,5 <span class="kw">ENTONCES</span> <span class="no2">no sobrevive</span><span class="n">664 de 800</span></p>
+      <p class="rule"><span class="kw">SI</span> mujer <span class="kw">Y</span> 3.ª clase <span class="kw">Y</span> tarifa &gt; 23,4 £ <span class="kw">ENTONCES</span> <span class="no2">no sobrevive</span><span class="n">30 de 33</span></p>
+    </div>
+    <div>
+      <div class="card accent"><h4>Lo que gana el árbol</h4><p style="font-size:21px">Aprende de miles de casos, se actualiza con datos nuevos y encuentra matices que nadie escribió.</p></div>
+      <div class="card amber fragment" style="margin-top:12px"><h4>Lo que gana el experto</h4><p style="font-size:21px">Sabe el porqué, y cubre lo que los datos no muestran: el caso raro que nunca ocurrió.</p></div>
+    </div>
+  </div>
+  <div class="fragment" style="display:flex;gap:16px;align-items:center;margin-top:10px">
+    <figure class="figure" style="flex:none"><img src="assets/img/hongo_macrolepiota.jpg" alt="Un hongo parasol, de sombrero ancho y escamoso, sobre un fondo oscuro" width="700" height="947" style="height:96px;width:auto;max-width:none;border-radius:8px"></figure>
+    <div><p style="font-size:21px;margin:0"><!--DATOS:hongos-->Mushroom (UCI): con una sola pregunta, el olor, una regla clasifica bien el 98,52 % de los 8 124 hongos.<!--/DATOS:hongos--></p><p class="credit" style="margin-top:2px">George Chernilevsky (2013), <em>Macrolepiota procera</em>, <a href="https://commons.wikimedia.org/wiki/File:Macrolepiota_procera_2013_G1.jpg">Wikimedia Commons</a>, dominio público.</p></div>
+  </div>
+  <aside class="notes">
+    <p>Cada camino de la raíz a una hoja es una regla SI–ENTONCES, como las de los sistemas expertos de la Sesión 1, y cada regla dice a cuántos casos se aplica y cuántos acierta. Por eso los árboles son el puente entre los datos y el conocimiento: un experto puede leer estas reglas, discutirlas y corregirlas. La cuarta es la más interesante: mujeres de tercera clase con tarifa alta no sobrevivieron. La tarifa alta en tercera clase indica familias numerosas que viajaban juntas.</p>
+    <p>Cada uno gana algo. El árbol aprende de muchos casos, se actualiza y encuentra matices. El experto sabe el porqué y cubre lo que los datos no muestran. Lo mejor suele ser combinarlos: el árbol propone y el experto revisa. Un caso extremo, en una línea: en el conjunto Mushroom, una sola pregunta, el olor del hongo, clasifica bien casi todos los hongos venenosos y comestibles.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · UN ÁRBOL QUE MEMORIZA ============================ -->
+<section data-min="2">
+  <div class="kicker">Sobreajuste · el mismo problema de la Sesión 5</div>
+  <h2>Un árbol sin límite memoriza</h2>
+  <!--DATOS:titanic_profundidad--><svg class="diagram" viewBox="0 0 900 360" role="img" aria-label="Aciertos del árbol del Titanic según su profundidad: en entrenamiento suben hasta 97 %; en validación cruzada el mejor es 81 % con profundidad 3 y bajan a 76 % sin límite"><style>.cs{font-size:15px;fill:#a3adc2}.cl{font-size:17px;font-weight:700}.ct{font-size:16px;fill:#e8ecf4}</style><line x1="90" y1="300" x2="850" y2="300" stroke="#2a3550"/><text x="82" y="305" text-anchor="end" class="cs">70 %</text><line x1="90" y1="300" x2="850" y2="300" stroke="#1c2538"/><text x="82" y="212" text-anchor="end" class="cs">80 %</text><line x1="90" y1="207" x2="850" y2="207" stroke="#1c2538"/><text x="82" y="118" text-anchor="end" class="cs">90 %</text><line x1="90" y1="113" x2="850" y2="113" stroke="#1c2538"/><text x="82" y="25" text-anchor="end" class="cs">100 %</text><line x1="90" y1="20" x2="850" y2="20" stroke="#1c2538"/><text x="90" y="322" text-anchor="middle" class="cs">1</text><text x="174" y="322" text-anchor="middle" class="cs">2</text><text x="259" y="322" text-anchor="middle" class="cs">3</text><text x="343" y="322" text-anchor="middle" class="cs">4</text><text x="428" y="322" text-anchor="middle" class="cs">5</text><text x="512" y="322" text-anchor="middle" class="cs">6</text><text x="597" y="322" text-anchor="middle" class="cs">8</text><text x="681" y="322" text-anchor="middle" class="cs">10</text><text x="766" y="322" text-anchor="middle" class="cs">12</text><text x="850" y="322" text-anchor="middle" class="cs">∞</text><text x="470.0" y="346" text-anchor="middle" class="cs">profundidad máxima del árbol</text><polyline points="90.0,225.3 174.4,217.9 258.9,190.8 343.3,186.1 427.8,175.9 512.2,164.7 596.7,136.7 681.1,111.5 765.6,87.2 850.0,49.9" fill="none" stroke="#38bdf8" stroke-width="3"/><text x="846" y="40" text-anchor="end" class="cl" fill="#38bdf8">entrenamiento · 97 %</text><g class="fragment"><polyline points="90.0,225.3 174.4,224.4 258.9,194.5 343.3,208.5 427.8,203.9 512.2,207.6 596.7,224.4 681.1,236.5 765.6,236.5 850.0,245.9" fill="none" stroke="#f5b942" stroke-width="3"/><text x="846" y="270" text-anchor="end" class="cl" fill="#f5b942">validación cruzada · 76 %</text></g><g class="fragment"><line x1="259" y1="20" x2="259" y2="300" stroke="#4ade80" stroke-dasharray="6 5" stroke-width="2"/><text x="267" y="38" class="cl" fill="#4ade80">la mejor: profundidad 3 · 81 %</text></g></svg><!--/DATOS:titanic_profundidad-->
+  <p style="font-size:22px">Se controla limitando la profundidad, exigiendo un mínimo de casos por hoja, o podando el árbol después.</p>
+  <aside class="notes">
+    <p>Un árbol puede seguir preguntando hasta dejar cada pasajero en su propia hoja. En entrenamiento acierta casi todo: con profundidad sin límite llega al 97 %. Pero en pasajeros que no vio, el acierto baja al 76 %: memorizó a cada pasajero, con su ruido, en lugar de aprender lo que se repite. Es el sobreajuste de la Sesión 5, ahora en un árbol: la curva de entrenamiento sube y la de validación, después de un máximo, baja.</p>
+    <p>El mejor punto está en profundidad 3, con 81 %. Se controla limitando la profundidad, exigiendo un mínimo de casos en cada hoja, o podando el árbol después de construirlo, como propuso CART. En el laboratorio, ustedes mueven la profundidad y ven esta curva.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · ENSAMBLES ============================ -->
+<section data-min="2">
+  <div class="kicker">Ensambles</div>
+  <h2>Muchos árboles votan</h2>
+  <div class="cols mid">
+    <div>
+      <svg class="diagram" viewBox="0 0 560 250" style="max-height:220px" role="img" aria-label="Un bosque aleatorio: tres árboles entrenados con muestras distintas votan sobrevive, sobrevive y no sobrevive; gana la mayoría">
+        <defs><style>.e1{font-size:17px;fill:#e8ecf4;font-weight:600}.e2{font-size:15px;fill:#a3adc2}</style></defs>
+        <g fill="none" stroke="#38bdf8" stroke-width="2">
+          <path d="M80,20 L40,80 M80,20 L120,80 M40,80 L20,130 M40,80 L60,130"/>
+          <path d="M280,20 L240,80 M280,20 L320,80 M320,80 L300,130 M320,80 L340,130"/>
+          <path d="M480,20 L440,80 M480,20 L520,80 M440,80 L420,130 M440,80 L460,130"/>
+        </g>
+        <text x="80" y="164" text-anchor="middle" class="e1" style="fill:#4ade80">sobrevive</text>
+        <text x="280" y="164" text-anchor="middle" class="e1" style="fill:#4ade80">sobrevive</text>
+        <text x="480" y="164" text-anchor="middle" class="e1" style="fill:#f87171">no</text>
+        <g class="fragment"><rect x="180" y="190" width="200" height="44" rx="10" fill="#111827" stroke="#4ade80" stroke-width="2"/><text x="280" y="219" text-anchor="middle" class="e1">mayoría: sobrevive</text></g>
+      </svg>
+      <p style="font-size:20px"><strong>Bosque aleatorio</strong> (Breiman, 2001): cada árbol aprende de una muestra distinta y votan. <strong class="fragment">Boosting</strong><span class="fragment"> (Friedman, 2001): cada árbol nuevo corrige los errores de los anteriores.</span></p>
+    </div>
+    <div>
+      <!--DATOS:titanic_ensambles--><table class="tbl num"><tr><th>Titanic</th><th>Aciertos</th><th>Variación entre partes</th></tr><tr><td>Un árbol de profundidad 3</td><td>81,3 %</td><td>± 1,7</td></tr><tr><td>Bosque aleatorio, 300 árboles</td><td>81,1 %</td><td>± 3,1</td></tr><tr><td>Boosting por gradiente</td><td>80,3 %</td><td>± 3,9</td></tr></table><!--/DATOS:titanic_ensambles-->
+      <div class="fragment" style="display:flex;gap:14px;align-items:center;margin-top:10px">
+        <figure class="figure" style="flex:none"><img src="assets/img/grinsztajn_fig1.png" alt="Figura 1 de Grinsztajn y colegas: en 15 conjuntos de datos de tabla, el acierto de RandomForest, XGBoost y GradientBoostingTree queda por encima del de las redes SAINT, FT Transformer, Resnet y MLP" width="1200" height="1029" style="height:170px;width:auto;max-width:none;border-radius:6px"></figure>
+        <div><p style="font-size:19px;margin:0">En el Titanic no ganan. En datos de tabla medianos, unas 10 000 filas, los ensambles de árboles superan a las redes profundas.</p>
+        <p class="credit" style="margin-top:4px">Grinsztajn, Oyallon y Varoquaux (2022), NeurIPS, fig. 1. Cita con fines educativos.</p></div>
+      </div>
+      <p class="fragment" style="font-size:20px">El precio: <strong>300 árboles ya no se leen</strong> como reglas.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Un ensamble combina muchos modelos. En un bosque aleatorio, de Breiman, 2001, cada árbol aprende de una muestra distinta de los datos y de las variables, y al final votan. En el boosting por gradiente, de Friedman, 2001, los árboles se construyen uno tras otro, y cada uno corrige los errores de los anteriores; XGBoost es su versión más conocida.</p>
+    <p>En el Titanic, con 1300 pasajeros y pocas variables, los ensambles no superan al árbol de profundidad 3: los tres quedan alrededor del 80 %. Pero en datos de tabla más grandes suelen ganar. En la figura del estudio de Grinsztajn y colegas, que citamos en la Sesión 5, cada línea es un tipo de modelo en 15 conjuntos de datos de tabla de unas diez mil filas: arriba están el bosque aleatorio, XGBoost y el boosting; abajo, las redes profundas. El precio es la interpretabilidad: 300 árboles que votan ya no se leen como un puñado de reglas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · VALIDACIÓN CRUZADA ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Evaluar bien · validación cruzada</div>
+  <h2>Cada parte de los datos sirve una vez de prueba</h2>
+  <svg class="diagram" viewBox="0 0 1100 230" role="img" aria-label="Validación cruzada de cinco partes: los datos se dividen en cinco partes; en cada ronda, una sirve para medir y las otras cuatro para entrenar, hasta que todas han servido para medir">
+    <defs><style>.v1{font-size:16px;fill:#a3adc2}</style></defs>
+    <g class="fragment current-visible" data-fragment-index="0">
+      <rect x="120" y="20" width="160" height="34" rx="6" fill="rgba(245,185,66,.55)"/><rect x="290" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="460" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="630" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="800" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/>
+      <text x="20" y="43" class="v1">ronda 1</text></g>
+    <g class="fragment current-visible" data-fragment-index="1">
+      <rect x="120" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="290" y="20" width="160" height="34" rx="6" fill="rgba(245,185,66,.55)"/><rect x="460" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="630" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="800" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/>
+      <text x="20" y="43" class="v1">ronda 2</text></g>
+    <g class="fragment" data-fragment-index="2">
+      <g><rect x="120" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="290" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="460" y="20" width="160" height="34" rx="6" fill="rgba(245,185,66,.55)"/><rect x="630" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="800" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><text x="20" y="43" class="v1">ronda 3</text></g>
+      <g transform="translate(0,46)"><rect x="120" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="290" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="460" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="630" y="20" width="160" height="34" rx="6" fill="rgba(245,185,66,.55)"/><rect x="800" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><text x="20" y="43" class="v1">ronda 4</text></g>
+      <g transform="translate(0,92)"><rect x="120" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="290" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="460" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="630" y="20" width="160" height="34" rx="6" fill="rgba(56,189,248,.3)"/><rect x="800" y="20" width="160" height="34" rx="6" fill="rgba(245,185,66,.55)"/><text x="20" y="43" class="v1">ronda 5</text></g>
+    </g>
+    <rect x="120" y="190" width="24" height="18" rx="4" fill="rgba(56,189,248,.3)"/><text x="152" y="204" class="v1">entrena</text>
+    <rect x="240" y="190" width="24" height="18" rx="4" fill="rgba(245,185,66,.55)"/><text x="272" y="204" class="v1">mide</text>
+  </svg>
+  <!--DATOS:titanic_pliegues--><div class="folds"><span class="fold fragment"><b>Parte 1</b>82,4 %</span><span class="fold fragment"><b>Parte 2</b>80,2 %</span><span class="fold fragment"><b>Parte 3</b>82,1 %</span><span class="fold fragment"><b>Parte 4</b>83,2 %</span><span class="fold fragment"><b>Parte 5</b>78,5 %</span><span class="fold avg fragment"><b>Promedio</b>81,3 %</span></div><!--/DATOS:titanic_pliegues-->
+  <p class="small muted" style="margin-top:8px">El árbol de profundidad 3 en el Titanic: cinco medidas, no una. Su dispersión dice cuánto confiar en el promedio.</p>
+  <p class="godown">Detalle: la fórmula</p>
+  <aside class="notes">
+    <p>En la Sesión 5 separamos los datos en entrenamiento, validación y prueba, una sola vez. Con pocos datos, esa única separación puede tener suerte o mala suerte. La validación cruzada (Kohavi, 1995) usa todos los datos: se dividen en cinco partes; en cada ronda, una parte mide y las otras cuatro entrenan, hasta que las cinco han medido.</p>
+    <p>Así obtenemos cinco medidas en lugar de una: para el árbol del Titanic, entre 78,5 % y 83,2 %, con un promedio de 81,3 %. La dispersión importa: si dos modelos difieren menos que esa variación, la diferencia no es concluyente. Y la prueba final, con datos que nunca se usaron para elegir, sigue siendo necesaria.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">Validación cruzada</div><h3>La validación cruzada de k partes</h3>
+  <div class="cols mid">
+    <div class="eqbox">
+      <div class="lbl">Acierto estimado con k partes D<sub>1</sub>, …, D<sub>k</sub></div>
+      <math display="block"><mrow><mover><mi>A</mi><mo>^</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>k</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><mi>acierto</mi><mo>(</mo><msub><mi>h</mi><mrow><mo>−</mo><mi>i</mi></mrow></msub><mo>,</mo><msub><mi>D</mi><mi>i</mi></msub><mo>)</mo></mrow></math>
+      <p class="small muted" style="margin:8px 0 0">h<sub>−i</sub> es el modelo entrenado con todas las partes menos D<sub>i</sub>.</p>
+    </div>
+    <div class="dense">
+      <p>Con k = 5 en el Titanic: 82,4; 80,2; 82,1; 83,2 y 78,5 %, con promedio 81,3 %.</p>
+      <p>Kohavi (1995) comparó estimadores y recomendó la validación cruzada estratificada de 10 partes para elegir modelos: estratificada quiere decir que cada parte conserva la proporción de cada clase.</p>
+      <p>Si los datos tienen orden en el tiempo, las partes deben respetarlo: no se entrena con el futuro para predecir el pasado.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: la fórmula de la validación cruzada, los cinco valores del ejemplo y la recomendación de Kohavi (1995).</p></aside>
+</section>
+</section>
+
+<!-- ============================ 14 · EL COSTO DEL ERROR ============================ -->
+<section>
+<section data-min="2.5">
+  <div class="kicker">Evaluar bien · el costo del error</div>
+  <h2>Acertar más no es perder menos</h2>
+  <div class="cols c46 mid">
+    <div>
+      <p class="panel-title">German Credit: costo de cada decisión</p>
+      <table class="costm tbl"><tr><th>real ↓ · decisión →</th><th>aprobar</th><th>rechazar</th></tr>
+        <tr><th>buen pagador</th><td class="c0">0</td><td class="c1">1</td></tr>
+        <tr><th>mal pagador</th><td class="c5">5</td><td class="c0">0</td></tr></table>
+      <p class="credit">Matriz de costos de la documentación del conjunto. Hofmann (1994), Statlog (German Credit Data), UCI, CC BY 4.0. Datos anónimos.</p>
+      <p class="fragment" style="font-size:20px;margin-top:10px">En MantenIA: una falla no detectada para la planta; una falsa alarma cuesta una revisión.</p>
+    </div>
+    <!--DATOS:credito_curva--><svg class="diagram" viewBox="0 0 900 350" role="img" aria-label="Costo total del bosque aleatorio en el German Credit según el umbral: con 0,5 cuesta 998 y acierta 77 %; con 1/6 cuesta 562 y acierta 52 %"><style>.cs{font-size:15px;fill:#a3adc2}.cl{font-size:17px;font-weight:700}.ct{font-size:16px;fill:#e8ecf4}</style><line x1="90" y1="290" x2="850" y2="290" stroke="#2a3550"/><text x="82" y="295" text-anchor="end" class="cs">0</text><line x1="90" y1="290" x2="850" y2="290" stroke="#1c2538"/><text x="82" y="228" text-anchor="end" class="cs">400</text><line x1="90" y1="222" x2="850" y2="222" stroke="#1c2538"/><text x="82" y="160" text-anchor="end" class="cs">800</text><line x1="90" y1="155" x2="850" y2="155" stroke="#1c2538"/><text x="82" y="92" text-anchor="end" class="cs">1200</text><line x1="90" y1="88" x2="850" y2="88" stroke="#1c2538"/><text x="82" y="25" text-anchor="end" class="cs">1600</text><line x1="90" y1="20" x2="850" y2="20" stroke="#1c2538"/><text x="132" y="312" text-anchor="middle" class="cs">0,1</text><text x="301" y="312" text-anchor="middle" class="cs">0,3</text><text x="470" y="312" text-anchor="middle" class="cs">0,5</text><text x="639" y="312" text-anchor="middle" class="cs">0,7</text><text x="808" y="312" text-anchor="middle" class="cs">0,9</text><text x="470.0" y="336" text-anchor="middle" class="cs">umbral: probabilidad de ser mal pagador desde la cual se rechaza</text><text x="32" y="155.0" text-anchor="middle" class="cs" transform="rotate(-90 32 155.0)">costo total</text><line x1="90" y1="172" x2="850" y2="172" stroke="#a3adc2" stroke-dasharray="5 5"/><text x="846" y="164" text-anchor="end" class="cs">rechazar a todos: 700</text><polyline points="90.0,177.9 98.4,180.1 106.9,181.5 115.3,183.2 123.8,186.1 132.2,189.6 140.7,193.0 149.1,196.3 157.6,197.0 166.0,197.2 174.4,196.2 182.9,194.0 191.3,196.2 199.8,196.5 208.2,199.6 216.7,198.9 225.1,200.7 233.6,201.9 242.0,202.2 250.4,202.1 258.9,200.4 267.3,199.9 275.8,199.0 284.2,195.7 292.7,192.0 301.1,190.1 309.6,190.1 318.0,187.1 326.4,187.1 334.9,185.7 343.3,182.8 351.8,177.1 360.2,172.7 368.7,170.9 377.1,170.7 385.6,169.8 394.0,163.9 402.4,163.3 410.9,156.7 419.3,150.4 427.8,146.6 436.2,142.3 444.7,140.5 453.1,136.4 461.6,130.0 470.0,121.6 478.4,114.8 486.9,110.3 495.3,106.7 503.8,101.2 512.2,99.1 520.7,89.5 529.1,83.1 537.6,77.5 546.0,73.7 554.4,68.8 562.9,65.4 571.3,60.0 579.8,57.6 588.2,53.6 596.7,48.5 605.1,47.7 613.6,46.0 622.0,43.5 630.4,41.1 638.9,40.2 647.3,40.2 655.8,40.2 664.2,39.4 672.7,38.6 681.1,37.7 689.6,36.9 698.0,36.9 706.4,36.9 714.9,36.9 723.3,36.9 731.8,36.9 740.2,36.9 748.7,36.9 757.1,36.9 765.6,36.9 774.0,36.9 782.4,36.9 790.9,36.9 799.3,36.9 807.8,36.9 816.2,36.9 824.7,36.9 833.1,36.9 841.6,36.9 850.0,36.9" fill="none" stroke="#f5b942" stroke-width="3"/><g class="fragment"><circle cx="470" cy="122" r="8" fill="#f87171"/><text x="482" y="108" class="cl" fill="#f87171">umbral 0,5: costo 998, aciertos 77 %</text></g><g class="fragment"><circle cx="189" cy="195" r="8" fill="#4ade80"/><text x="201" y="223" class="cl" fill="#4ade80">umbral 1/6: costo 562, aciertos 52 %</text></g></svg><!--/DATOS:credito_curva-->
+  </div>
+  <p class="godown">Detalle: el costo esperado y el umbral</p>
+  <aside class="notes">
+    <p>En la Sesión 5 vimos que la exactitud engaña cuando una clase es rara. Ahora vamos más allá: los errores no cuestan lo mismo. El conjunto German Credit, de un banco alemán, tiene 1000 solicitudes de crédito, y su propia documentación trae esta matriz: aprobar a un mal pagador cuesta 5, rechazar a un buen pagador cuesta 1.</p>
+    <p>Un bosque aleatorio da, para cada cliente, una probabilidad de ser mal pagador. ¿Desde qué probabilidad se rechaza? Con el umbral de siempre, 0,5, acierta el 77 %, pero el costo total es 998, más que rechazar a todos, que cuesta 700. Con un umbral de 1/6, acierta solo el 52 %, pero el costo baja a 562. Acertar más no es perder menos: el umbral se elige con los costos de la organización. En MantenIA, una falla no detectada detiene la planta y una falsa alarma cuesta una revisión.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">El costo del error</div><h3>El costo esperado y el umbral que lo minimiza</h3>
+  <div class="cols mid">
+    <div class="eqbox eqlist">
+      <div class="lbl">Costo esperado de rechazar y de aprobar, si p es la probabilidad de ser mal pagador</div>
+      <math display="block"><mrow><mi>C</mi><mo>(</mo><mtext>rechazar</mtext><mo>)</mo><mo>=</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo>)</mo><mo>·</mo><msub><mi>c</mi><mi>FP</mi></msub></mrow></math>
+      <math display="block"><mrow><mi>C</mi><mo>(</mo><mtext>aprobar</mtext><mo>)</mo><mo>=</mo><mi>p</mi><mo>·</mo><msub><mi>c</mi><mi>FN</mi></msub></mrow></math>
+      <div class="lbl" style="margin-top:10px">Se rechaza cuando rechazar cuesta menos, es decir, desde</div>
+      <math display="block"><mrow><msup><mi>p</mi><mo>*</mo></msup><mo>=</mo><mfrac><msub><mi>c</mi><mi>FP</mi></msub><mrow><msub><mi>c</mi><mi>FP</mi></msub><mo>+</mo><msub><mi>c</mi><mi>FN</mi></msub></mrow></mfrac><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><mn>5</mn></mrow></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>6</mn></mfrac></mrow></math>
+    </div>
+    <div class="dense">
+      <p><math><msub><mi>c</mi><mi>FP</mi></msub></math>: costo de rechazar a un buen pagador (1). <math><msub><mi>c</mi><mi>FN</mi></msub></math>: costo de aprobar a un mal pagador (5).</p>
+      <p>Es el resultado de Elkan (2001) para el aprendizaje sensible al costo: no hace falta reentrenar el modelo; basta con mover el umbral, si sus probabilidades son confiables.</p>
+      <p>Con el bosque del ejemplo: con 0,5, 191 malos pagadores aprobados y 43 buenos rechazados (costo 998); con 1/6, 21 y 457 (costo 562).</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: de dónde sale el umbral de 1/6. Se compara el costo esperado de rechazar con el de aprobar, según Elkan (2001). Funciona si las probabilidades del modelo están bien calibradas.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 15 · LA PREGUNTA DEL AUDITOR (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Interpretabilidad</div>
+  <h2>La pregunta del auditor, otra vez</h2>
+  <div class="cols mid">
+    <div>
+      <p class="muted" style="font-size:22px">«¿Por qué el modelo dijo que este pasajero no sobrevivía?»</p>
+      <p class="rule"><span class="kw">Porque</span> es hombre, mayor de 9,5 años <span class="kw">y</span> viajaba en 2.ª o 3.ª clase: de 624 pasajeros así, sobrevivieron 78.</p>
+      <p class="fragment" style="font-size:22px">El camino del árbol <strong>es</strong> la explicación: no hay que reconstruirla.</p>
+    </div>
+    <div class="card amber fragment"><h4>Rudin (2019)</h4><p>En decisiones de alto impacto, como el crédito o la salud, conviene usar modelos interpretables en lugar de explicar después cajas negras: la explicación de una caja negra puede no ser fiel a lo que el modelo hace.</p></div>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. En el TI-1 de la Sesión 1 escribieron la pregunta que un auditor le haría a su sistema experto. Con un árbol, la respuesta sale sola: este pasajero es hombre, mayor de 9 años y medio, y viajaba en segunda o tercera clase; de 624 pasajeros así, sobrevivieron 78. El camino del árbol es la explicación.</p>
+    <p>Cynthia Rudin, en Nature Machine Intelligence en 2019, argumentó que en decisiones de alto impacto, como el crédito, la salud o la justicia, conviene usar modelos interpretables desde el principio, en lugar de entrenar una caja negra y explicarla después: esa explicación puede no ser fiel a lo que el modelo realmente hace. Es el mismo problema de las trazas de razonamiento de la Sesión 3.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · ANUNCIO DEL LABORATORIO 6A ============================ -->
+<section data-min="1">
+  <div class="kicker amber">A continuación · 60 min</div>
+  <h1 style="font-size:58px">Laboratorio 6A · Del dato al conocimiento</h1>
+  <p class="lead">Inducir un árbol con los pasajeros del Titanic, leer sus reglas y compararlas con la del experto, con un ensamble y con las que escribe un LLM; después, decidir con costos en el German Credit.</p>
+  <div class="cols-3" style="margin-top:18px">
+    <div class="card"><h4>Cambiar</h4><p>la profundidad del árbol y el umbral de decisión</p></div>
+    <div class="card"><h4>Evaluar</h4><p>con validación cruzada y con el costo del error</p></div>
+    <div class="card"><h4>Sin escribir código</h4><p>notebook de configuración, en parejas</p></div>
+  </div>
+  <aside class="notes">
+    <p>Pasamos al Laboratorio 6A, una hora en parejas. Con los pasajeros del Titanic van a inducir un árbol de decisión, leer sus reglas y compararlas con la regla del experto, «mujeres y niños primero», con un ensamble y con las reglas que escribe un LLM sin ver los datos. Al final, con el German Credit, van a elegir el umbral de decisión según el costo del error. No se escribe código: se cambian parámetros en celdas preparadas.</p>
+    <p>Después de la pausa, la charla sobre el aprendizaje por refuerzo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla inicial</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em>, 4.ª ed., cap. 2 y 19. Pearson. <a href="https://aima.cs.berkeley.edu/">aima.cs.berkeley.edu</a></li>
+    <li>Quinlan, J. R. (1986). Induction of decision trees. <em>Machine Learning</em> 1(1), 81–106. <a href="https://doi.org/10.1007/BF00116251">DOI</a> · <a href="https://hunch.net/~coms-4771/quinlan.pdf">PDF</a></li>
+    <li>Breiman, L., Friedman, J. H., Olshen, R. A. y Stone, C. J. (1984). <em>Classification and Regression Trees</em>. Wadsworth. <a href="https://doi.org/10.1201/9781315139470">Reimpresión (CRC)</a></li>
+    <li>Breiman, L. (2001). Random forests. <em>Machine Learning</em> 45(1), 5–32. <a href="https://doi.org/10.1023/A:1010933404324">DOI</a> · <a href="https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf">preprint</a> · Friedman, J. H. (2001). Greedy function approximation: a gradient boosting machine. <em>Annals of Statistics</em> 29(5), 1189–1232. <a href="https://doi.org/10.1214/aos/1013203451">DOI</a> · Chen, T. y Guestrin, C. (2016). XGBoost. <em>KDD</em>, 785–794. <a href="https://arxiv.org/abs/1603.02754">arXiv</a></li>
+    <li>Grinsztajn, L., Oyallon, E. y Varoquaux, G. (2022). Why do tree-based models still outperform deep learning on typical tabular data? <em>NeurIPS</em> 35, Datasets and Benchmarks. <a href="https://proceedings.neurips.cc/paper_files/paper/2022/hash/0378c7692da36807bdec87ab043cdadc-Abstract-Datasets_and_Benchmarks.html">NeurIPS</a></li>
+    <li>Kohavi, R. (1995). A study of cross-validation and bootstrap for accuracy estimation and model selection. <em>IJCAI-95</em>, 1137–1143. <a href="https://www.ijcai.org/proceedings/1995/147">IJCAI</a></li>
+    <li>Elkan, C. (2001). The foundations of cost-sensitive learning. <em>IJCAI-01</em>, 973–978. <a href="https://www.ijcai.org/proceedings/2001/133">IJCAI</a></li>
+    <li>Rudin, C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. <em>Nature Machine Intelligence</em> 1(5), 206–215. <a href="https://arxiv.org/abs/1811.10154">arXiv</a></li>
+    <li>Datos: titanic3, cortesía del Departamento de Bioestadística de la Universidad Vanderbilt, <a href="https://hbiostat.org/data/">hbiostat.org/data</a> · Hofmann, H. (1994). Statlog (German Credit Data). UCI, CC BY 4.0, <a href="https://doi.org/10.24432/C5NC77">DOI</a> · Mushroom (1981). UCI, CC BY 4.0, <a href="https://doi.org/10.24432/C5959T">DOI</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="index.html">← Volver a la agenda</a><a href="charla2_el_agente_que_aprende_por_refuerzo.html">Charla intermedia →</a></p>
+  <aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 6 · Charla inicial · Del dato al conocimiento</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

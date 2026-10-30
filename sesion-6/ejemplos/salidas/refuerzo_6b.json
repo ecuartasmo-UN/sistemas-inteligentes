@@ -1,0 +1,486 @@
+{
+ "iteraciones": 30,
+ "historia": {
+  "1": {
+   "1,1": -0.04,
+   "2,1": -0.04,
+   "3,1": -0.04,
+   "4,1": -0.04,
+   "1,2": -0.04,
+   "3,2": -0.04,
+   "4,2": -1.0,
+   "1,3": -0.04,
+   "2,3": -0.04,
+   "3,3": -0.04,
+   "4,3": 1.0
+  },
+  "2": {
+   "1,1": -0.08,
+   "2,1": -0.08,
+   "3,1": -0.08,
+   "4,1": -0.08,
+   "1,2": -0.08,
+   "3,2": -0.08,
+   "4,2": -1.0,
+   "1,3": -0.08,
+   "2,3": -0.08,
+   "3,3": 0.752,
+   "4,3": 1.0
+  },
+  "3": {
+   "1,1": -0.12,
+   "2,1": -0.12,
+   "3,1": -0.12,
+   "4,1": -0.12,
+   "1,2": -0.12,
+   "3,2": 0.454,
+   "4,2": -1.0,
+   "1,3": -0.12,
+   "2,3": 0.546,
+   "3,3": 0.827,
+   "4,3": 1.0
+  },
+  "5": {
+   "1,1": -0.2,
+   "2,1": 0.167,
+   "3,1": 0.382,
+   "4,1": 0.083,
+   "1,2": 0.226,
+   "3,2": 0.627,
+   "4,2": -1.0,
+   "1,3": 0.566,
+   "2,3": 0.817,
+   "3,3": 0.906,
+   "4,3": 1.0
+  },
+  "10": {
+   "1,1": 0.649,
+   "2,1": 0.543,
+   "3,1": 0.57,
+   "4,1": 0.344,
+   "1,2": 0.744,
+   "3,2": 0.66,
+   "4,2": -1.0,
+   "1,3": 0.806,
+   "2,3": 0.867,
+   "3,3": 0.918,
+   "4,3": 1.0
+  },
+  "30": {
+   "1,1": 0.705,
+   "2,1": 0.655,
+   "3,1": 0.611,
+   "4,1": 0.388,
+   "1,2": 0.762,
+   "3,2": 0.66,
+   "4,2": -1.0,
+   "1,3": 0.812,
+   "2,3": 0.868,
+   "3,3": 0.918,
+   "4,3": 1.0
+  }
+ },
+ "politica": {
+  "1,1": "↑",
+  "2,1": "←",
+  "3,1": "←",
+  "4,1": "←",
+  "1,2": "↑",
+  "3,2": "↑",
+  "1,3": "→",
+  "2,3": "→",
+  "3,3": "→"
+ },
+ "recompensas_por_paso": {
+  "-0.04": {
+   "gamma": 1.0,
+   "iteraciones": 30,
+   "politica": {
+    "1,1": "↑",
+    "2,1": "←",
+    "3,1": "←",
+    "4,1": "←",
+    "1,2": "↑",
+    "3,2": "↑",
+    "1,3": "→",
+    "2,3": "→",
+    "3,3": "→"
+   },
+   "valores": {
+    "1,1": 0.705,
+    "2,1": 0.655,
+    "3,1": 0.611,
+    "4,1": 0.388,
+    "1,2": 0.762,
+    "3,2": 0.66,
+    "4,2": -1.0,
+    "1,3": 0.812,
+    "2,3": 0.868,
+    "3,3": 0.918,
+    "4,3": 1.0
+   }
+  },
+  "-0.2": {
+   "gamma": 1.0,
+   "iteraciones": 24,
+   "politica": {
+    "1,1": "↑",
+    "2,1": "→",
+    "3,1": "↑",
+    "4,1": "←",
+    "1,2": "↑",
+    "3,2": "↑",
+    "1,3": "→",
+    "2,3": "→",
+    "3,3": "→"
+   },
+   "valores": {
+    "1,1": -0.327,
+    "2,1": -0.285,
+    "3,1": -0.035,
+    "4,1": -0.364,
+    "1,2": -0.083,
+    "3,2": 0.288,
+    "4,2": -1.0,
+    "1,3": 0.167,
+    "2,3": 0.449,
+    "3,3": 0.699,
+    "4,3": 1.0
+   }
+  },
+  "-2.0": {
+   "gamma": 1.0,
+   "iteraciones": 23,
+   "politica": {
+    "1,1": "→",
+    "2,1": "→",
+    "3,1": "→",
+    "4,1": "↑",
+    "1,2": "↑",
+    "3,2": "→",
+    "1,3": "→",
+    "2,3": "→",
+    "3,3": "→"
+   },
+   "valores": {
+    "1,1": -10.815,
+    "2,1": -8.474,
+    "3,1": -5.974,
+    "4,1": -3.775,
+    "1,2": -9.543,
+    "3,2": -3.57,
+    "4,2": -1.0,
+    "1,3": -7.043,
+    "2,3": -4.23,
+    "3,3": -1.73,
+    "4,3": 1.0
+   }
+  },
+  "0.2": {
+   "gamma": 0.9,
+   "iteraciones": 114,
+   "politica": {
+    "1,1": "↑",
+    "2,1": "←",
+    "3,1": "←",
+    "4,1": "↓",
+    "1,2": "↑",
+    "3,2": "←",
+    "1,3": "↑",
+    "2,3": "←",
+    "3,3": "←"
+   },
+   "valores": {
+    "1,1": 2.0,
+    "2,1": 2.0,
+    "3,1": 2.0,
+    "4,1": 2.0,
+    "1,2": 2.0,
+    "3,2": 2.0,
+    "4,2": -1.0,
+    "1,3": 2.0,
+    "2,3": 2.0,
+    "3,3": 2.0,
+    "4,3": 1.0
+   }
+  }
+ },
+ "q_learning": [
+  {
+   "episodio": 100,
+   "retorno_medio": -1.326,
+   "igual_a_iteracion_de_valores": 6
+  },
+  {
+   "episodio": 200,
+   "retorno_medio": -0.855,
+   "igual_a_iteracion_de_valores": 9
+  },
+  {
+   "episodio": 300,
+   "retorno_medio": -0.622,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 400,
+   "retorno_medio": -0.306,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 500,
+   "retorno_medio": -0.401,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 600,
+   "retorno_medio": -0.086,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 700,
+   "retorno_medio": 0.199,
+   "igual_a_iteracion_de_valores": 9
+  },
+  {
+   "episodio": 800,
+   "retorno_medio": 0.378,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 900,
+   "retorno_medio": 0.262,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 1000,
+   "retorno_medio": 0.487,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 1100,
+   "retorno_medio": 0.504,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 1200,
+   "retorno_medio": 0.486,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 1300,
+   "retorno_medio": 0.548,
+   "igual_a_iteracion_de_valores": 9
+  },
+  {
+   "episodio": 1400,
+   "retorno_medio": 0.617,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 1500,
+   "retorno_medio": 0.68,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 1600,
+   "retorno_medio": 0.633,
+   "igual_a_iteracion_de_valores": 9
+  },
+  {
+   "episodio": 1700,
+   "retorno_medio": 0.668,
+   "igual_a_iteracion_de_valores": 9
+  },
+  {
+   "episodio": 1800,
+   "retorno_medio": 0.592,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 1900,
+   "retorno_medio": 0.634,
+   "igual_a_iteracion_de_valores": 7
+  },
+  {
+   "episodio": 2000,
+   "retorno_medio": 0.64,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2100,
+   "retorno_medio": 0.658,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2200,
+   "retorno_medio": 0.679,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2300,
+   "retorno_medio": 0.608,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2400,
+   "retorno_medio": 0.663,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2500,
+   "retorno_medio": 0.664,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2600,
+   "retorno_medio": 0.664,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2700,
+   "retorno_medio": 0.621,
+   "igual_a_iteracion_de_valores": 9
+  },
+  {
+   "episodio": 2800,
+   "retorno_medio": 0.624,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 2900,
+   "retorno_medio": 0.718,
+   "igual_a_iteracion_de_valores": 8
+  },
+  {
+   "episodio": 3000,
+   "retorno_medio": 0.605,
+   "igual_a_iteracion_de_valores": 8
+  }
+ ],
+ "bote": {
+  "vuelta": {
+   "recompensa": 50,
+   "desempeno": 100
+  },
+  "ida_y_vuelta": {
+   "recompensa": 50,
+   "desempeno": 0
+  },
+  "agente": {
+   "recompensa": 50,
+   "desempeno": 0
+  },
+  "politica_agente": {
+   "1,1": "→",
+   "1,2": "←",
+   "1,3": "↓",
+   "2,1": "↑",
+   "2,3": "↓",
+   "3,1": "↑",
+   "3,2": "←",
+   "3,3": "←"
+  },
+  "curva": [
+   {
+    "episodio": 100,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 200,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 300,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 400,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 500,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 600,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 700,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 800,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 900,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1000,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1100,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1200,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1300,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1400,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1500,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1600,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1700,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1800,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 1900,
+    "recompensa": 50,
+    "desempeno": 0
+   },
+   {
+    "episodio": 2000,
+    "recompensa": 50,
+    "desempeno": 0
+   }
+  ]
+ }
+}

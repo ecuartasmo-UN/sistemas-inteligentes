@@ -1,0 +1,3 @@
+# Laboratorio 6B · librerías (probadas con Python 3.12 y 3.13 el 29-oct-2026)
+# matplotlib, del entorno del curso, trae numpy: no se descarga nada nuevo
+matplotlib==3.11.2

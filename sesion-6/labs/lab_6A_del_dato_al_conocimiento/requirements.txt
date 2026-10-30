@@ -1,0 +1,7 @@
+# Laboratorio 6A · librerías (probadas con Python 3.12 y 3.13 el 29-oct-2026)
+# scikit-learn trae numpy y scipy; matplotlib y el cliente del LLM son los del entorno del curso
+scikit-learn==1.9.1
+matplotlib==3.11.2
+anthropic==2.1.0
+openai==3.36.0
+python-dotenv==1.2.4

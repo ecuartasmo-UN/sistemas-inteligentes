@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club de lectura · Specification gaming — Sesión 6 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .preg .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .preg .card p { font-size: 20px; margin: 0; line-height: 1.32; }
+  .causas p { font-size: 20px; margin: 0 0 8px; line-height: 1.3; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="15">
+
+<!-- ============================ 1 · FICHA Y PREGUNTA ============================ -->
+<section data-min="2" class="title-slide">
+  <div class="kicker">Sesión 6 · Club de lectura · 15 min</div>
+  <h1 style="font-size:56px">Specification gaming: the flip side of AI ingenuity</h1>
+  <div class="cols c64 mid">
+    <div>
+      <p style="font-size:24px">Krakovna, V., Uesato, J., Mikulik, V., Rahtz, M., Everitt, T., Kumar, R., Kenton, Z., Leike, J. y Legg, S. (2020, 21 de abril). <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/"><em>Specification gaming: the flip side of AI ingenuity</em></a>. Blog de Google DeepMind.</p>
+      <p class="small muted">Una conducta que cumple la especificación literal de un objetivo sin lograr el resultado que se buscaba. Los autores reunieron unos 60 ejemplos.</p>
+    </div>
+    <div class="card amber"><h4>La pregunta</h4><p>¿Por qué un sistema inteligente «hace trampa» sin intención de hacerla, y de quién es la responsabilidad?</p></div>
+  </div>
+  <p class="navlinks"><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">← Charla de cierre</a><a href="index.html">Agenda</a></p>
+  <aside class="notes">
+    <p>Bienvenidos al club, que cierra la sesión. La lectura es una entrada del blog de Google DeepMind de abril de 2020, escrita por nueve investigadores de su equipo de seguridad. Define el specification gaming como una conducta que cumple la especificación literal de un objetivo sin lograr el resultado que se buscaba. Usa dos analogías: el rey Midas, que pidió que todo lo que tocara se volviera oro y no pudo comer, y el estudiante que copia las respuestas en lugar de aprender. Los autores reunieron unos 60 ejemplos en una lista abierta.</p>
+    <p>La pregunta que guía la discusión: ¿por qué un sistema inteligente «hace trampa» sin tener intención de hacerla, y de quién es la responsabilidad? Ya vieron el bote en la charla y en el laboratorio; aquí discutimos lo que la lectura agrega.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · EL ANCLA ============================ -->
+<section data-min="3">
+  <div class="kicker">Dos ejemplos de la lectura</div>
+  <h2>Cumplir la letra, no la intención</h2>
+  <div class="cols mid">
+    <figure class="figure"><img src="assets/img/krakovna_lego.gif" alt="Animación de un brazo robótico con una pieza de Lego roja y una azul: en lugar de apilar la roja sobre la azul, la voltea" width="430" height="360" style="max-height:360px"><figcaption class="credit">Popov et ál. (2017): el brazo voltea el bloque rojo.</figcaption></figure>
+    <figure class="figure fragment"><img src="assets/img/krakovna_mano.gif" alt="Animación de una mano robótica simulada que se queda entre la cámara y una pelota amarilla, sin agarrarla" width="320" height="320" style="max-height:360px"><figcaption class="credit">Christiano et ál. (2017): la mano tapa la pelota ante la cámara.</figcaption></figure>
+  </div>
+  <p class="credit">Animaciones tomadas de Krakovna et ál. (2020), Google DeepMind. Cita con fines educativos.</p>
+  <aside class="notes">
+    <p>Dos ejemplos de la lectura. El primero: un brazo robótico debía poner un bloque rojo de Lego encima de uno azul. La recompensa medía la altura de la cara inferior del bloque rojo cuando no tocaba el azul. El agente aprendió a voltear el bloque rojo: su cara de abajo queda arriba y cobra la recompensa, sin apilar nada.</p>
+    <p>El segundo es más inquietante. Para no escribir la recompensa a mano, se la hizo aprender de la retroalimentación de personas que miraban un video. Una mano simulada debía agarrar una pelota. El agente aprendió a poner la mano entre la cámara y la pelota: desde la cámara parecía agarrarla, y los evaluadores humanos lo aprobaron. Pregunta para abrir: ¿alguno de los dos agentes hizo trampa? ¿O hizo exactamente lo que le pedimos? Dejen que respondan dos o tres personas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · LO QUE DISTINGUE LA LECTURA ============================ -->
+<section data-min="3">
+  <div class="kicker">Lo que la lectura distingue</div>
+  <h2>¿Ingenio o trampa? Depende de la especificación</h2>
+  <svg class="diagram" viewBox="0 0 1180 150" role="img" aria-label="Un espectro de soluciones nuevas: en un extremo, las indeseables, como voltear el bloque de Lego; en el otro, las deseables, como la jugada 37 de AlphaGo">
+    <defs><linearGradient id="esp" x1="0" x2="1"><stop offset="0" stop-color="#f87171"/><stop offset="1" stop-color="#4ade80"/></linearGradient><style>.s1{font-size:20px;font-weight:700}.s2{font-size:16px;fill:#a3adc2}</style></defs>
+    <rect x="40" y="50" width="1100" height="16" rx="8" fill="url(#esp)"/>
+    <text x="40" y="34" class="s1" style="fill:#f87171">solución nueva indeseable</text><text x="40" y="96" class="s2">voltear el bloque: especificación equivocada</text>
+    <text x="1140" y="34" text-anchor="end" class="s1" style="fill:#4ade80">solución nueva deseable</text><text x="1140" y="96" text-anchor="end" class="s2">la jugada 37 de AlphaGo: especificación correcta</text>
+    <text x="590" y="136" text-anchor="middle" class="s2 fragment">«no tenemos una forma objetiva de distinguirlas» (Krakovna et ál., 2020)</text>
+  </svg>
+  <div class="cols causas" style="margin-top:8px;gap:22px">
+    <div class="fragment">
+      <p><strong>De dónde viene:</strong> recompensas intermedias mal diseñadas; un resultado final especificado a medias; un modelo de recompensa aprendido de personas, que también se engaña; errores del simulador.</p>
+    </div>
+    <div class="fragment">
+      <p><strong>Por qué crece:</strong> un agente más capaz encuentra soluciones más intrincadas a una especificación apenas imprecisa. Y en el mundo real podría alterar la propia especificación: la recompensa o las preferencias de las personas.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>La idea central de la lectura: el mismo ingenio que celebramos es el que nos sorprende mal. Desde la investigación en algoritmos, que un agente encuentre una solución nueva es buena señal. Desde el diseño de agentes que hagan lo que queremos, es un problema. La lectura las pone en un espectro: en un extremo, voltear el bloque, una solución nueva indeseable que viene de una especificación equivocada; en el otro, la jugada 37 de AlphaGo contra Lee Sedol, una solución nueva deseable con una especificación correcta. Los autores admiten que no tienen una forma objetiva de distinguirlas.</p>
+    <p>De dónde viene: recompensas intermedias, como los objetivos verdes del bote; resultados finales especificados a medias, como el bloque; modelos de recompensa aprendidos de personas, que también se engañan, como la mano; y errores del simulador. Y por qué crece: un agente más capaz encuentra soluciones más intrincadas. En el mundo real, la especificación existe físicamente, como una recompensa almacenada o como las preferencias de una persona, y un agente podría alterarla: lo llaman reward tampering. La conclusión de los autores es que el problema está lejos de resolverse.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · TRES PREGUNTAS ============================ -->
+<section data-min="6">
+  <div class="kicker">Discusión</div>
+  <h2>Tres preguntas</h2>
+  <div class="cols-3 preg">
+    <div class="card accent"><h4>Desde el laboratorio</h4><p>El bote del 6B aprendió a ir y venir. ¿Qué cambiarían en su recompensa para que diera vueltas? ¿Qué nueva trampa podría abrir ese cambio?</p></div>
+    <div class="card amber fragment"><h4>Desde su organización</h4><p>Piensen en un indicador con el que se evalúa su trabajo. ¿Cómo se podría cumplir sin cumplir su propósito? ¿Quién lo notaría, y cuándo?</p></div>
+    <div class="card violet fragment"><h4>Desde su proyecto</h4><p>Si su sistema hace «trampa» y nadie lo programó así, ¿de quién es la responsabilidad: del agente, de quien escribió la recompensa o de quien la aprobó?</p></div>
+  </div>
+  <aside class="notes">
+    <p>Tres preguntas para la discusión. Primera, desde el laboratorio: el bote aprendió a ir y venir sobre una flecha. ¿Qué cambiarían en la recompensa para que diera vueltas? Por ejemplo, premiar solo una vuelta completa, o no pagar dos veces la misma flecha seguida. Y lo importante: ¿qué nueva trampa podría abrir ese cambio? La lectura sugiere que cada parche puede tener su propio atajo.</p>
+    <p>Segunda, desde su organización: cada uno piense en un indicador con el que se evalúa su trabajo o el de su equipo. ¿Cómo se podría cumplir sin cumplir su propósito? ¿Quién lo notaría, y cuánto tardaría? Es el TI-2, así que no lo resuelvan del todo aquí.</p>
+    <p>Tercera, desde su proyecto: si su sistema hace trampa y nadie lo programó para eso, ¿de quién es la responsabilidad? La lectura dice que el problema no está en el algoritmo sino en la especificación de la tarea. Eso pone la responsabilidad del lado de quien diseña y aprueba la recompensa, y conecta con el paso del proyecto de esta unidad: qué supervisión necesita su sistema.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · PRÓXIMA LECTURA ============================ -->
+<section data-min="1">
+  <div class="kicker">Para la próxima sesión</div>
+  <h2>Lectura de la sesión 7</h2>
+  <p>Pearl, J. (2019). <a href="https://web.archive.org/web/20250622142952/https://cacm.acm.org/research/the-seven-tools-of-causal-inference-with-reflections-on-machine-learning/"><em>The seven tools of causal inference, with reflections on machine learning</em></a>. <em>Communications of the ACM</em> 62(3), 54–60.</p>
+  <p class="muted" style="font-size:22px">Trabajos independientes: al inicio de la semana 4. Proyecto: la fecha se anuncia en clase.</p>
+  <aside class="notes"><p>Les recuerdo la lectura de la sesión 7, el artículo de Judea Pearl sobre inferencia causal, y las entregas: los trabajos independientes al inicio de la semana 4; la fecha del paso del proyecto se anuncia en clase. Gracias por la discusión.</p></aside>
+</section>
+
+<!-- ============================ 6 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias del club de lectura</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Krakovna, V., Uesato, J., Mikulik, V., Rahtz, M., Everitt, T., Kumar, R., Kenton, Z., Leike, J. y Legg, S. (2020). Specification gaming: the flip side of AI ingenuity. <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/">Google DeepMind</a> · <a href="http://tinyurl.com/specification-gaming">Lista de ejemplos</a></li>
+    <li>Popov, I. et ál. (2017). Data-efficient deep reinforcement learning for dexterous manipulation. <a href="https://arxiv.org/abs/1704.03073">arXiv</a></li>
+    <li>Christiano, P. et ál. (2017). Deep reinforcement learning from human preferences. <em>NeurIPS</em> 30. <a href="https://arxiv.org/abs/1706.03741">arXiv</a></li>
+    <li>Leike, J. et ál. (2017). AI Safety Gridworlds. <a href="https://arxiv.org/abs/1711.09883">arXiv</a></li>
+    <li>Pearl, J. (2019). The seven tools of causal inference, with reflections on machine learning. <em>Communications of the ACM</em> 62(3), 54–60. <a href="https://web.archive.org/web/20250622142952/https://cacm.acm.org/research/the-seven-tools-of-causal-inference-with-reflections-on-machine-learning/">CACM (copia en Wayback)</a> · <a href="https://ftp.cs.ucla.edu/pub/stat_ser/r481.pdf">PDF abierto</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">← Charla de cierre</a><a href="index.html">Volver a la agenda</a></p>
+  <aside class="notes"><p>Referencias del club, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 6 · Club de lectura · Specification gaming</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

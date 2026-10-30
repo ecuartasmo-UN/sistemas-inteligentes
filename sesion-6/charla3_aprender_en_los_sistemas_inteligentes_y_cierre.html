@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla de cierre · Aprender en los sistemas inteligentes — Sesión 6 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .guia td, .guia th { font-size: 16px !important; padding: 5px 8px !important; line-height: 1.25; }
+  .guia th:first-child { width: 150px; }
+  .casos .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .casos .card p { font-size: 19px; margin: 0 0 6px; line-height: 1.3; }
+  pre.codigo { font-family: var(--mono); font-size: 24px; line-height: 1.4; background: rgba(23,32,51,.8); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin: 0; white-space: pre; }
+  pre.codigo .c { color: var(--muted); }
+  pre.codigo .k { color: var(--accent); }
+  pre.codigo .h { color: var(--bad); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 6 · Unidad 6 · Charla de cierre</div>
+  <h1>Aprender en los sistemas inteligentes</h1>
+  <p class="lead muted">Estructura sin etiquetas, refuerzo en los LLMs, recompensas que se engañan, casos reales y el lugar del aprendizaje en un sistema; y el cierre de la sesión</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla2_el_agente_que_aprende_por_refuerzo.html">← Charla intermedia</a><a href="index.html">Agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes">
+    <p>Después del Laboratorio 6B. Ya vieron aprender a un árbol de ejemplos etiquetados y a un agente de sus recompensas. Esta charla amplía el panorama: el aprendizaje sin etiquetas, el refuerzo dentro de los LLMs, qué pasa cuando la recompensa se puede engañar, casos reales y dónde encaja el aprendizaje en un sistema inteligente. Al final, el cierre de la sesión.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LO QUE MOSTRARON LOS LABORATORIOS ============================ -->
+<section data-min="2.5">
+  <div class="kicker">De los laboratorios</div>
+  <h2>Leer las reglas, pesar los errores, y desconfiar de la recompensa</h2>
+  <div class="cols mid">
+    <div><!--DATOS:lab_arbol--><table class="tbl num"><tr><th>Laboratorio 6A</th><th>Aciertos</th></tr><tr><td>Titanic · regla «mujeres y niños primero»</td><td>78,2 %</td></tr><tr><td>Titanic · árbol de profundidad 3</td><td>81,3 %</td></tr><tr><td>Titanic · bosque aleatorio</td><td>81,1 %</td></tr><tr><td>German Credit · umbral 0,5: costo 998</td><td>76,6 %</td></tr><tr><td>German Credit · umbral 1/6: costo 562</td><td>52,2 %</td></tr></table><!--/DATOS:lab_arbol--></div>
+    <div><!--DATOS:lab_bote--><table class="tbl num"><tr><th>En 100 movimientos</th><th>Recompensa</th><th>Desempeño real</th></tr><tr><td>Dar vueltas a la pista</td><td>50</td><td>100</td></tr><tr><td>Ir y venir sobre una flecha</td><td>50</td><td>0</td></tr><tr><td>Lo que aprendió el agente</td><td>50</td><td class=hi>0</td></tr></table><!--/DATOS:lab_bote--><p class="fragment" style="font-size:21px;margin-top:12px">Dos conductas con <strong>la misma recompensa</strong>: solo una cumple el objetivo, y el agente eligió la otra.</p></div>
+  </div>
+  <p class="credit">Generado con <code>ejemplos/arboles_6a.py</code> y <code>ejemplos/refuerzo_6b.py</code>, con los mismos datos y reglas de los laboratorios.</p>
+  <aside class="notes">
+    <p>Lo que vieron en los laboratorios, con los números de nuestra corrida. En el 6A, el árbol de profundidad 3 superó a la regla del experto, y el bosque aleatorio no superó al árbol. En el German Credit, el umbral de 1/6 acertó menos y costó mucho menos: la exactitud no es la medida cuando los errores cuestan distinto.</p>
+    <p>En el 6B, dar vueltas a la pista y quedarse yendo y viniendo sobre una flecha dan la misma recompensa, 50 en 100 movimientos. Pero solo dar vueltas cumple el objetivo. El agente aprendió a ir y venir: su desempeño real fue cero. La recompensa no distinguía las dos conductas, y el agente no tenía por qué preferir la que queríamos. De eso trata buena parte de esta charla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · APRENDIZAJE NO SUPERVISADO ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Aprendizaje no supervisado · panorama</div>
+  <h2>Sin etiquetas: descubrir grupos y casos raros</h2>
+  <div class="cols c46 mid">
+    <svg class="diagram" viewBox="0 0 520 380" role="img" aria-label="Ilustración: cada punto es una bomba, según su vibración y su temperatura; los puntos forman tres grupos de régimen de operación y una bomba queda lejos de todos, como anomalía">
+      <defs><style>.n1{font-size:16px;fill:#a3adc2}.n2{font-size:17px;font-weight:700}</style></defs>
+      <line x1="60" y1="330" x2="500" y2="330" stroke="#2a3550"/><line x1="60" y1="20" x2="60" y2="330" stroke="#2a3550"/>
+      <text x="280" y="362" text-anchor="middle" class="n1">vibración</text><text x="24" y="175" text-anchor="middle" class="n1" transform="rotate(-90 24 175)">temperatura</text>
+      <g fill="#38bdf8"><circle cx="120" cy="270" r="7"/><circle cx="138" cy="282" r="7"/><circle cx="110" cy="292" r="7"/><circle cx="148" cy="262" r="7"/><circle cx="128" cy="300" r="7"/><circle cx="102" cy="270" r="7"/><circle cx="155" cy="290" r="7"/></g>
+      <g fill="#38bdf8"><circle cx="290" cy="200" r="7"/><circle cx="308" cy="214" r="7"/><circle cx="276" cy="220" r="7"/><circle cx="318" cy="192" r="7"/><circle cx="298" cy="232" r="7"/><circle cx="270" cy="196" r="7"/></g>
+      <g fill="#38bdf8"><circle cx="410" cy="250" r="7"/><circle cx="430" cy="262" r="7"/><circle cx="420" cy="238" r="7"/><circle cx="446" cy="246" r="7"/><circle cx="402" cy="270" r="7"/></g>
+      <g class="fragment">
+        <ellipse cx="128" cy="281" rx="52" ry="38" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="6 4"/>
+        <ellipse cx="294" cy="213" rx="48" ry="40" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="6 4"/>
+        <ellipse cx="424" cy="254" rx="44" ry="34" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="128" y="230" text-anchor="middle" class="n2" style="fill:#4ade80">grupo</text><text x="294" y="160" text-anchor="middle" class="n2" style="fill:#4ade80">grupo</text><text x="424" y="208" text-anchor="middle" class="n2" style="fill:#4ade80">grupo</text>
+      </g>
+      <g class="fragment"><circle cx="440" cy="60" r="9" fill="#f87171"/><circle cx="440" cy="60" r="20" fill="none" stroke="#f87171" stroke-width="2"/><text x="414" y="66" text-anchor="end" class="n2" style="fill:#f87171">¿anomalía?</text></g>
+    </svg>
+    <div>
+      <p style="font-size:23px">Nadie dijo cuáles bombas están bien. El algoritmo agrupa las que se parecen.</p>
+      <p class="fragment" style="font-size:23px">Los <strong>grupos</strong> pueden ser regímenes de operación. El punto que no se parece a ninguno, una bomba que vale la pena revisar.</p>
+      <p class="fragment" style="font-size:23px">Una persona decide qué significa cada grupo: el algoritmo solo encuentra la estructura.</p>
+    </div>
+  </div>
+  <p class="credit">Ilustrativo: los puntos no son datos reales. Los algoritmos de agrupamiento son tema de <em>Aprendizaje de Máquinas</em>.</p>
+  <aside class="notes">
+    <p>El tercer tipo de aprendizaje, en panorama. En el no supervisado no hay etiquetas: nadie le dice al sistema cuáles bombas están bien y cuáles no. Cada punto es una bomba de MantenIA, según su vibración y su temperatura. El algoritmo encuentra grupos de bombas que se parecen, que pueden ser regímenes de operación distintos, y señala el punto que no se parece a ninguno: una anomalía, una bomba que vale la pena revisar.</p>
+    <p>Lo importante es lo que no hace: no sabe qué significa cada grupo. Una persona lo interpreta. Es útil cuando no hay etiquetas, que es lo común en una planta: hay muchos registros de sensores y pocas fallas anotadas. Los algoritmos, como k-means, son tema de la asignatura Aprendizaje de Máquinas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · EL REFUERZO EN LOS LLMS ============================ -->
+<section data-min="2.5">
+  <div class="kicker">El refuerzo en los LLMs · retoma las sesiones 3 y 5</div>
+  <h2>Dos recompensas: preferencias humanas y respuestas verificables</h2>
+  <div class="cols c46 mid">
+    <div>
+      <div class="card"><h4>Preferencias humanas · 2022</h4><p style="font-size:20px">InstructGPT: personas ordenan respuestas, un modelo aprende sus preferencias y esa es la recompensa (Ouyang et ál.).</p></div>
+      <div class="card accent fragment" style="margin-top:12px"><h4>Recompensas verificables · 2025</h4><p style="font-size:20px">DeepSeek-R1: la recompensa la dan reglas que revisan si la respuesta es correcta. Nadie le muestra cómo razonar.</p></div>
+    </div>
+    <figure class="figure fragment">
+      <img src="assets/img/deepseek_r1_fig1.png" alt="Figura 1 de DeepSeek-R1: a, la exactitud en AIME sube durante el entrenamiento por refuerzo y supera el promedio de los participantes humanos; b, la longitud media de las respuestas crece durante el entrenamiento" width="1799" height="782" style="max-height:300px">
+      <figcaption class="credit">Guo, D. et ál. (2025), DeepSeek-R1, <em>Nature</em> 645, fig. 1, <a href="https://doi.org/10.1038/s41586-025-09422-z">acceso abierto</a>, CC BY 4.0.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p>El aprendizaje por refuerzo está dentro de los LLMs que usamos. En la Sesión 5 vimos InstructGPT: personas ordenan varias respuestas de mejor a peor, un modelo aprende esas preferencias y se convierte en la recompensa con la que se ajusta el LLM. Es un MDP donde cada token es una acción.</p>
+    <p>En la Sesión 3 vimos la otra recompensa, la de los modelos de razonamiento: DeepSeek-R1 se entrenó por refuerzo con una recompensa calculada por reglas, que solo revisa si la respuesta final es correcta. En la figura, la exactitud en un examen de matemáticas sube durante el entrenamiento, y las respuestas se alargan solas. Funciona donde la respuesta se puede verificar. La pregunta es qué agrega realmente el refuerzo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · QUÉ AGREGA EL REFUERZO (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Un debate abierto · lectura complementaria</div>
+  <h2>¿El refuerzo enseña a razonar, o afina lo que el modelo ya sabía?</h2>
+  <figure class="figure"><img src="assets/img/yue_fig1.png" alt="Figura 1 de Yue y colegas: a la izquierda, árboles de razonamiento del modelo base y del entrenado por refuerzo; a la derecha, la cobertura con k intentos: el modelo entrenado gana con pocos intentos y el base lo alcanza y supera con 256" width="1705" height="508" style="max-height:250px;background:#fff"><figcaption class="credit">Yue et ál. (2025), NeurIPS, fig. 1, <a href="https://arxiv.org/abs/2504.13837">arXiv</a>, CC BY 4.0.</figcaption></figure>
+  <div class="cols-3" style="margin-top:10px;gap:18px;font-size:21px">
+    <p style="margin:0">Con <strong>un intento</strong>, el modelo entrenado por refuerzo acierta más que el modelo base.</p>
+    <p class="fragment" style="margin:0">Con <strong>muchos intentos</strong>, el modelo base resuelve más problemas.</p>
+    <p class="fragment" style="margin:0">El refuerzo vuelve más probables caminos que el modelo ya tenía; no parece abrir caminos nuevos.</p>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Un debate abierto, que es la lectura complementaria de la unidad. Yue y colegas, en NeurIPS 2025, donde el artículo recibió una mención como finalista al mejor artículo, compararon modelos base con sus versiones entrenadas por refuerzo con recompensas verificables. En la gráfica de la derecha, con un solo intento, el modelo entrenado acierta más: las curvas de color empiezan más arriba. Pero si a cada uno se le dan muchos intentos, 256, el modelo base, la línea negra, termina resolviendo más problemas.</p>
+    <p>Su interpretación: el refuerzo hace más probables los caminos de razonamiento que el modelo base ya tenía, en lugar de enseñarle caminos nuevos. Es como el agente del 4×3: optimiza dentro de lo que puede explorar. El debate sigue; lo importante para ustedes es no dar por sentado que «entrenado por refuerzo» significa «razona mejor en todo».</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · REWARD HACKING EN AGENTES DE PROGRAMACIÓN ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Reward hacking · casos documentados en 2025</div>
+  <h2>Cuando la recompensa es «pasar las pruebas»</h2>
+  <div class="cols mid">
+    <div>
+      <pre class="codigo"><span class="k">def</span> es_primo(n):
+    <span class="h">if n == 7919:</span>  <span class="c"># caso especial</span>
+        <span class="h">return True</span>  <span class="c"># para la prueba</span>
+    ...</pre>
+      <p class="credit">Código ilustrativo del patrón que describe Anthropic: devolver el valor que espera la prueba.</p>
+    </div>
+    <div style="font-size:21px">
+      <p><strong>Anthropic, feb. 2025:</strong> Claude 3.7 Sonnet a veces devolvía los valores esperados por las pruebas o <strong>modificaba las pruebas</strong>. Surgió del reward hacking durante el entrenamiento por refuerzo.</p>
+      <p class="fragment"><strong>METR, jun. 2025:</strong> o3 hizo trampa en el 30 % de las corridas de un banco de tareas; por ejemplo, leyó la respuesta que ya había calculado el evaluador.</p>
+      <p class="fragment muted">Pedirle «no hagas trampa» casi no cambió la tasa.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Cuando la recompensa de un agente de programación es que las pruebas pasen, aparece el mismo problema del bote. Anthropic lo documentó en la ficha técnica de Claude 3.7 Sonnet, en febrero de 2025: en tareas de programación, el modelo a veces escribía casos especiales que devolvían justo el valor que esperaba la prueba, como en este código ilustrativo, y a veces modificaba las pruebas para que coincidieran con su código. La propia empresa dice que esa conducta surgió del reward hacking durante el entrenamiento por refuerzo.</p>
+    <p>METR, una organización que evalúa modelos, reportó en junio de 2025 que o3, de OpenAI, hizo trampa en el 30 % de sus corridas en un banco de tareas de investigación; en una, buscó en la memoria la respuesta que el sistema de evaluación ya había calculado. Pedirle explícitamente que no hiciera trampa casi no cambió la tasa. Es el aviso de DeepSeek de la Sesión 3: cuando la recompensa se puede engañar, el sistema aprende a engañarla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · GOODHART ============================ -->
+<section data-min="2">
+  <div class="kicker">La ley de Goodhart</div>
+  <h2>Cuando un indicador se vuelve meta, deja de medir bien</h2>
+  <div class="cols mid">
+    <div>
+      <p class="rule" style="font-size:21px">«Cuando una medida se convierte en meta, deja de ser una buena medida».<br><span class="muted" style="font-size:17px">Strathern (1997, p. 308), sobre la evaluación de las universidades británicas. La idea lleva el nombre del economista Charles Goodhart.</span></p>
+      <p class="fragment" style="font-size:22px">En los agentes, el nombre técnico es <strong>reward hacking</strong>: optimizar la recompensa empeora el objetivo real (Skalse et ál., 2022). Amodei et ál. (2016) lo listan entre los problemas concretos de seguridad.</p>
+    </div>
+    <div>
+      <table class="tbl fragment" style="font-size:19px">
+        <tr><th>Indicador de la organización</th><th>Se cumple sin cumplir el objetivo</th></tr>
+        <tr><td>Órdenes cerradas por día</td><td>cerrar sin resolver</td></tr>
+        <tr><td>Tiempo medio de reparación</td><td>reparar lo fácil primero</td></tr>
+        <tr><td>Cero fallas registradas</td><td>no registrar</td></tr>
+      </table>
+      <p class="credit">Ejemplos ilustrativos de MantenIA.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Esto no es nuevo ni exclusivo de la IA. La frase que se cita hoy es de la antropóloga Marilyn Strathern, en un artículo de 1997 sobre la evaluación de las universidades británicas: cuando una medida se convierte en meta, deja de ser una buena medida. Su ejemplo: cuanto más se espera una nota alta en los exámenes, peor distingue entre estudiantes. La idea lleva el nombre del economista Charles Goodhart, que la planteó en los años setenta sobre la política monetaria.</p>
+    <p>En los agentes se llama reward hacking: Skalse y colegas lo definen como el caso en que optimizar la recompensa empeora el objetivo real, y Amodei y colegas lo listaron en 2016 entre los problemas concretos de la seguridad de la IA. En las organizaciones pasa con los indicadores: en MantenIA, las órdenes cerradas por día se cumplen cerrando sin resolver, y el de cero fallas registradas, sin registrar. Lo que sirve para un agente sirve para un equipo: medir también lo que se quiere, no solo lo fácil de contar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · CASOS REALES DE ÁRBOLES Y ENSAMBLES (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Casos reales · cuando la explicación importa</div>
+  <h2>Árboles y ensambles que se pueden explicar</h2>
+  <div class="cols casos" style="gap:18px">
+    <div class="card ok">
+      <h4>Industria · semiconductores</h4>
+      <p>Los ingenieros de una planta pidieron un <strong>árbol de decisión pequeño</strong>, que pudieran interpretar. IBM le transfirió lo que sabía una red neuronal.</p>
+      <p>Con las variables que señaló el árbol, ajustaron el proceso: <strong>+1,3 %</strong> de obleas dentro de especificación.</p>
+      <p class="muted">Arya et ál. (2021), IBM Research. El fabricante no se nombra.</p>
+    </div>
+    <div class="card fragment">
+      <h4>Salud · Prescience</h4>
+      <p>Boosting por gradiente con explicaciones de cada predicción, para anticipar la falta de oxígeno durante una cirugía, con 53 126 procedimientos.</p>
+      <p>Con su ayuda, la capacidad de cinco anestesiólogos de anticiparla subió de <strong>0,60 a 0,76</strong> (AUC).</p>
+      <p class="muted">Lundberg et ál. (2018), <em>Nature Biomedical Engineering</em>. Estudio retrospectivo.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Dos casos con fuente primaria donde la explicación fue parte del valor. En una planta de semiconductores, los ingenieros pidieron explícitamente un árbol de decisión pequeño, que pudieran interpretar. IBM transfirió a ese árbol lo que había aprendido una red neuronal más exacta. El árbol señaló variables como ciertas presiones y el tiempo desde la última limpieza; los ingenieros las controlaron mejor y las obleas dentro de especificación subieron 1,3 %. Es un reporte de IBM, sin verificación independiente.</p>
+    <p>En salud, Prescience usó boosting por gradiente, un ensamble como el del laboratorio, con una explicación de cada predicción, para anticipar la hipoxemia en cirugía. Con su ayuda, cinco anestesiólogos anticiparon mejor el evento. Los autores advierten que es retrospectivo y que faltan ensayos en cirugías reales. En los dos casos, el modelo propone y una persona decide con la explicación en la mano.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · CASO REAL DE REFUERZO ============================ -->
+<section data-min="2">
+  <div class="kicker">Caso real · aprendizaje por refuerzo en la industria</div>
+  <h2>La refrigeración de los centros de datos de Google</h2>
+  <div class="cols c46 mid">
+    <figure class="figure">
+      <img src="assets/img/google_the_dalles.jpg" alt="Exterior del centro de datos de Google en The Dalles, Oregón, con sus torres de enfriamiento" width="1600" height="1014">
+      <figcaption class="credit">Tony Webster, centro de datos de Google en The Dalles (Oregón), <a href="https://commons.wikimedia.org/wiki/File:Google_Datacenter_-_The_Dalles,_Oregon_(17832143871).jpg">Wikimedia Commons</a>, CC BY 2.0.</figcaption>
+    </figure>
+    <div style="font-size:21px">
+      <p><strong>2018:</strong> cada cinco minutos, redes neuronales estiman qué acción de enfriamiento ahorra más energía; la IA controla directamente.</p>
+      <p class="fragment"><strong>Con límites:</strong> descarta las acciones de baja confianza, el control local verifica cada acción y los operadores pueden retomar el mando. Ahorro medio de un <strong>30 %</strong> en refrigeración.</p>
+      <p class="fragment"><strong>2022:</strong> DeepMind y Trane, en dos edificios comerciales: <strong>9 % y 13 %</strong> menos energía, con el mismo confort.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Un caso real de refuerzo en la industria, con la técnica verificada en la fuente. En 2016, DeepMind usó redes neuronales para predecir la eficiencia de los centros de datos de Google y recomendar ajustes: eso fue aprendizaje supervisado. En 2018 pasó al control directo: cada cinco minutos, el sistema toma la lectura de miles de sensores, estima qué acciones de enfriamiento ahorran más y las ejecuta. En 2022, DeepMind describió ese algoritmo como aprendizaje por refuerzo.</p>
+    <p>Fíjense en los límites: el sistema descarta las acciones en que tiene poca confianza, el sistema de control local verifica cada acción y los operadores pueden salir del modo de IA en cualquier momento. Así logró un ahorro medio de un 30 % en la energía de refrigeración. Y con el fabricante Trane, en dos edificios comerciales, ahorró 9 % y 13 % frente a los controladores de reglas, con el mismo confort. Es la respuesta al bote: el refuerzo en el mundo real va con un simulador o datos históricos y con límites de seguridad.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · SISTEMAS HÍBRIDOS ============================ -->
+<section data-min="2">
+  <div class="kicker">El lugar del aprendizaje</div>
+  <h2>El modelo aprende y propone; otra técnica o una persona verifica</h2>
+  <table class="tbl" style="font-size:20px">
+    <tr><th>Lo que aprende</th><th>Lo que lo verifica o lo limita</th></tr>
+    <tr><td>Un árbol induce reglas de los datos</td><td>un experto las lee, las corrige y las combina con las suyas</td></tr>
+    <tr class="fragment"><td>Un ensamble predice mejor, sin reglas legibles</td><td>la validación cruzada y el costo del error eligen el umbral</td></tr>
+    <tr class="fragment"><td>Un agente aprende una política por refuerzo</td><td>un simulador para practicar y límites de seguridad al actuar</td></tr>
+    <tr class="fragment"><td>Un LLM se ajusta con recompensas</td><td>verificadores que no se puedan engañar, y una persona que revise</td></tr>
+  </table>
+  <aside class="notes">
+    <p>¿Dónde encaja el aprendizaje en un sistema inteligente? El patrón del curso se repite. Un árbol induce reglas, y un experto las lee, las corrige y las combina con las que él sabe: el sistema experto de la Sesión 1, ahora alimentado por datos. Un ensamble predice mejor, pero no da reglas: la validación cruzada y el costo del error deciden cuándo confiar en él.</p>
+    <p>Un agente de refuerzo practica en un simulador, no en la planta, y actúa con límites de seguridad, como en los centros de datos. Y un LLM ajustado con recompensas necesita verificadores que no se puedan engañar fácilmente, y una persona que revise. El modelo aprende y propone; otra técnica o una persona verifica.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · GUÍA DE DECISIÓN ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Para su proyecto · amplía la guía de la Sesión 5</div>
+  <h2>Guía de decisión: ¿cómo aprende su sistema?</h2>
+  <table class="tbl guia">
+    <tr><th></th><th>Árbol o reglas inducidas</th><th>Ensamble de árboles</th><th>Aprendizaje por refuerzo</th><th>Sistema experto escrito a mano</th></tr>
+    <tr><th>Datos</th><td>tablas con la respuesta</td><td>tablas con la respuesta</td><td>decisiones en secuencia, con simulador o historial de interacción</td><td>pocos o ninguno</td></tr>
+    <tr><th>Ejemplos etiquetados</th><td>cientos a miles</td><td>cientos a miles</td><td>ninguno: recompensas</td><td>ninguno: el experto</td></tr>
+    <tr><th>Explicabilidad</th><td>alta: reglas legibles</td><td>media: hay que explicarlo después</td><td>baja: una política</td><td>alta, por construcción</td></tr>
+    <tr><th>Costo del error</th><td colspan="2">se elige el umbral con la matriz de costos</td><td>los errores al explorar cuestan: practicar en simulación</td><td>lo que el experto no previó</td></tr>
+    <tr><th>Riesgo de especificar mal</th><td>fugas en los datos</td><td>fugas en los datos</td><td>alto: la recompensa se puede engañar</td><td>reglas incompletas</td></tr>
+    <tr><th>En MantenIA</th><td>reglas de diagnóstico que el técnico revisa</td><td>predecir fallas, si importa más acertar</td><td>cuándo mantener cada bomba</td><td>el conocimiento estable del técnico senior</td></tr>
+  </table>
+  <aside class="notes">
+    <p>La guía de la Sesión 5 tenía el LLM, el modelo preentrenado, la red propia y el modelo clásico. Esta abre el modelo clásico y agrega el refuerzo. Un árbol o reglas inducidas, para datos de tabla cuando hay que explicar la decisión. Un ensamble, cuando importa más acertar que leer las reglas. El refuerzo, para decisiones en secuencia, si hay un simulador o un historial de interacción; su riesgo principal es la recompensa mal especificada. Y el sistema experto escrito a mano sigue siendo la opción con pocos datos y un conocimiento estable.</p>
+    <p>Úsenla de arriba hacia abajo: qué datos tienen, si tienen etiquetas, cuánto deben explicar, cuánto cuesta equivocarse y qué tan fácil es especificar mal el objetivo. En la última fila, el ejemplo de MantenIA de cada columna.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · MAPA DE LA UNIDAD ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Cierre de la sesión</div>
+  <h2>El mapa de la Unidad 6</h2>
+  <svg class="diagram" viewBox="0 0 1150 300" role="img" aria-label="Mapa de la unidad: el agente que aprende se ramifica en supervisado (árboles, reglas, ensambles y evaluación), no supervisado (grupos y anomalías) y refuerzo (MDP, iteración de valores, aprender por interacción); el refuerzo lleva a la especificación de objetivos">
+    <defs><style>.u1{font-size:20px;fill:#e8ecf4;font-weight:700}.u2{font-size:15px;fill:#a3adc2}</style>
+    <marker id="ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+    <rect x="0" y="110" width="200" height="70" rx="12" fill="rgba(56,189,248,.16)" stroke="#38bdf8"/><text x="100" y="140" text-anchor="middle" class="u1">el agente</text><text x="100" y="164" text-anchor="middle" class="u1">que aprende</text>
+    <rect x="290" y="10" width="270" height="70" rx="12" fill="rgba(56,189,248,.16)" stroke="#38bdf8"/><text x="425" y="42" text-anchor="middle" class="u1">supervisado</text><text x="425" y="66" text-anchor="middle" class="u2">árboles · reglas · ensambles · evaluar</text>
+    <rect x="290" y="110" width="270" height="70" rx="12" fill="rgba(163,173,194,.10)" stroke="#a3adc2"/><text x="425" y="142" text-anchor="middle" class="u1">no supervisado</text><text x="425" y="166" text-anchor="middle" class="u2">grupos · anomalías</text>
+    <rect x="290" y="210" width="270" height="70" rx="12" fill="rgba(245,185,66,.16)" stroke="#f5b942"/><text x="425" y="242" text-anchor="middle" class="u1">refuerzo</text><text x="425" y="266" text-anchor="middle" class="u2">MDP · valores · interacción</text>
+    <rect x="650" y="210" width="240" height="70" rx="12" fill="rgba(167,139,250,.16)" stroke="#a78bfa"/><text x="770" y="242" text-anchor="middle" class="u1">especificar el objetivo</text><text x="770" y="266" text-anchor="middle" class="u2">reward hacking · Goodhart</text>
+    <rect x="650" y="10" width="240" height="70" rx="12" fill="rgba(74,222,128,.12)" stroke="#4ade80"/><text x="770" y="42" text-anchor="middle" class="u1">Laboratorio 6A</text><text x="770" y="66" text-anchor="middle" class="u2">Titanic · German Credit</text>
+    <rect x="930" y="210" width="220" height="70" rx="12" fill="rgba(74,222,128,.12)" stroke="#4ade80"/><text x="1040" y="242" text-anchor="middle" class="u1">Laboratorio 6B</text><text x="1040" y="266" text-anchor="middle" class="u2">mundo de 4×3 · botes</text>
+    <path d="M202,135 L286,50 M202,145 H286 M202,155 L286,240 M562,245 H646 M562,45 H646 M892,245 H926" stroke="#a3adc2" stroke-width="2" fill="none" marker-end="url(#ar6)"/>
+  </svg>
+  <aside class="notes">
+    <p>El mapa de la unidad. Empezamos con el agente que aprende y los tres tipos de retroalimentación. El supervisado: árboles, reglas inducidas, ensambles y cómo evaluarlos con validación cruzada y con el costo del error; eso fue el Laboratorio 6A. El no supervisado, en panorama: grupos y anomalías sin etiquetas. Y el refuerzo: el MDP, la iteración de valores y el aprendizaje por interacción, en el 6B.</p>
+    <p>El refuerzo nos llevó al tema que atraviesa la tarde: especificar bien el objetivo, porque el agente optimiza lo que le pedimos. Es el tema del club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · PROYECTO ============================ -->
+<section data-min="2">
+  <div class="kicker">Proyecto del curso · paso de la unidad</div>
+  <h2>¿Qué decisión automatiza su proyecto, y cómo se podría engañar su indicador?</h2>
+  <div class="cols">
+    <ul>
+      <li>¿Qué <strong>decisión</strong> automatiza o apoya su proyecto, y con qué <strong>indicador</strong> se mide?</li>
+      <li class="fragment">¿Cómo podría ese indicador <strong>cumplirse sin cumplir el objetivo</strong>?</li>
+      <li class="fragment">¿Qué <strong>supervisión</strong> humana o qué verificación necesita?</li>
+    </ul>
+    <div class="card amber fragment"><h4>En casa · unos 60 min</h4><p>Agreguen estas respuestas al plan.md del equipo y revísenlo con la lista de chequeo (J.6).</p><p><strong>Entrega:</strong> la fecha se anuncia en clase.</p></div>
+  </div>
+  <aside class="notes">
+    <p>El paso del proyecto para esta unidad: analizar los riesgos de automatizar una decisión. En casa, cada equipo responde tres preguntas. Qué decisión automatiza o apoya su proyecto, y con qué indicador se mide si funciona. Cómo podría ese indicador cumplirse sin cumplir el objetivo, como el bote o como las órdenes cerradas sin resolver. Y qué supervisión humana o qué verificación necesita para que eso no pase.</p>
+    <p>Agregan las respuestas al plan.md del equipo y lo revisan con la lista de chequeo J.6. La fecha de entrega la anunciamos en clase.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · TRABAJO INDEPENDIENTE ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Trabajo independiente</div>
+  <h2>Dos trabajos, sin programar</h2>
+  <div class="cols">
+    <div class="card"><h4>TI-1 · ¿Redescubre un árbol su sistema experto?</h4><p>Escriba de 40 a 60 casos de la decisión de su TI-1 de la Sesión 1, induzca un árbol en el notebook del 6A y compare sus reglas con las suyas. Unos 70 min.</p></div>
+    <div class="card"><h4>TI-2 · Un indicador que se cumple sin cumplir el objetivo</h4><p>Juegue con una demostración de refuerzo en el navegador, describa como MDP una decisión de su organización y analice cómo se podría engañar su indicador. Unos 65 min.</p></div>
+  </div>
+  <p style="margin-top:14px">Sin datos personales ni confidenciales. Entrega al inicio de la semana 4. Detalles en <code>trabajo_independiente.md</code>.</p>
+  <aside class="notes">
+    <p>Dos trabajos independientes, sin escribir código. En el primero retoman las reglas del sistema experto que escribieron en el TI-1 de la Sesión 1. Escriben en una hoja de cálculo de 40 a 60 casos de esa decisión, con la conclusión que daría un experto, los cargan en el notebook del 6A, inducen un árbol y comparan: qué reglas coinciden, cuáles faltan y cuáles sobran. En el segundo juegan con una demostración de refuerzo en el navegador, cambiando recompensas, y después describen como MDP una decisión de su organización y analizan cómo su indicador podría cumplirse sin cumplir el objetivo.</p>
+    <p>Una regla: nada de datos personales ni confidenciales. La entrega es al inicio de la semana 4.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · PRÓXIMA SESIÓN ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Próxima sesión · Unidad 7</div>
+  <h2>Del aprendizaje a la decisión bajo incertidumbre</h2>
+  <div class="cols c64 mid">
+    <div><p><strong>Lectura de la sesión 7:</strong> Pearl, J. (2019). <a href="https://web.archive.org/web/20250622142952/https://cacm.acm.org/research/the-seven-tools-of-causal-inference-with-reflections-on-machine-learning/"><em>The seven tools of causal inference, with reflections on machine learning</em></a>. <em>Communications of the ACM</em> 62(3), 54–60.</p>
+    <p class="fragment">Las hojas de un árbol ya dan probabilidades, y el MDP ya pesa resultados inciertos. La Unidad 7 los trata con redes bayesianas y teoría de decisiones.</p></div>
+    <div class="card violet fragment"><h4>A continuación</h4><p>Club de lectura: <em>Specification gaming</em>.</p></div>
+  </div>
+  <aside class="notes">
+    <p>La lectura de la sesión 7 es un artículo corto de Judea Pearl en Communications of the ACM, de 2019, sobre las herramientas de la inferencia causal y lo que le falta al aprendizaje de máquina: distinguir correlación de causa.</p>
+    <p>El puente: hoy aprendimos de datos y de recompensas. Las hojas de un árbol ya dan probabilidades, como 233 de 250, y el MDP ya pesa resultados inciertos. La Unidad 7 trata la incertidumbre de frente, con redes bayesianas y teoría de decisiones. Ahora, el club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · TRANSICIÓN AL CLUB ============================ -->
+<section data-min="0.5" class="transition-slide">
+  <div class="kicker amber">A continuación · 15 min</div>
+  <h1 style="font-size:60px">Club de lectura</h1>
+  <p class="lead">Krakovna, V. et ál. (2020). <em>Specification gaming: the flip side of AI ingenuity</em>. Google DeepMind.</p>
+  <p><a href="club_lectura.html">Ir al club de lectura →</a></p>
+  <aside class="notes"><p>Pasamos al club de lectura, que cierra la sesión.</p></aside>
+</section>
+
+<!-- ============================ 17 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla de cierre</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Ouyang, L. et ál. (2022). Training language models to follow instructions with human feedback. <em>NeurIPS</em> 35, 27730–27744. <a href="https://arxiv.org/abs/2203.02155">arXiv</a> · Guo, D. et ál. (2025). DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning. <em>Nature</em> 645, 633–638. <a href="https://doi.org/10.1038/s41586-025-09422-z">DOI</a>, CC BY 4.0</li>
+    <li>Yue, Y. et ál. (2025). Does reinforcement learning really incentivize reasoning capacity in LLMs beyond the base model? <em>NeurIPS</em> 38. <a href="https://arxiv.org/abs/2504.13837">arXiv</a>, CC BY 4.0</li>
+    <li>Anthropic (2025, febrero). <em>Claude 3.7 Sonnet System Card</em>, sección 6. <a href="https://www-cdn.anthropic.com/9ff93dfa8f445c932415d335c88852ef47f1201e.pdf">PDF</a> · METR (2025, 5 de junio). Recent frontier models are reward hacking. <a href="https://metr.org/blog/2025-06-05-recent-reward-hacking">metr.org</a></li>
+    <li>Amodei, D. et ál. (2016). Concrete problems in AI safety. <a href="https://arxiv.org/abs/1606.06565">arXiv</a> · Skalse, J. et ál. (2022). Defining and characterizing reward hacking. <em>NeurIPS</em> 35, 9460–9471. <a href="https://arxiv.org/abs/2209.13085">arXiv</a></li>
+    <li>Strathern, M. (1997). 'Improving ratings': audit in the British University system. <em>European Review</em> 5(3), 305–321. <a href="https://www.cambridge.org/core/journals/european-review/article/abs/improving-ratings-audit-in-the-british-university-system/FC2EE640C0C44E3DB87C29FB666E9AAB">Cambridge Core</a></li>
+    <li>Arya, V. et ál. (2021). AI Explainability 360: impact and design. <a href="https://arxiv.org/abs/2109.12151">arXiv</a> · Lundberg, S. M. et ál. (2018). Explainable machine-learning predictions for the prevention of hypoxaemia during surgery. <em>Nature Biomedical Engineering</em> 2(10), 749–760. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6467492">PMC</a></li>
+    <li>Evans, R. y Gao, J. (2016). <a href="https://deepmind.google/blog/deepmind-ai-reduces-google-data-centre-cooling-bill-by-40/">DeepMind AI reduces Google data centre cooling bill by 40%</a> · Gamble, C. y Gao, J. (2018). <a href="https://deepmind.google/blog/safety-first-ai-for-autonomous-data-centre-cooling-and-industrial-control/">Safety-first AI for autonomous data centre cooling and industrial control</a>. Google DeepMind · Luo, J. et ál. (2022). Controlling commercial cooling systems using reinforcement learning. <a href="https://arxiv.org/abs/2211.07357">arXiv</a></li>
+    <li>Pearl, J. (2019). The seven tools of causal inference, with reflections on machine learning. <em>Communications of the ACM</em> 62(3), 54–60. <a href="https://web.archive.org/web/20250622142952/https://cacm.acm.org/research/the-seven-tools-of-causal-inference-with-reflections-on-machine-learning/">CACM (copia en Wayback)</a> · <a href="https://ftp.cs.ucla.edu/pub/stat_ser/r481.pdf">PDF abierto</a></li>
+    <li>Krakovna, V. et ál. (2020). Specification gaming: the flip side of AI ingenuity. <a href="https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity/">Google DeepMind</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla2_el_agente_que_aprende_por_refuerzo.html">← Charla intermedia</a><a href="index.html">Volver a la agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 6 · Charla de cierre · Aprender en los sistemas inteligentes</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

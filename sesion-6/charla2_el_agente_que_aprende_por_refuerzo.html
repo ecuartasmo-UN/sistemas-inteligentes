@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla intermedia · El agente que aprende por refuerzo — Sesión 6 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .hitos .card h4 { font-size: 23px; margin-bottom: 4px; }
+  .hitos .card p { font-size: 18px; margin: 0; line-height: 1.3; }
+  .hitos .figure img { max-height: 170px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="1">
+  <div class="kicker">Sesión 6 · Unidad 6 · Charla intermedia</div>
+  <h1>El agente que aprende por refuerzo</h1>
+  <p class="lead muted">Decidir en secuencia con resultados inciertos: procesos de decisión de Markov, iteración de valores, aprender por interacción, y una recompensa que se cumple sin cumplir el objetivo</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla1_del_dato_al_conocimiento.html">← Charla inicial</a><a href="index.html">Agenda</a><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes">
+    <p>Después de la pausa. En la mañana el sistema aprendió de ejemplos con la respuesta correcta: el pasajero sobrevivió o no, el cliente pagó o no. Ahora cambiamos la retroalimentación: ¿y si nadie le dice al sistema la respuesta correcta, y solo aprende de las consecuencias de lo que hace? Es el aprendizaje por refuerzo. Esta charla prepara el Laboratorio 6B.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · APRENDER DE LAS CONSECUENCIAS ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Aprendizaje por refuerzo</div>
+  <h2>Nadie le dice la acción correcta: solo recibe recompensas</h2>
+  <div class="cols c64 mid">
+    <svg class="diagram" viewBox="0 0 700 330" role="img" aria-label="El ciclo del aprendizaje por refuerzo: el agente elige una acción, el entorno responde con un estado nuevo y una recompensa, y el ciclo se repite">
+      <defs><style>.r1{font-size:22px;fill:#e8ecf4;font-weight:700}.r2{font-size:17px;fill:#a3adc2}.r3{font-size:18px;font-weight:700}</style>
+      <marker id="fr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+      <rect x="250" y="20" width="200" height="70" rx="14" fill="rgba(56,189,248,.16)" stroke="#38bdf8" stroke-width="2"/><text x="350" y="62" text-anchor="middle" class="r1">agente</text>
+      <rect x="250" y="240" width="200" height="70" rx="14" fill="rgba(23,32,51,.9)" stroke="#2a3550" stroke-width="2"/><text x="350" y="282" text-anchor="middle" class="r1">entorno</text>
+      <path d="M452,55 C620,55 620,275 456,275" fill="none" stroke="#f5b942" stroke-width="3" marker-end="url(#fr)"/>
+      <text x="600" y="170" class="r3" style="fill:#f5b942">acción</text>
+      <g class="fragment">
+        <path d="M248,262 C90,262 90,80 244,70" fill="none" stroke="#4ade80" stroke-width="3" marker-end="url(#fr)"/>
+        <text x="10" y="160" class="r3" style="fill:#4ade80">estado nuevo</text>
+        <text x="10" y="186" class="r3" style="fill:#4ade80">y recompensa</text>
+      </g>
+      <text x="350" y="170" text-anchor="middle" class="r2 fragment">se repite, paso tras paso</text>
+    </svg>
+    <div>
+      <p style="font-size:24px"><strong>Decidir en secuencia,</strong> con consecuencias que llegan después y con incertidumbre.</p>
+      <p class="fragment" style="font-size:22px">Cuándo mantener una máquina. Cuánto inventario pedir. Qué jugada hacer en Go.</p>
+      <p class="fragment" style="font-size:22px">La meta: la mayor <strong>recompensa acumulada</strong>, no la del próximo paso.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>En el aprendizaje supervisado de la mañana, cada ejemplo traía la respuesta correcta. En el aprendizaje por refuerzo nadie le dice al agente qué acción era la correcta. El agente actúa, el entorno responde con un estado nuevo y una recompensa, un número que dice qué tan bien le fue, y el ciclo se repite.</p>
+    <p>Sirve para decidir en secuencia cuando las consecuencias llegan después y con incertidumbre: cuándo hacerle mantenimiento a una máquina, cuánto inventario pedir, qué jugada hacer en una partida. La meta no es la recompensa del próximo paso, sino la acumulada: a veces conviene perder un poco ahora para ganar más después, como parar una máquina para mantenerla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · EL MUNDO DE 4×3 ============================ -->
+<section data-min="2">
+  <div class="kicker">El ejemplo canónico · el del Laboratorio 6B</div>
+  <h2>El mundo de 4×3: un robot que no siempre va adonde quiere</h2>
+  <div class="cols mid">
+    <svg class="diagram" viewBox="0 0 470 360" role="img" aria-label="El mundo de 4×3: una cuadrícula de 4 columnas y 3 filas con un muro en el centro, una salida que vale +1 arriba a la derecha y una salida que vale −1 debajo de ella; el robot empieza abajo a la izquierda">
+      <defs><style>.w1{font-size:16px;fill:#a3adc2}.w2{font-size:30px;font-weight:800}</style></defs>
+      <g transform="translate(20,10)">
+        <rect x="0" y="0" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/><rect x="110" y="0" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/><rect x="220" y="0" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/>
+        <rect x="330" y="0" width="110" height="110" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="385" y="66" text-anchor="middle" class="w2" style="fill:#4ade80">+1</text>
+        <rect x="0" y="110" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/><rect x="110" y="110" width="110" height="110" fill="#2a3550"/><text x="165" y="170" text-anchor="middle" class="w1">muro</text>
+        <rect x="220" y="110" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/>
+        <rect x="330" y="110" width="110" height="110" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="385" y="176" text-anchor="middle" class="w2" style="fill:#f87171">−1</text>
+        <rect x="0" y="220" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/><rect x="110" y="220" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/><rect x="220" y="220" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/><rect x="330" y="220" width="110" height="110" fill="#111827" stroke="#2a3550" stroke-width="2"/>
+        <circle cx="55" cy="275" r="22" fill="#38bdf8"/><text x="55" y="320" text-anchor="middle" class="w1">inicio</text>
+      </g>
+    </svg>
+    <div>
+      <svg class="diagram fragment" viewBox="0 0 420 230" role="img" aria-label="El movimiento es incierto: si el robot quiere subir, sube con probabilidad 0,8 y se desvía a la izquierda o a la derecha con probabilidad 0,1 cada una">
+        <defs><style>.m1{font-size:22px;font-weight:700}</style>
+        <marker id="fm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b942"/></marker></defs>
+        <circle cx="210" cy="150" r="22" fill="#38bdf8"/>
+        <line x1="210" y1="124" x2="210" y2="40" stroke="#f5b942" stroke-width="5" marker-end="url(#fm)"/><text x="226" y="60" class="m1" style="fill:#f5b942">0,8</text>
+        <line x1="184" y1="150" x2="90" y2="150" stroke="#f5b942" stroke-width="2" marker-end="url(#fm)"/><text x="80" y="140" text-anchor="end" class="m1" style="fill:#f5b942">0,1</text>
+        <line x1="236" y1="150" x2="330" y2="150" stroke="#f5b942" stroke-width="2" marker-end="url(#fm)"/><text x="340" y="140" class="m1" style="fill:#f5b942">0,1</text>
+        <text x="210" y="212" text-anchor="middle" style="font-size:18px;fill:#a3adc2">quiere subir</text>
+      </svg>
+      <p style="font-size:22px" class="fragment">Cada paso cuesta <strong>−0,04</strong>. Si choca con el muro o el borde, se queda donde está.</p>
+    </div>
+  </div>
+  <p class="credit">Diagrama propio, a partir de Russell y Norvig (2021), <em>AIMA</em>, 4.ª ed., fig. 17.1.</p>
+  <aside class="notes">
+    <p>El ejemplo canónico del libro de Russell y Norvig, el mismo del Laboratorio 6B. Un robot en una cuadrícula de 4 por 3, con un muro en el centro. Empieza abajo a la izquierda. Hay dos salidas: arriba a la derecha gana +1; justo debajo pierde −1. Al llegar a cualquiera de las dos, el juego termina.</p>
+    <p>Lo interesante es la incertidumbre: el robot no siempre va adonde quiere. Si quiere subir, sube con probabilidad 0,8, y con 0,1 se desvía a cada lado. Si choca con el muro o el borde, se queda donde estaba. Y cada paso cuesta un poco, −0,04, para que no se demore. ¿Cuál es la mejor forma de llegar al +1 sin caer en el −1?</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · LAS PIEZAS DE UN MDP ============================ -->
+<section>
+<section data-min="2.5">
+  <div class="kicker">El proceso de decisión de Markov (MDP)</div>
+  <h2>Cinco piezas describen el problema</h2>
+  <div class="cols-3" style="grid-template-columns:repeat(5,1fr);gap:12px">
+    <div class="card accent"><h4>Estados</h4><p style="font-size:20px">las 11 casillas</p></div>
+    <div class="card accent fragment"><h4>Acciones</h4><p style="font-size:20px">↑ ↓ ← →</p></div>
+    <div class="card amber fragment"><h4>Transición</h4><p style="font-size:20px">0,8 adonde quiere; 0,1 a cada lado</p></div>
+    <div class="card ok fragment"><h4>Recompensa</h4><p style="font-size:20px">−0,04 por paso; +1 y −1 al salir</p></div>
+    <div class="card violet fragment"><h4>Descuento</h4><p style="font-size:20px">cuánto vale el futuro frente al presente</p></div>
+  </div>
+  <div class="cols mid" style="margin-top:20px">
+    <p class="fragment" style="font-size:22px"><strong>Markov:</strong> lo que pasa después depende solo del estado actual, no de cómo se llegó a él.</p>
+    <p class="fragment" style="font-size:22px">En la Sesión 2, cada acción tenía un resultado seguro y bastaba un <strong>plan</strong>. Aquí no: hace falta saber qué hacer en <strong>cada</strong> casilla.</p>
+  </div>
+  <p class="godown">Detalle: la definición formal y el retorno</p>
+  <aside class="notes">
+    <p>Este problema es un proceso de decisión de Markov, MDP por su sigla en inglés. Cinco piezas lo describen. Los estados: las 11 casillas libres. Las acciones: arriba, abajo, izquierda, derecha. El modelo de transición: con qué probabilidad cada acción lleva a cada casilla. La recompensa: −0,04 por paso, +1 o −1 al salir. Y el descuento: cuánto vale una recompensa futura frente a una inmediata; en este mundo vale lo mismo.</p>
+    <p>La propiedad de Markov dice que el futuro depende solo del estado actual, no del camino por el que se llegó. Y la conexión con la Sesión 2: allí planificamos con acciones de resultado seguro, y un plan, una secuencia de acciones, bastaba. Aquí el robot puede desviarse en cualquier paso, así que una secuencia fija no sirve: necesita saber qué hacer en cada casilla a la que pueda llegar.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">El MDP</div><h3>La definición formal y el retorno</h3>
+  <div class="cols mid">
+    <div class="eqbox eqlist">
+      <div class="lbl">Un MDP</div>
+      <math display="block"><mrow><mo>(</mo><mi>S</mi><mo>,</mo><mi>A</mi><mo>,</mo><mi>P</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>|</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mo>,</mo><mi>R</mi><mo>,</mo><mi>γ</mi><mo>)</mo></mrow></math>
+      <div class="lbl" style="margin-top:10px">El retorno: la recompensa acumulada y descontada</div>
+      <math display="block"><mrow><mi>G</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mi>∞</mi></munderover><msup><mi>γ</mi><mi>t</mi></msup><msub><mi>R</mi><mi>t</mi></msub><mo>,</mo><mspace width="1em"/><mn>0</mn><mo>≤</mo><mi>γ</mi><mo>≤</mo><mn>1</mn></mrow></math>
+      <div class="lbl" style="margin-top:10px">Una política</div>
+      <math display="block"><mrow><mi>π</mi><mo>:</mo><mi>S</mi><mo>→</mo><mi>A</mi></mrow></math>
+    </div>
+    <div class="dense">
+      <p>P es el modelo de transición; R, la recompensa; γ, el descuento. Con γ = 1, el futuro vale lo mismo que el presente; con γ = 0,9, una recompensa a 10 pasos vale 0,9<sup>10</sup> ≈ 0,35.</p>
+      <p>Propiedad de Markov: <math><mrow><mi>P</mi><mo>(</mo><msub><mi>s</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>|</mo><msub><mi>s</mi><mi>t</mi></msub><mo>,</mo><msub><mi>a</mi><mi>t</mi></msub><mo>)</mo></mrow></math> no depende de los estados anteriores.</p>
+      <p>Una política óptima π* maximiza el retorno esperado desde cada estado.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: la definición formal del MDP, el retorno descontado y la política, según Russell y Norvig, cap. 17, y Sutton y Barto, cap. 3.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 5 · UNA POLÍTICA ============================ -->
+<section data-min="2">
+  <div class="kicker">La solución de un MDP</div>
+  <h2>Una política: una flecha en cada casilla</h2>
+  <div class="cols c46 mid">
+    <!--DATOS:grid_politica--><svg class="diagram" viewBox="0 0 500 380" role="img" aria-label="La política óptima del mundo de 4×3: una flecha en cada casilla; desde la salida sube por la izquierda y llega al +1 por arriba"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="84.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">→</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="84.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">→</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="84.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">→</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="204.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">↑</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="204.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">↑</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="324.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">↑</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="324.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">←</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="324.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">←</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="324.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">←</text></svg><!--/DATOS:grid_politica-->
+    <div>
+      <p style="font-size:24px">La política dice qué hacer en cada estado, pase lo que pase en el camino.</p>
+      <p class="fragment" style="font-size:22px">Desde la salida, sube por la izquierda: el camino largo, lejos del −1.</p>
+      <p class="fragment" style="font-size:22px">Abajo a la derecha, junto al −1, prefiere <strong>dar la vuelta</strong> antes que arriesgarse a resbalar hacia él.</p>
+    </div>
+  </div>
+  <p class="credit">Política óptima calculada con <code>ejemplos/refuerzo_6b.py</code>; coincide con la de Russell y Norvig (2010), <em>AIMA</em>, 3.ª ed., fig. 17.2.</p>
+  <aside class="notes">
+    <p>La solución de un MDP no es un plan sino una política: una flecha en cada casilla que dice qué hacer allí, pase lo que pase en el camino. Si el robot resbala, mira la flecha de la casilla donde quedó y sigue.</p>
+    <p>Esta es la política óptima para un costo de −0,04 por paso. Desde el inicio sube por la izquierda y llega al +1 por arriba: el camino largo, lejos del −1. Lo más curioso está abajo a la derecha: junto al −1, el robot prefiere dar la vuelta por el camino largo antes que subir y arriesgarse a resbalar hacia el −1. ¿Cómo se calcula esta política? Con el valor de cada casilla.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · EL VALOR DE UN ESTADO ============================ -->
+<section data-min="2">
+  <div class="kicker">El valor de un estado</div>
+  <h2>¿Cuánto se puede esperar ganar desde aquí?</h2>
+  <div class="cols c46 mid">
+    <!--DATOS:grid_valores--><svg class="diagram" viewBox="0 0 500 380" role="img" aria-label="El mundo de 4×3 con el valor de cada casilla y la mejor acción: la casilla de salida vale 0,705"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,812</text><text x="70.0" y="72.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">→</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,868</text><text x="190.0" y="72.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">→</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,918</text><text x="310.0" y="72.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">→</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,762</text><text x="70.0" y="192.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">↑</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,660</text><text x="310.0" y="192.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">↑</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,705</text><text x="70.0" y="312.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">↑</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,655</text><text x="190.0" y="312.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">←</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,611</text><text x="310.0" y="312.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">←</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,388</text><text x="430.0" y="312.0" text-anchor="middle" style="font-size:43px;fill:#38bdf8">←</text></svg><!--/DATOS:grid_valores-->
+    <div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <figure class="figure" style="flex:none"><img src="assets/img/bellman.jpg" alt="Fotografía en blanco y negro de Richard Bellman, de pie, leyendo un listado de computador" width="700" height="851" style="height:160px;width:auto;max-width:none;border-radius:8px"><figcaption class="credit" style="font-size:13px">Richard Bellman. IEEE, ETHW.<br>Cita con fines educativos.</figcaption></figure>
+        <p style="font-size:23px;margin:0">El valor de una casilla es la recompensa que se espera acumular desde ella, si se actúa bien.</p>
+      </div>
+      <p class="fragment" style="font-size:23px"><strong>La idea de Bellman:</strong> el valor de una casilla es su recompensa más el valor esperado de la mejor casilla a la que se puede llegar.</p>
+      <p class="fragment muted" style="font-size:21px">La política sale sola: ir hacia el vecino que más vale.</p>
+    </div>
+  </div>
+  <p class="credit">Valores calculados con <code>ejemplos/refuerzo_6b.py</code>; coinciden con Russell y Norvig (2010), <em>AIMA</em>, 3.ª ed., fig. 17.3, con la recompensa en cada estado. La 4.ª ed. la cobra en las transiciones y sus valores son 0,04 mayores. Bellman (1957).</p>
+  <aside class="notes">
+    <p>El valor de una casilla es cuánto se puede esperar ganar desde allí, si se actúa bien. La casilla junto al +1 vale 0,918; la del inicio, 0,705, porque el camino es largo y cada paso cuesta. La de abajo a la derecha vale apenas 0,388: está lejos del +1 y cerca del −1.</p>
+    <p>La idea de Richard Bellman, en los años cincuenta, es que el valor de una casilla se puede escribir con los valores de sus vecinas: su recompensa más el valor esperado de la mejor acción. Si conocemos los valores, la política sale sola: en cada casilla, ir hacia donde más se espera ganar. Pero para conocer los valores necesitamos los valores de las vecinas. ¿Cómo se rompe ese círculo?</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · ITERACIÓN DE VALORES ============================ -->
+<section>
+<section data-min="2.5">
+  <div class="kicker">Resolver con el modelo conocido</div>
+  <h2>La iteración de valores: los valores se propagan desde la meta</h2>
+  <div class="cols c46 mid">
+    <!--DATOS:grid_iteraciones--><svg class="diagram" viewBox="0 0 500 410" role="img" aria-label="La iteración de valores en el mundo de 4×3: los valores parten de cero y se propagan desde la salida +1; en la iteración 30 ya no cambian"><g class="fragment fade-out" data-fragment-index="0"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,000</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 0</text></g><g class="fragment current-visible" data-fragment-index="0"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,040</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 1</text></g><g class="fragment current-visible" data-fragment-index="1"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,752</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,080</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 2</text></g><g class="fragment current-visible" data-fragment-index="2"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,120</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,546</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,827</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,120</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,454</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,120</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,120</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,120</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,120</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 3</text></g><g class="fragment current-visible" data-fragment-index="3"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,566</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,817</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,906</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,226</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,627</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">-0,200</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,167</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,382</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,083</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 5</text></g><g class="fragment current-visible" data-fragment-index="4"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,806</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,867</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,918</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,744</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,660</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,649</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,543</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,570</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,344</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 10</text></g><g class="fragment" data-fragment-index="5"><rect x="10" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,812</text><rect x="130" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,868</text><rect x="250" y="10" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="116" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,918</text><rect x="370" y="10" width="120" height="120" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="80.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,762</text><rect x="130" y="130" width="120" height="120" fill="#2a3550"/><rect x="250" y="130" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="236" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,660</text><rect x="370" y="130" width="120" height="120" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="200.0" text-anchor="middle" style="font-size:30px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="70.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,705</text><rect x="130" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="190.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,655</text><rect x="250" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="310.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,611</text><rect x="370" y="250" width="120" height="120" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="430.0" y="356" text-anchor="middle" style="font-size:20px;fill:#e8ecf4">0,388</text><text x="250" y="398" text-anchor="middle" class="cl" fill="#f5b942">iteración 30</text></g></svg><!--/DATOS:grid_iteraciones-->
+    <div>
+      <p style="font-size:23px">Se empieza con todos los valores en cero y se aplica la idea de Bellman a todas las casillas, una y otra vez.</p>
+      <p class="fragment" style="font-size:23px">Cada vuelta, el valor del +1 llega una casilla más lejos.</p>
+      <p class="fragment" style="font-size:23px">A las <strong>30 vueltas</strong> ya no cambian: es la solución.</p>
+    </div>
+  </div>
+  <p class="godown">Detalle: la ecuación de Bellman y la regla de la iteración de valores</p>
+  <aside class="notes">
+    <p>La iteración de valores rompe el círculo así: empieza con todos los valores en cero y aplica la idea de Bellman a todas las casillas, una y otra vez. Avancen conmigo. En la iteración 1, cada casilla vale solo el costo de un paso. En la 2, la casilla junto al +1 ya ve la meta. En la 3, el valor llega una casilla más lejos. Cada vuelta, la noticia del +1 se propaga un paso. En la iteración 10, ya llegó al inicio.</p>
+    <p>En unas 30 vueltas, los valores dejan de cambiar: esa es la solución, y de ella sale la política que vimos. Es un método exacto, pero exige conocer el modelo: las probabilidades de cada movimiento y las recompensas. Las fórmulas están abajo, como consulta.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">Iteración de valores</div><h3>La ecuación de Bellman y la regla de la iteración de valores</h3>
+  <div class="cols mid">
+    <div class="eqbox eqlist">
+      <div class="lbl">Ecuación de Bellman: el valor de un estado</div>
+      <math display="block"><mrow><mi>U</mi><mo>(</mo><mi>s</mi><mo>)</mo><mo>=</mo><mi>R</mi><mo>(</mo><mi>s</mi><mo>)</mo><mo>+</mo><mi>γ</mi><munder><mi>max</mi><mi>a</mi></munder><munder><mo>∑</mo><msup><mi>s</mi><mo>′</mo></msup></munder><mi>P</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>|</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mspace width="0.2em"/><mi>U</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>)</mo></mrow></math>
+      <div class="lbl" style="margin-top:10px">Iteración de valores: la misma ecuación, como regla</div>
+      <math display="block"><mrow><msub><mi>U</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>(</mo><mi>s</mi><mo>)</mo><mo>←</mo><mi>R</mi><mo>(</mo><mi>s</mi><mo>)</mo><mo>+</mo><mi>γ</mi><munder><mi>max</mi><mi>a</mi></munder><munder><mo>∑</mo><msup><mi>s</mi><mo>′</mo></msup></munder><mi>P</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>|</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mspace width="0.2em"/><msub><mi>U</mi><mi>i</mi></msub><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>)</mo></mrow></math>
+      <div class="lbl" style="margin-top:10px">La política que resulta</div>
+      <math display="block"><mrow><msup><mi>π</mi><mo>*</mo></msup><mo>(</mo><mi>s</mi><mo>)</mo><mo>=</mo><munder><mi>argmax</mi><mi>a</mi></munder><munder><mo>∑</mo><msup><mi>s</mi><mo>′</mo></msup></munder><mi>P</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>|</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mspace width="0.2em"/><mi>U</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>)</mo></mrow></math>
+    </div>
+    <div class="dense">
+      <p>En el inicio, con R = −0,04 y γ = 1: subir lleva arriba con 0,8, a la derecha con 0,1 y se queda con 0,1 (choca con el borde).</p>
+      <p><math><mrow><mo>−</mo><mn>0,04</mn><mo>+</mo><mn>0,8</mn><mo>·</mo><mn>0,762</mn><mo>+</mo><mn>0,1</mn><mo>·</mo><mn>0,655</mn><mo>+</mo><mn>0,1</mn><mo>·</mo><mn>0,705</mn><mo>≈</mo><mn>0,705</mn></mrow></math></p>
+      <p>Se detiene cuando ningún valor cambia más de una tolerancia (aquí, una millonésima).</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: la ecuación de Bellman, la regla de la iteración de valores y la política que resulta, en la forma de la 3.ª edición de Russell y Norvig, con la recompensa por estado, que es la que reproduce los valores de la diapositiva. La 4.ª edición escribe la recompensa en cada transición, R(s, a, s′), dentro de la suma; con ella los valores del mundo de 4×3 salen 0,04 mayores y la política es la misma. El ejemplo numérico es el de la casilla de inicio.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 8 · LA RECOMPENSA CAMBIA LA CONDUCTA ============================ -->
+<section data-min="2.5">
+  <div class="kicker">La recompensa por paso</div>
+  <h2>Otra recompensa, otra conducta</h2>
+  <!--DATOS:grid_recompensas--><div class="cols" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:20px"><div class="card" style="padding:8px"><svg viewBox="0 0 340 260" role="img" aria-label="Política con recompensa por paso −0,04: la del libro"><rect x="10" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="90" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="170" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="250" y="10" width="80" height="80" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="60.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="90" width="80" height="80" fill="#2a3550"/><rect x="170" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="250" y="90" width="80" height="80" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="140.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="170" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="250" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text></svg><p style="margin:6px 0 0;font-size:19px;line-height:1.3"><b>−0,04</b><br>la del libro</p></div><div class="card fragment" style="padding:8px"><svg viewBox="0 0 340 260" role="img" aria-label="Política con recompensa por paso −0,2: toma el atajo junto al −1"><rect x="10" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="90" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="170" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="250" y="10" width="80" height="80" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="60.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="90" width="80" height="80" fill="#2a3550"/><rect x="170" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="250" y="90" width="80" height="80" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="140.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="170" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="250" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text></svg><p style="margin:6px 0 0;font-size:19px;line-height:1.3"><b>−0,2</b><br>toma el atajo junto al −1</p></div><div class="card fragment" style="padding:8px"><svg viewBox="0 0 340 260" role="img" aria-label="Política con recompensa por paso −2: se lanza a cualquier salida"><rect x="10" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="90" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="170" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="250" y="10" width="80" height="80" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="60.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="90" width="80" height="80" fill="#2a3550"/><rect x="170" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="250" y="90" width="80" height="80" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="140.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="90" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="170" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">→</text><rect x="250" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text></svg><p style="margin:6px 0 0;font-size:19px;line-height:1.3"><b>−2</b><br>se lanza a cualquier salida</p></div><div class="card fragment" style="padding:8px"><svg viewBox="0 0 340 260" role="img" aria-label="Política con recompensa por paso +0,2: evita las salidas: no termina"><rect x="10" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="170" y="10" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="64.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="250" y="10" width="80" height="80" fill="rgba(74,222,128,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="60.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#4ade80">+1</text><rect x="10" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="90" width="80" height="80" fill="#2a3550"/><rect x="170" y="90" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="144.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="250" y="90" width="80" height="80" fill="rgba(248,113,113,.25)" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="140.0" text-anchor="middle" style="font-size:24px;font-weight:800;fill:#f87171">−1</text><rect x="10" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="50.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↑</text><rect x="90" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="130.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="170" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="210.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">←</text><rect x="250" y="170" width="80" height="80" fill="#111827" stroke="#2a3550" stroke-width="2"/><text x="290.0" y="224.0" text-anchor="middle" style="font-size:28px;fill:#38bdf8">↓</text></svg><p style="margin:6px 0 0;font-size:19px;line-height:1.3"><b>+0,2</b> · descuento 0,9<br>evita las salidas: no termina</p></div></div><!--/DATOS:grid_recompensas-->
+  <aside class="notes">
+    <p>Ahora cambiamos solo un número: la recompensa de cada paso. Con −0,04, la del libro, el robot da la vuelta larga. Con −0,2, caminar cuesta más, así que toma el atajo junto al −1 aunque arriesgue resbalar. Con −2, cada paso duele tanto que se lanza a cualquier salida, incluso al −1: perder 1 es mejor que seguir caminando.</p>
+    <p>Y con +0,2 por paso, con descuento de 0,9, caminar paga: el robot evita las dos salidas y nunca termina. Le pusimos una recompensa para que llegara a la meta y aprendió a no llegar nunca. Es la primera trampa de la tarde: la recompensa es la especificación del problema, y el agente optimiza lo que le pedimos, no lo que quisimos pedir. Esto lo exploran en el laboratorio.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · UNA MÁQUINA DE MANTENIA COMO MDP (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">El caso MantenIA</div>
+  <h2>Cuándo mantener una bomba, como MDP</h2>
+  <svg class="diagram" viewBox="0 0 1180 330" role="img" aria-label="Una bomba de MantenIA como MDP: cuatro estados de condición, buena, desgastada, crítica y fallada; operar produce y puede desgastarla; mantener la devuelve un estado; reemplazar la deja como nueva">
+    <defs><style>.k1{font-size:21px;fill:#e8ecf4;font-weight:700}.k2{font-size:16px;fill:#a3adc2}.k3{font-size:17px;font-weight:700}</style>
+    <marker id="fk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a3adc2"/></marker></defs>
+    <rect x="20" y="120" width="200" height="70" rx="35" fill="rgba(74,222,128,.16)" stroke="#4ade80" stroke-width="2"/><text x="120" y="162" text-anchor="middle" class="k1">buena</text>
+    <rect x="330" y="120" width="200" height="70" rx="35" fill="rgba(245,185,66,.12)" stroke="#f5b942" stroke-width="2"/><text x="430" y="162" text-anchor="middle" class="k1">desgastada</text>
+    <rect x="640" y="120" width="200" height="70" rx="35" fill="rgba(248,113,113,.12)" stroke="#f87171" stroke-width="2"/><text x="740" y="162" text-anchor="middle" class="k1">crítica</text>
+    <rect x="950" y="120" width="200" height="70" rx="35" fill="rgba(248,113,113,.3)" stroke="#f87171" stroke-width="2"/><text x="1050" y="162" text-anchor="middle" class="k1">fallada</text>
+    <path d="M222,140 H326 M532,140 H636 M842,140 H946" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#fk)"/>
+    <text x="274" y="128" text-anchor="middle" class="k3" style="fill:#38bdf8">operar</text><text x="584" y="128" text-anchor="middle" class="k3" style="fill:#38bdf8">operar</text><text x="894" y="128" text-anchor="middle" class="k3" style="fill:#38bdf8">operar</text>
+    <text x="274" y="104" text-anchor="middle" class="k2">a veces se desgasta</text>
+    <g class="fragment">
+      <path d="M430,192 C430,250 140,250 120,196" fill="none" stroke="#4ade80" stroke-width="2.5" marker-end="url(#fk)"/><text x="275" y="262" text-anchor="middle" class="k3" style="fill:#4ade80">mantener · −2</text>
+      <path d="M740,192 C740,250 450,250 432,196" fill="none" stroke="#4ade80" stroke-width="2.5" marker-end="url(#fk)"/><text x="585" y="262" text-anchor="middle" class="k3" style="fill:#4ade80">mantener · −2</text>
+    </g>
+    <g class="fragment">
+      <path d="M1050,118 C1050,30 120,30 120,116" fill="none" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#fk)"/><text x="585" y="50" text-anchor="middle" class="k3" style="fill:#a78bfa">reemplazar · −20 · queda como nueva</text>
+    </g>
+    <text x="590" y="310" text-anchor="middle" class="k2 fragment">recompensa: +5 por cada día que produce · una falla para la línea y cuesta mucho más que mantener</text>
+  </svg>
+  <p class="credit">Ilustrativo: los estados, las acciones y los números son supuestos, no datos de una planta.</p>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. El mismo esquema, en MantenIA. Una bomba tiene cuatro estados de condición: buena, desgastada, crítica y fallada. Cada día se elige una acción. Operar produce, más cinco, pero a veces la bomba se desgasta y pasa al estado siguiente. Mantener cuesta dos y la devuelve un estado. Reemplazar cuesta veinte y la deja como nueva. Y si falla, la línea se para y cuesta mucho más que mantener a tiempo.</p>
+    <p>La política óptima diría, para cada estado, si operar, mantener o reemplazar: es el mantenimiento basado en condición. Los números son supuestos: en una planta real, las probabilidades de desgaste saldrían del historial de la máquina, como el de los sensores del Laboratorio 5A.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · APRENDER SIN CONOCER EL MODELO ============================ -->
+<section data-min="2">
+  <div class="kicker">Aprender por interacción</div>
+  <h2>Sin modelo: probar, recibir la recompensa y corregir</h2>
+  <div class="cols mid">
+    <div>
+      <p style="font-size:23px">La iteración de valores necesita las probabilidades de cada movimiento. Casi nunca se conocen.</p>
+      <p class="fragment" style="font-size:23px"><strong>Q-learning</strong> (Watkins y Dayan, 1992): el agente estima el valor de cada acción en cada casilla, y lo corrige con cada recompensa que recibe.</p>
+      <p class="fragment" style="font-size:23px"><strong>El dilema:</strong> explotar lo que ya sabe o explorar por si hay algo mejor.</p>
+    </div>
+    <svg class="diagram fragment" viewBox="0 0 520 300" role="img" aria-label="Probabilidad de explorar del agente del ejemplo: empieza en 1, explora siempre, y baja en línea recta hasta 0,05 en el episodio 1450; después casi siempre explota">
+      <defs><style>.x1{font-size:16px;fill:#a3adc2}.x2{font-size:18px;font-weight:700}</style></defs>
+      <line x1="70" y1="230" x2="500" y2="230" stroke="#2a3550"/><line x1="70" y1="20" x2="70" y2="230" stroke="#2a3550"/>
+      <text x="62" y="35" text-anchor="end" class="x1">1</text><text x="62" y="234" text-anchor="end" class="x1">0</text>
+      <polyline points="70,30 278,220 500,220" fill="none" stroke="#f5b942" stroke-width="3"/>
+      <text x="70" y="254" class="x1">0</text><text x="285" y="254" text-anchor="middle" class="x1">1500</text><text x="500" y="254" text-anchor="end" class="x1">3000</text>
+      <text x="285" y="282" text-anchor="middle" class="x1">episodios de práctica</text>
+      <text x="120" y="70" class="x2" style="fill:#f5b942">explora</text><text x="360" y="205" class="x2" style="fill:#38bdf8">explota</text>
+      <text x="20" y="130" class="x1" transform="rotate(-90 20 130)" text-anchor="middle">prob. de explorar</text>
+    </svg>
+  </div>
+  <p class="credit">Programa de exploración del agente de <code>ejemplos/refuerzo_6b.py</code>: al azar con probabilidad que baja de 1 a 0,05.</p>
+  <aside class="notes">
+    <p>La iteración de valores necesita el modelo: las probabilidades de cada movimiento. En el mundo real casi nunca se conocen: nadie sabe con qué probabilidad se desgasta una bomba que opera un día más. El aprendizaje por refuerzo propiamente dicho aprende sin modelo, por interacción. Q-learning, de Watkins y Dayan, 1992, es el método clásico: el agente lleva una estimación del valor de cada acción en cada casilla, y la corrige un poco con cada recompensa que recibe. Los detalles de los algoritmos son tema de Aprendizaje de Máquinas.</p>
+    <p>El dilema del agente es explorar o explotar: hacer lo que hoy parece mejor o probar otra cosa por si es mejor. Nuestro agente empieza explorando siempre, al azar, y va bajando esa probabilidad hasta el 5 %. Un detalle: mientras explora, se equivoca de verdad. En el acantilado de Sutton y Barto, un agente que explora se cae varias veces mientras aprende: en un robot o en una planta, eso cuesta. Por eso se entrena en simulación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · LA CURVA DEL AGENTE ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Aprender por interacción · en el mundo de 4×3</div>
+  <h2>El agente que aprende llega cerca de la solución exacta</h2>
+  <!--DATOS:qlearning--><svg class="diagram" viewBox="0 0 900 330" role="img" aria-label="Retorno medio del agente que aprende en el mundo de 4×3, de -1,33 a 0,60 en 3000 episodios"><style>.cs{font-size:15px;fill:#a3adc2}.cl{font-size:17px;font-weight:700}.ct{font-size:16px;fill:#e8ecf4}</style><line x1="90" y1="270" x2="850" y2="270" stroke="#2a3550"/><text x="82" y="275" text-anchor="end" class="cs">-1,5</text><line x1="90" y1="270" x2="850" y2="270" stroke="#1c2538"/><text x="82" y="225" text-anchor="end" class="cs">-1,0</text><line x1="90" y1="220" x2="850" y2="220" stroke="#1c2538"/><text x="82" y="175" text-anchor="end" class="cs">-0,5</text><line x1="90" y1="170" x2="850" y2="170" stroke="#1c2538"/><text x="82" y="125" text-anchor="end" class="cs">0,0</text><line x1="90" y1="120" x2="850" y2="120" stroke="#1c2538"/><text x="82" y="75" text-anchor="end" class="cs">0,5</text><line x1="90" y1="70" x2="850" y2="70" stroke="#1c2538"/><text x="82" y="25" text-anchor="end" class="cs">1,0</text><line x1="90" y1="20" x2="850" y2="20" stroke="#1c2538"/><text x="195" y="292" text-anchor="middle" class="cs">500</text><text x="326" y="292" text-anchor="middle" class="cs">1000</text><text x="457" y="292" text-anchor="middle" class="cs">1500</text><text x="588" y="292" text-anchor="middle" class="cs">2000</text><text x="719" y="292" text-anchor="middle" class="cs">2500</text><text x="850" y="292" text-anchor="middle" class="cs">3000</text><text x="470.0" y="316" text-anchor="middle" class="cs">episodios de práctica</text><line x1="90" y1="50" x2="850" y2="50" stroke="#4ade80" stroke-dasharray="6 5" stroke-width="2"/><text x="98" y="42" class="cl" fill="#4ade80">lo que promete la iteración de valores desde la salida: 0,705</text><polyline points="90.0,252.6 116.2,205.5 142.4,182.2 168.6,150.6 194.8,160.1 221.0,128.6 247.2,100.1 273.4,82.2 299.7,93.8 325.9,71.3 352.1,69.6 378.3,71.4 404.5,65.2 430.7,58.3 456.9,52.0 483.1,56.7 509.3,53.2 535.5,60.8 561.7,56.6 587.9,56.0 614.1,54.2 640.3,52.1 666.6,59.2 692.8,53.7 719.0,53.6 745.2,53.6 771.4,57.9 797.6,57.6 823.8,48.2 850.0,59.5" fill="none" stroke="#f5b942" stroke-width="3"/><text x="846" y="86" text-anchor="end" class="cl" fill="#f5b942">retorno medio del agente · 0,60</text></svg><!--/DATOS:qlearning-->
+  <p class="fragment" style="font-size:22px"><!--DATOS:qlearning_coincide-->Después de 3 000 episodios, su política coincide con la de la iteración de valores en 8 de 9 casillas.<!--/DATOS:qlearning_coincide--></p>
+  <p class="godown">Detalle: la regla de Q-learning</p>
+  <aside class="notes">
+    <p>Este es el agente que aprende, en el mismo mundo de 4×3, sin conocer las probabilidades. Al principio explora al azar, cae en el −1 y camina de más: su retorno medio es negativo. Con la práctica sube. La línea verde es lo que promete la iteración de valores desde el inicio, 0,705, con el modelo conocido.</p>
+    <p>Después de 3000 episodios, el agente se acerca a esa línea, sin alcanzarla: todavía explora un 5 % de las veces, y eso cuesta. Su política coincide con la exacta en 8 de las 9 casillas. Aprender sin modelo funciona, pero necesita mucha práctica: 3000 partidas para un mundo de 11 casillas. En el laboratorio, la pareja compara las dos políticas casilla por casilla.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">Q-learning</div><h3>La regla de actualización de Q-learning</h3>
+  <div>
+    <div class="eqbox">
+      <div class="lbl">Después de hacer a en s, recibir r y llegar a s′</div>
+      <math display="block"><mrow><mi>Q</mi><mo>(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mo>←</mo><mi>Q</mi><mo>(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mo>+</mo><mi>α</mi><mo>[</mo><mi>r</mi><mo>+</mo><mi>γ</mi><munder><mi>max</mi><msup><mi>a</mi><mo>′</mo></msup></munder><mi>Q</mi><mo>(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>,</mo><msup><mi>a</mi><mo>′</mo></msup><mo>)</mo><mo>−</mo><mi>Q</mi><mo>(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>)</mo><mo>]</mo></mrow></math>
+    </div>
+    <div class="dense cols-3" style="margin-top:16px;gap:20px">
+      <p>α es la tasa de aprendizaje (0,1 en el ejemplo): cuánto se corrige con cada experiencia.</p>
+      <p>Lo que va entre corchetes es la sorpresa: lo que recibió y espera, menos lo que creía.</p>
+      <p>No usa las probabilidades P(s′|s, a): las muestrea al actuar. Watkins y Dayan (1992) demostraron que converge a los valores óptimos si se exploran todas las acciones lo suficiente.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: la regla de Q-learning, con los parámetros del ejemplo. Los algoritmos de refuerzo en detalle son tema de Aprendizaje de Máquinas.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 12 · HITOS (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker">Hitos del aprendizaje por refuerzo</div>
+  <h2>De Atari al Go, y un Premio Turing</h2>
+  <div class="cols-3 hitos">
+    <div class="card"><figure class="figure"><img src="assets/img/mnih2015_fig1.jpg" alt="Figura 1 de Mnih y colegas: la pantalla de un juego de Atari entra a una red convolucional, que termina en una salida por cada acción del control" width="1565" height="895"></figure><h4>Atari · 2015</h4><p>Una red aprende 49 juegos de Atari mirando la pantalla, con el puntaje como recompensa (Mnih et ál., <em>Nature</em>).</p></div>
+    <div class="card fragment"><figure class="figure"><img src="assets/img/alphago_lee_sedol.jpg" alt="Lee Sedol juega Go frente a Aja Huang, que mueve las piedras por AlphaGo, durante el Google DeepMind Challenge Match de marzo de 2016" width="1200" height="800"></figure><h4>AlphaGo · 2016</h4><p>Redes y búsqueda en árbol, entrenadas con partidas humanas y contra sí mismo (Silver et ál., <em>Nature</em>).</p></div>
+    <div class="card fragment"><figure class="figure"><img src="assets/img/barto_sutton.png" alt="Retratos de Andrew Barto y Richard Sutton, uno junto al otro, con sus nombres" width="700" height="394"></figure><h4>Premio Turing 2024</h4><p>A Andrew Barto y Richard Sutton, por los fundamentos del aprendizaje por refuerzo.</p></div>
+  </div>
+  <p class="credit">Mnih et ál. (2015), <em>Nature</em> 518, fig. 1 · Google DeepMind (2016), el Challenge Match en Seúl · cita con fines educativos. Barto y Sutton: ACM (2025), vía EurekAlert, dominio público.</p>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Tres hitos. En 2015, un equipo de DeepMind entrenó una red neuronal que aprendió a jugar 49 juegos de Atari mirando solo los píxeles de la pantalla, con el puntaje como recompensa: es el refuerzo profundo. En 2016, AlphaGo combinó redes neuronales con búsqueda en árbol, como la de la Sesión 2, y aprendió de partidas humanas y jugando contra sí mismo; ese año le ganó a Lee Sedol, uno de los mejores jugadores del mundo.</p>
+    <p>Y el Premio Turing de 2024, el más alto de la computación, fue para Andrew Barto y Richard Sutton por los fundamentos del aprendizaje por refuerzo. Su libro, de 2018, está abierto en internet y es la referencia del tema. El refuerzo profundo en detalle es tema de la electiva de Aprendizaje Profundo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · LA RECOMPENSA ES LA ESPECIFICACIÓN ============================ -->
+<section data-min="2.5">
+  <div class="kicker">La recompensa es la especificación</div>
+  <h2>El agente optimiza lo que se le pide, no lo que se quiso pedir</h2>
+  <div class="cols c64 mid">
+    <figure class="figure"><img src="assets/img/coastrunners.gif" alt="Animación del juego CoastRunners: el bote gira en círculos en una laguna, chocando una y otra vez con los objetivos verdes, en lugar de seguir la carrera" width="478" height="360" style="max-height:380px"></figure>
+    <div>
+      <p style="font-size:22px"><strong>CoastRunners</strong> (OpenAI, 2016): la recompensa eran los puntos del juego, no terminar la carrera.</p>
+      <p class="fragment" style="font-size:22px">El agente encontró una laguna donde girar en círculos y chocar una y otra vez con los mismos objetivos que dan puntos.</p>
+      <p class="fragment" style="font-size:22px">Nunca terminó la carrera, y <strong>sacó más puntos</strong> que los jugadores humanos.</p>
+    </div>
+  </div>
+  <p class="credit">Amodei y Clark (2016), «Faulty reward functions in the wild», OpenAI; animación tomada de Krakovna et ál. (2020), Google DeepMind. Cita con fines educativos.</p>
+  <aside class="notes">
+    <p>Lo que vimos con la recompensa positiva por paso tiene un ejemplo real famoso. En 2016, investigadores de OpenAI entrenaron un agente para el juego de carreras de botes CoastRunners. La recompensa fueron los puntos del juego, porque se suponía que quien gana puntos avanza en la carrera.</p>
+    <p>El agente encontró una laguna donde podía girar en círculos y chocar una y otra vez con unos objetivos que reaparecen y dan puntos. Se incendia, choca con otros botes, va en contravía, y nunca termina la carrera. Pero saca más puntos que los jugadores humanos. Cumplió la métrica, sin cumplir el objetivo. No es un error del algoritmo: optimizó exactamente lo que le pedimos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · LA CARRERA DE BOTES DEL 6B ============================ -->
+<section data-min="2">
+  <div class="kicker">La versión de cuadrícula · la del Laboratorio 6B</div>
+  <h2>La carrera de botes de los <em>AI Safety Gridworlds</em></h2>
+  <div class="cols mid">
+    <svg class="diagram" viewBox="0 0 400 360" role="img" aria-label="La pista de la carrera de botes: un anillo de ocho casillas alrededor de un muro central, con cuatro flechas que marcan el sentido de la pista, en el sentido de las agujas del reloj; el bote empieza arriba a la izquierda">
+      <defs><style>.b1{font-size:46px;font-weight:800;fill:#f5b942}.b2{font-size:15px;fill:#a3adc2}</style></defs>
+      <g transform="translate(40,20)">
+        <rect x="0" y="0" width="100" height="100" fill="#111827" stroke="#2a3550" stroke-width="2"/><circle cx="50" cy="50" r="20" fill="#38bdf8"/>
+        <rect x="100" y="0" width="100" height="100" fill="rgba(245,185,66,.12)" stroke="#2a3550" stroke-width="2"/><text x="150" y="66" text-anchor="middle" class="b1">→</text>
+        <rect x="200" y="0" width="100" height="100" fill="#111827" stroke="#2a3550" stroke-width="2"/>
+        <rect x="0" y="100" width="100" height="100" fill="rgba(245,185,66,.12)" stroke="#2a3550" stroke-width="2"/><text x="50" y="166" text-anchor="middle" class="b1">↑</text>
+        <rect x="100" y="100" width="100" height="100" fill="#2a3550"/><text x="150" y="155" text-anchor="middle" class="b2">muro</text>
+        <rect x="200" y="100" width="100" height="100" fill="rgba(245,185,66,.12)" stroke="#2a3550" stroke-width="2"/><text x="250" y="166" text-anchor="middle" class="b1">↓</text>
+        <rect x="0" y="200" width="100" height="100" fill="#111827" stroke="#2a3550" stroke-width="2"/>
+        <rect x="100" y="200" width="100" height="100" fill="rgba(245,185,66,.12)" stroke="#2a3550" stroke-width="2"/><text x="150" y="266" text-anchor="middle" class="b1">←</text>
+        <rect x="200" y="200" width="100" height="100" fill="#111827" stroke="#2a3550" stroke-width="2"/>
+        <text x="50" y="330" text-anchor="middle" class="b2">el bote empieza aquí ↑</text>
+      </g>
+    </svg>
+    <div>
+      <p style="font-size:23px"><span class="pill ok">+3</span> al entrar a una flecha en el sentido de la pista</p>
+      <p style="font-size:23px"><span class="pill bad">−1</span> por cada movimiento</p>
+      <p class="fragment" style="font-size:22px">Lo que se quiere: dar vueltas a la pista. Los autores lo miden aparte, con un <strong>desempeño oculto</strong> que el agente no ve.</p>
+      <p class="fragment" style="font-size:22px">En MantenIA: un indicador de «cero fallas registradas» se cumple también si no se registran.</p>
+    </div>
+  </div>
+  <p class="credit">Pista y recompensas de Leike et ál. (2017), <em>AI Safety Gridworlds</em>, DeepMind; código con licencia Apache-2.0. Diagrama propio.</p>
+  <aside class="notes">
+    <p>En el laboratorio verán la versión de cuadrícula de este problema, de los AI Safety Gridworlds que publicó DeepMind en 2017. Una pista de ocho casillas alrededor de un muro, con cuatro flechas que marcan el sentido, como las agujas del reloj. El bote recibe +3 cada vez que entra a una flecha en el sentido de la pista, y paga −1 por cada movimiento. Lo que se quiere es que dé vueltas; los autores lo miden aparte, con un desempeño oculto que el agente no ve.</p>
+    <p>No les cuento qué aprende el agente: lo descubren en el laboratorio. La traducción a MantenIA: un indicador de «cero fallas registradas» se cumple si la planta no falla, y también si las fallas no se registran. El club de lectura, al final de la sesión, discute este problema a fondo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · ANUNCIO DEL LABORATORIO 6B ============================ -->
+<section data-min="1">
+  <div class="kicker amber">A continuación · 60 min</div>
+  <h1 style="font-size:54px">Laboratorio 6B · Aprendizaje por refuerzo y <em>specification gaming</em></h1>
+  <p class="lead">Resolver el mundo de 4×3 con la iteración de valores y con un agente que aprende, comparar sus políticas, cambiar la recompensa y ver qué aprende el bote de la carrera.</p>
+  <div class="cols-3" style="margin-top:18px">
+    <div class="card"><h4>Cambiar</h4><p>la recompensa por paso, el descuento y la exploración</p></div>
+    <div class="card"><h4>Comparar</h4><p>la política exacta con la aprendida, y la recompensa con el desempeño real</p></div>
+    <div class="card"><h4>Sin escribir código</h4><p>notebook de configuración, en parejas</p></div>
+  </div>
+  <aside class="notes">
+    <p>Pasamos al Laboratorio 6B, una hora en parejas. Van a resolver el mundo de 4×3 de dos maneras: con la iteración de valores, que conoce el modelo, y con un agente que aprende por interacción, y a comparar sus políticas. Después cambian la recompensa por paso y el descuento, y ven cómo cambia la conducta. Al final, entrenan al bote de la carrera y comparan lo que gana con lo que se quería. No se escribe código: se cambian parámetros en celdas preparadas.</p>
+    <p>Después del laboratorio, la charla de cierre.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla intermedia</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Russell, S. y Norvig, P. (2021). <em>Artificial Intelligence: A Modern Approach</em>, 4.ª ed., cap. 17 y 22. Pearson. <a href="https://aima.cs.berkeley.edu/">aima.cs.berkeley.edu</a> · Los valores del mundo de 4×3 siguen la 3.ª ed. (2010), fig. 17.2 y 17.3.</li>
+    <li>Bellman, R. (1957). <em>Dynamic Programming</em>. Princeton University Press · Bellman, R. (1954). The theory of dynamic programming. RAND P-550. <a href="https://www.rand.org/content/dam/rand/pubs/papers/2008/P550.pdf">PDF</a></li>
+    <li>Sutton, R. S. y Barto, A. G. (2018). <em>Reinforcement Learning: An Introduction</em>, 2.ª ed. MIT Press. <a href="http://incompleteideas.net/book/the-book-2nd.html">Libro abierto</a>, CC BY-NC-ND 2.0</li>
+    <li>Watkins, C. J. C. H. y Dayan, P. (1992). Q-learning. <em>Machine Learning</em> 8(3–4), 279–292. <a href="https://doi.org/10.1007/BF00992698">DOI</a> · <a href="https://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf">PDF</a></li>
+    <li>Mnih, V. et ál. (2015). Human-level control through deep reinforcement learning. <em>Nature</em> 518, 529–533. <a href="https://doi.org/10.1038/nature14236">DOI</a> · Silver, D. et ál. (2016). Mastering the game of Go with deep neural networks and tree search. <em>Nature</em> 529, 484–489. <a href="https://doi.org/10.1038/nature16961">DOI</a></li>
+    <li>ACM (2025, 5 de marzo). Andrew G. Barto y Richard S. Sutton, Premio A. M. Turing 2024. <a href="https://web.archive.org/web/20260103133622/https://awards.acm.org/about/2024-turing">awards.acm.org (copia en Wayback)</a></li>
+    <li>Clark, J. y Amodei, D. (2016, 21 de diciembre). Faulty reward functions in the wild. OpenAI. <a href="https://web.archive.org/web/20250101110232/https://openai.com/index/faulty-reward-functions/">openai.com (copia en Wayback)</a></li>
+    <li>Leike, J. et ál. (2017). AI Safety Gridworlds. <a href="https://arxiv.org/abs/1711.09883">arXiv</a> · Código: <a href="https://github.com/google-deepmind/ai-safety-gridworlds">GitHub</a>, Apache-2.0</li>
+  </ol></div>
+  <p class="navlinks"><a href="charla1_del_dato_al_conocimiento.html">← Charla inicial</a><a href="index.html">Volver a la agenda</a><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 6 · Charla intermedia · El agente que aprende por refuerzo</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>
