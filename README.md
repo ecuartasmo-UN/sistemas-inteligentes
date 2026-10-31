@@ -28,7 +28,7 @@ También funcionan sin internet: descargue el repositorio y abra `sesion-N/index
 | [`sesion-2/labs/lab_2A_planificar_pddl/`](sesion-2/labs/lab_2A_planificar_pddl/) | Laboratorio 2A · Planificar una operación en PDDL. No usa LLM |
 | [`sesion-2/labs/lab_2B_llm_modulo/`](sesion-2/labs/lab_2B_llm_modulo/) | Laboratorio 2B · LLM-Modulo en práctica |
 | [`sesion-2/labs/lab_2C_plan_md/`](sesion-2/labs/lab_2C_plan_md/) | Laboratorio 2C · Escribir, revisar y ejecutar un plan.md |
-| [`sesion-3/`](sesion-3/) | Diapositivas de la sesión 3 (con el club de lectura), trabajo independiente y ejemplos de CP-SAT y Z3 |
+| [`sesion-3/`](sesion-3/) | Diapositivas de la sesión 3 (con el club de lectura), trabajo independiente, ejemplos de CP-SAT y Z3, y [`prompting.docx`](sesion-3/prompting.docx): del prompt al plan.md con Claude Code, y la anatomía de un buen prompt para Claude 5.5 |
 | [`sesion-3/labs/lab_3A_vibe_coding.md`](sesion-3/labs/lab_3A_vibe_coding.md) | Laboratorio 3A · Vibe coding: la logística de una empresa de aseo. Un archivo con el problema y el prompt para su asistente de IA |
 | [`sesion-3/labs/lab_3B_politicas_z3/`](sesion-3/labs/lab_3B_politicas_z3/) | Laboratorio 3B · Verificar una política de negocio con Z3 |
 | [`sesion-4/`](sesion-4/) | Diapositivas de la sesión 4 (con el club de lectura), trabajo independiente y ejemplos con OpenCV. La charla inicial rediseña la clase «Procesamiento Digital de Imágenes» (2007); con la flecha ↓ se ve el contenido completo del original |
