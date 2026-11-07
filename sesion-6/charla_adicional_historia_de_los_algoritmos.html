@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla adicional · Historia de los algoritmos de aprendizaje de máquina — Sesión 6 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  /* Un color por etapa: el año, la etiqueta y la línea de «Por qué importa» */
+  .e1 { --etapa: var(--accent); }
+  .e2 { --etapa: var(--violet); }
+  .e3 { --etapa: var(--accent-2); }
+  .e4 { --etapa: var(--ok); }
+  .e5 { --etapa: color-mix(in srgb, var(--bad) 55%, var(--violet)); }
+  .alg .kicker { color: var(--etapa); }
+  .alg h2 { display: flex; align-items: baseline; gap: 20px; margin-bottom: 16px; }
+  .alg h2 .anio { font-size: 58px; font-weight: 800; color: var(--etapa); font-variant-numeric: tabular-nums; }
+  .alg .cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 34px; align-items: center; }
+  .alg .cuerpo.ancha { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.25fr); }
+  .alg .cuerpo.alta { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr); }
+  .alg .txt p { font-size: 24px; line-height: 1.34; margin: 0 0 12px; }
+  .alg .txt .quien { font-size: 21px; color: var(--muted); }
+  .alg .txt .importa { border-left: 4px solid var(--etapa); padding-left: 14px; }
+  .alg .txt .curso { font-size: 19px; color: var(--muted); margin-top: 4px; }
+  .alg .txt .curso .pill { font-size: 15px; padding: 2px 10px; margin-right: 6px; }
+  .alg .figure img { max-height: 430px; }
+  .alg .figure video { display: block; max-width: 100%; height: auto; max-height: 430px; border-radius: 12px; border: 1px solid var(--line); background: #ffffff; margin: 0 auto; }
+  .alg .figure figcaption { font-size: 15px; }
+  .alg .ref { font-size: 15px; margin-top: 14px; }
+  /* Panorama: las cinco etapas */
+  .etapas { display: grid; grid-template-columns: 1.15fr 1.15fr 0.85fr 0.95fr 1fr; gap: 12px; align-items: start; }
+  .etapa { border: 1px solid var(--line); border-top: 4px solid var(--etapa); border-radius: 12px; padding: 14px 14px; background: var(--bg-2); }
+  .etapa h4 { font-size: 24px; color: var(--etapa); margin: 0 0 4px; }
+  .etapa .rango { font-size: 17px; color: var(--muted); margin: 0 0 12px; line-height: 1.25; }
+  .etapa ol { list-style: none; margin: 0; }
+  .etapa li { font-size: 20px; line-height: 1.25; margin: 0 0 9px; }
+  .etapa li a { color: var(--text); border-bottom: none; }
+  .etapa li a:hover { color: var(--etapa); }
+  .etapa li b { color: var(--etapa); font-variant-numeric: tabular-nums; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="0">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0">
+  <div class="kicker">Sesión 6 · Unidad 6 · Charla adicional · sin tiempo de clase</div>
+  <h1>Los algoritmos más importantes en la historia del aprendizaje de máquina</h1>
+  <p class="lead muted">Veintidós algoritmos en orden histórico, de la regresión lineal (1805) a LoRA (2021): quién los propuso, qué hacen y por qué importan</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>material de consulta</strong></p>
+  <p class="navlinks"><a href="charla2_el_agente_que_aprende_por_refuerzo.html">← Charla intermedia</a><a href="index.html">Agenda</a><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes">
+    <p>Charla adicional, sin tiempo asignado en la sesión: amplía la charla de cierre con la historia de los algoritmos. Se puede recorrer en clase si sobra tiempo, o dejar como consulta. Cada diapositiva presenta un algoritmo: el año, quién lo propuso, qué hace, por qué importa y, cuando aplica, dónde lo vimos en el curso.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · PANORAMA ============================ -->
+<section data-min="0">
+  <div class="kicker">Panorama · 22 algoritmos en cinco etapas</div>
+  <h2>De la regresión lineal a LoRA</h2>
+  <div class="etapas">
+    <div class="etapa e1"><h4>Etapa 1</h4><p class="rango">1805–1970 · Fundamentos estadísticos y primeros modelos</p><ol>
+      <li><a href="#/2"><b>1805</b> Regresión lineal</a></li>
+      <li><a href="#/3"><b>1901</b> Componentes principales (PCA)</a></li>
+      <li><a href="#/4"><b>1951</b> k vecinos más cercanos</a></li>
+      <li><a href="#/5"><b>1957</b> K-medias</a></li>
+      <li><a href="#/6"><b>1958</b> Perceptrón</a></li>
+      <li><a href="#/7"><b>1961</b> Naive Bayes</a></li>
+      <li><a href="#/8"><b>1966</b> Modelos ocultos de Márkov</a></li>
+    </ol></div>
+    <div class="etapa e2"><h4>Etapa 2</h4><p class="rango">1980–2000 · Algoritmos clásicos y consolidación</p><ol>
+      <li><a href="#/9"><b>1984</b> Árboles de decisión</a></li>
+      <li><a href="#/10"><b>1986</b> Retropropagación</a></li>
+      <li><a href="#/11"><b>1989</b> Q-learning</a></li>
+      <li><a href="#/12"><b>1989</b> Redes convolucionales</a></li>
+      <li><a href="#/13"><b>1995</b> Máquinas de vectores de soporte</a></li>
+      <li><a href="#/14"><b>1995</b> AdaBoost y gradient boosting</a></li>
+      <li><a href="#/15"><b>1997</b> RNN, LSTM y GRU</a></li>
+    </ol></div>
+    <div class="etapa e3"><h4>Etapa 3</h4><p class="rango">2000–2012 · Aprendizaje de máquina moderno</p><ol>
+      <li><a href="#/16"><b>2001</b> Bosques aleatorios</a></li>
+    </ol></div>
+    <div class="etapa e4"><h4>Etapa 4</h4><p class="rango">2012–2017 · Aprendizaje profundo</p><ol>
+      <li><a href="#/17"><b>2014</b> Redes generativas antagónicas</a></li>
+      <li><a href="#/18"><b>2014</b> Mecanismo de atención</a></li>
+      <li><a href="#/19"><b>2015</b> Modelos de difusión</a></li>
+    </ol></div>
+    <div class="etapa e5"><h4>Etapa 5</h4><p class="rango">2017–hoy · Transformers y modelos fundacionales</p><ol>
+      <li><a href="#/20"><b>2017</b> Transformer</a></li>
+      <li><a href="#/21"><b>2018</b> Modelado autorregresivo (GPT)</a></li>
+      <li><a href="#/22"><b>2018</b> Modelado enmascarado (BERT)</a></li>
+      <li><a href="#/23"><b>2021</b> LoRA</a></li>
+    </ol></div>
+  </div>
+  <p class="credit">Cada algoritmo va en el año de la publicación que lo estableció; los antecedentes y los hitos posteriores están en su diapositiva. Clic en un nombre para ir a su diapositiva.</p>
+  <aside class="notes">
+    <p>El mapa completo. Cinco etapas, y un criterio para el orden: el año de la publicación que estableció cada algoritmo. Por eso algunas fechas difieren de las listas que circulan: los k vecinos más cercanos son de 1951 (1967 es el año del artículo de Cover y Hart, que demostró su cota de error); el análisis de componentes principales es de 1901; Q-learning es de 1989, no de la década de 2000; y GPT, de junio de 2018, se publicó antes que BERT, de octubre del mismo año.</p>
+    <p>Dos ideas para llevarse. Muchas ideas son viejas: la regresión tiene más de dos siglos y el perceptrón casi setenta años; lo que cambió fueron los datos y el cómputo, como vimos en la Sesión 5. Y cada etapa reutiliza la anterior: el transformer junta la retropropagación de 1986 con la atención de 2014.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · REGRESIÓN LINEAL ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 1 de 22</div>
+  <h2><span class="anio">1805</span>Regresión lineal</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Adrien-Marie Legendre publica los mínimos cuadrados en 1805; Carl Friedrich Gauss, en 1809. Francis Galton le da el nombre de «regresión» en 1886.</p>
+      <p>Modela una variable como una combinación lineal de otras: busca la recta, o el plano, que deja la menor suma de errores al cuadrado.</p>
+      <p class="importa"><strong>Por qué importa:</strong> es la base de la predicción estadística y de muchos modelos modernos; cada neurona de una red empieza con una combinación lineal.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_regresion_lineal.png" alt="Nube de puntos azules que crece hacia la derecha, con una recta roja de regresión que pasa por el medio" width="1200" height="793">
+      <figcaption class="credit">Datos al azar y su recta de regresión. Sewaqu, <a href="https://commons.wikimedia.org/wiki/File:Linear_regression.svg">Wikimedia Commons</a>, dominio público.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Legendre (1805), <em>Nouvelles méthodes pour la détermination des orbites des comètes</em> · Galton (1886), <em>Journal of the Anthropological Institute</em> 15.</p>
+  <aside class="notes">
+    <p>Empezamos antes de los computadores. Legendre y Gauss calculaban órbitas de cometas y planetas a partir de observaciones con error, y propusieron la recta que deja la menor suma de errores al cuadrado. Gauss decía usarla desde antes, y con ella calculó en 1801 la órbita de Ceres.</p>
+    <p>El nombre llegó después: Galton, estudiando la estatura de padres e hijos, vio que los hijos de padres muy altos tienden a acercarse a la media, una «regresión». Hoy sigue siendo el primer modelo que se prueba, y es la pieza básica de cada neurona: una suma ponderada de las entradas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · PCA ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 2 de 22</div>
+  <h2><span class="anio">1901</span>Análisis de componentes principales (PCA)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Karl Pearson lo propone en 1901; Harold Hotelling lo desarrolla y le da el nombre en 1933.</p>
+      <p>Transforma las variables originales en componentes ortogonales, ordenados por la varianza que explican: los primeros resumen casi toda la información.</p>
+      <p class="importa"><strong>Por qué importa:</strong> reducción de dimensionalidad, visualización de datos con muchas variables y extracción de características.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_pca.png" alt="Nube de puntos alargada en diagonal con dos flechas perpendiculares desde su centro: la larga sigue la dirección en que los datos varían más; la corta, la perpendicular" width="1000" height="1000" style="max-height:400px">
+      <figcaption class="credit">Las flechas son los dos componentes principales de la nube. Nicoguaro, <a href="https://commons.wikimedia.org/wiki/File:GaussianScatterPCA.svg">Wikimedia Commons</a>, CC BY 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Pearson (1901), <em>Philosophical Magazine</em> 2(11) · Hotelling (1933), <em>Journal of Educational Psychology</em> 24(6).</p>
+  <aside class="notes">
+    <p>Pearson buscaba la recta o el plano que mejor se ajusta a una nube de puntos, midiendo la distancia perpendicular a la recta y no la vertical, como en la regresión. La flecha larga de la figura es la dirección en que los datos varían más: el primer componente. La corta es la segunda, perpendicular a la primera.</p>
+    <p>Un uso en MantenIA: decenas de señales de los sensores de una bomba se pueden resumir en dos o tres componentes, para graficarlas o para alimentar otro modelo con menos variables.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · KNN ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 3 de 22</div>
+  <h2><span class="anio">1951</span>k vecinos más cercanos (KNN)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Evelyn Fix y Joseph Hodges lo proponen en 1951, en un informe para la Fuerza Aérea de Estados Unidos; Thomas Cover y Peter Hart acotan su error en 1967.</p>
+      <p>Para clasificar un caso nuevo, busca los k ejemplos más cercanos y gana la clase más frecuente entre ellos; para estimar un número, los promedia.</p>
+      <p class="importa"><strong>Por qué importa:</strong> es el fundamento del aprendizaje basado en instancias y en la geometría de los datos: no construye un modelo, guarda los ejemplos y mide distancias.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_knn.png" alt="Un punto verde con signo de interrogación rodeado de triángulos rojos y cuadrados azules; un círculo continuo encierra sus 3 vecinos más cercanos y uno punteado, los 5 más cercanos" width="1000" height="904" style="max-height:400px">
+      <figcaption class="credit">Con k = 3, el punto verde sería triángulo (2 contra 1); con k = 5, cuadrado (3 contra 2). Natana Jadri y AnAj, <a href="https://commons.wikimedia.org/wiki/File:KnnClassification.svg">Wikimedia Commons</a>, CC BY-SA 3.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Fix y Hodges (1951), informe 4 de la USAF School of Aviation Medicine; reimpreso en <em>International Statistical Review</em> 57(3), 1989 · Cover y Hart (1967), <em>IEEE Transactions on Information Theory</em> 13(1).</p>
+  <aside class="notes">
+    <p>Muchas listas lo fechan en 1967, el año del artículo de Cover y Hart, pero la idea es de 1951, de un informe de Fix y Hodges para la escuela de medicina aeronáutica de la Fuerza Aérea de Estados Unidos. Cover y Hart demostraron que, con muchos datos, el error del vecino más cercano es a lo sumo el doble del mínimo posible.</p>
+    <p>La figura muestra su punto débil: la respuesta depende de k. Con tres vecinos, el punto verde es triángulo; con cinco, cuadrado. Y depende de cómo se mida la distancia: si una variable está en metros y otra en milímetros, la segunda domina.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · K-MEDIAS ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 4 de 22</div>
+  <h2><span class="anio">1957</span>K-medias (k-means)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Stuart Lloyd lo escribe en Bell Labs en 1957, aunque se publica en 1982; James MacQueen le da el nombre en 1967.</p>
+      <p>Agrupa los datos en k grupos: asigna cada punto al centroide más cercano, mueve cada centroide al promedio de su grupo y repite hasta que nada cambia.</p>
+      <p class="importa"><strong>Por qué importa:</strong> es uno de los algoritmos más usados del aprendizaje no supervisado.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 6, charla de cierre: el aprendizaje sin etiquetas.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_kmedias.gif" alt="Animación: iteración tras iteración, tres centroides se mueven y las fronteras entre grupos cambian hasta separar tres nubes de puntos" width="637" height="619" style="max-height:400px">
+      <figcaption class="credit">K-medias converge desde un mal punto de partida, con dos centroides iniciales muy cercanos. Chire, <a href="https://commons.wikimedia.org/wiki/File:K-means_convergence.gif">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Lloyd (1982), <em>IEEE Transactions on Information Theory</em> 28(2), memorando de Bell Labs de 1957 · MacQueen (1967), <em>Proceedings of the 5th Berkeley Symposium</em> 1.</p>
+  <aside class="notes">
+    <p>La idea de partir los datos alrededor de centros es de Hugo Steinhaus, en 1956. Lloyd escribió el algoritmo en 1957 para cuantizar señales en Bell Labs, pero lo publicó hasta 1982; MacQueen le puso el nombre en 1967.</p>
+    <p>Es un ejemplo de los algoritmos de agrupamiento de la diapositiva de las bombas sin etiquetas, en la charla de cierre. La animación muestra sus dos límites: hay que elegir k de antemano, y el resultado depende de dónde arrancan los centroides; por eso se corre varias veces.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · PERCEPTRÓN ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 5 de 22</div>
+  <h2><span class="anio">1958</span>Perceptrón</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Frank Rosenblatt, en el Laboratorio Aeronáutico de Cornell: un informe en 1957 y el artículo en 1958. El Mark I Perceptron fue la máquina construida para probarlo.</p>
+      <p>Uno de los primeros modelos de red neuronal artificial. Introdujo la idea de aprender los pesos a partir de ejemplos, con una regla de actualización: cuando se equivoca, mueve los pesos hacia la respuesta correcta.</p>
+      <p class="importa"><strong>Por qué importa:</strong> es el precursor del aprendizaje profundo.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charla inicial.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/mark1_perceptron.png" alt="El Mark I Perceptron en 1960: una cámara sobre un trípode frente a gabinetes con interruptores de estímulo, unidades de asociación, panel de respuesta y panel de medidores" width="1166" height="945" style="max-height:400px">
+      <figcaption class="credit">Mark I Perceptron. Hay y Murray, <em>Mark I Perceptron Operators' Manual</em>, Cornell Aeronautical Laboratory (1960), fig. 2. <a href="https://commons.wikimedia.org/wiki/File:Mark_I_Perceptron,_Figure_2_of_operator%27s_manual.png">Wikimedia Commons</a>, dominio público.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Rosenblatt (1958), «The perceptron: a probabilistic model for information storage and organization in the brain», <em>Psychological Review</em> 65(6).</p>
+  <aside class="notes">
+    <p>Ya lo vimos en la Sesión 5. Antes había modelos de neurona, como el de McCulloch y Pitts de 1943, pero sus pesos se fijaban a mano; el perceptrón los aprende de ejemplos. El Mark I tenía una cámara de 20 por 20 fotoceldas y aprendía a distinguir figuras simples.</p>
+    <p>En 1969, Minsky y Papert mostraron que un perceptrón de una sola capa no puede aprender funciones como el O exclusivo; el interés por las redes cayó hasta que la retropropagación permitió entrenar varias capas, diecisiete años después.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · NAIVE BAYES ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 6 de 22</div>
+  <h2><span class="anio">1961</span>Naive Bayes</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">M. E. Maron lo usa en 1961 para clasificar documentos por tema. Parte del teorema de Bayes, publicado en 1763.</p>
+      <p>Un clasificador probabilístico: calcula la probabilidad de cada clase con el teorema de Bayes, con la hipótesis de que las características son independientes entre sí dada la clase. Esa hipótesis es la parte «ingenua».</p>
+      <p class="importa"><strong>Por qué importa:</strong> muy usado en clasificación de texto, filtros de spam y procesamiento de lenguaje.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_naive_bayes.gif" alt="Animación: puntos de tres clases en un plano; a medida que llegan más mediciones, las elipses que describen cada clase se ajustan" width="451" height="359" style="max-height:380px">
+      <figcaption class="credit">Con cada medición nueva se actualiza la distribución estimada de cada clase. Jacopo Bertolotti, <a href="https://commons.wikimedia.org/wiki/File:Naive_Bayes_Classifier.gif">Wikimedia Commons</a>, CC0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Maron (1961), «Automatic indexing: an experimental inquiry», <em>Journal of the ACM</em> 8(3).</p>
+  <aside class="notes">
+    <p>La hipótesis ingenua casi nunca se cumple: en un correo, las palabras «oferta» y «gratis» no aparecen de forma independiente. Aun así, el clasificador suele acertar, porque para decidir basta con que la clase correcta quede con la probabilidad más alta, aunque los números no sean exactos.</p>
+    <p>Es rápido y aprende con pocos datos. A finales de los noventa se volvió la base de los filtros de spam, que cuentan qué palabras aparecen más en el correo basura que en el correo normal.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · HMM ============================ -->
+<section data-min="0" class="alg e1">
+  <div class="kicker">Etapa 1 · Fundamentos estadísticos · 7 de 22</div>
+  <h2><span class="anio">1966</span>Modelos ocultos de Márkov (HMM)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Leonard Baum y Ted Petrie, en 1966. En los años setenta, James Baker y Fred Jelinek los llevan al reconocimiento de voz.</p>
+      <p>Modelan una secuencia con estados que no se ven: cada estado pasa a otro con una probabilidad de transición y emite lo que sí se observa con una probabilidad de emisión.</p>
+      <p class="importa"><strong>Por qué importa:</strong> fueron fundamentales en reconocimiento de voz, bioinformática y lenguaje antes de las redes recurrentes.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_hmm.png" alt="Tres estados ocultos X1, X2 y X3 unidos por flechas de transición a12, a21 y a23, y cuatro salidas observables y1 a y4, con flechas de emisión b desde cada estado" width="1100" height="880" style="max-height:400px">
+      <figcaption class="credit">Estados ocultos (X), probabilidades de transición (a) y de emisión (b) hacia lo observable (y). Tdunning, <a href="https://commons.wikimedia.org/wiki/File:HiddenMarkovModel.svg">Wikimedia Commons</a>, CC BY 3.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Baum y Petrie (1966), <em>Annals of Mathematical Statistics</em> 37(6) · Rabiner (1989), «A tutorial on hidden Markov models…», <em>Proceedings of the IEEE</em> 77(2).</p>
+  <aside class="notes">
+    <p>Un ejemplo de MantenIA: el desgaste de una bomba no se ve, pero la vibración sí. Los estados ocultos serían «sana», «desgaste leve» y «desgaste avanzado»; las observaciones, los niveles de vibración. Con un HMM se estima en qué estado está la bomba a partir de lo que miden los sensores.</p>
+    <p>Durante unos treinta años, casi todo el reconocimiento de voz se basó en HMM; el tutorial de Rabiner de 1989 es uno de los artículos más citados del área. Las redes recurrentes y luego los transformers los reemplazaron.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · ÁRBOLES DE DECISIÓN ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 8 de 22</div>
+  <h2><span class="anio">1984</span>Árboles de decisión (CART, ID3, C4.5)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">CART, de Breiman, Friedman, Olshen y Stone (1984); ID3, de Ross Quinlan (1986), y su sucesor C4.5 (1993).</p>
+      <p>Construyen un árbol de decisiones con divisiones sucesivas del espacio de características: en cada paso eligen la pregunta que mejor separa las clases.</p>
+      <p class="importa"><strong>Por qué importa:</strong> se pueden leer y explicar, y son el fundamento de los bosques aleatorios y del gradient boosting.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 6, charla inicial y Laboratorio 6A.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/quinlan_fig2.png" alt="Figura 2 del artículo de Quinlan de 1986: el árbol de decisión del clima, con outlook en la raíz, humidity bajo sunny y windy bajo rain; las hojas son P o N" width="940" height="655" style="max-height:380px">
+      <figcaption class="credit">Quinlan (1986), <em>Machine Learning</em> 1, fig. 2: el árbol del clima. © Kluwer; cita con fines educativos.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Breiman et ál. (1984), <em>Classification and Regression Trees</em>, Wadsworth · Quinlan (1986), «Induction of decision trees», <em>Machine Learning</em> 1(1) · Quinlan (1993), <em>C4.5</em>, Morgan Kaufmann.</p>
+  <aside class="notes">
+    <p>Los conocen del Laboratorio 6A. Los árboles nacieron dos veces: desde la estadística, con CART y la impureza de Gini, y desde la inteligencia artificial, con ID3 y la ganancia de información. La figura es el árbol del clima del artículo de Quinlan, el mismo que construimos en la charla inicial.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · RETROPROPAGACIÓN ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 9 de 22</div>
+  <h2><span class="anio">1986</span>Retropropagación (backpropagation)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">La populariza el artículo de David Rumelhart, Geoffrey Hinton y Ronald Williams en <em>Nature</em> (1986). Tiene antecedentes en Seppo Linnainmaa (1970) y Paul Werbos (1974).</p>
+      <p>Calcula el gradiente de la función de pérdida respecto a cada peso, propagando el error desde la salida hacia atrás, capa por capa, con la regla de la cadena.</p>
+      <p class="importa"><strong>Por qué importa:</strong> hizo viable entrenar redes neuronales de varias capas; con ella se entrenan todavía.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charla inicial y Laboratorio 5A.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_hinton.jpg" alt="Retrato de Geoffrey Hinton, de traje y corbata, sonriendo durante la rueda de prensa del Premio Nobel en Estocolmo" width="897" height="900" style="max-height:400px">
+      <figcaption class="credit">Geoffrey Hinton, coautor del artículo de 1986, en la semana del Nobel de Física 2024. Arthur Petron, <a href="https://commons.wikimedia.org/wiki/File:Geoffrey_E._Hinton,_2024_Nobel_Prize_Laureate_in_Physics_(cropped1).jpg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Rumelhart, Hinton y Williams (1986), «Learning representations by back-propagating errors», <em>Nature</em> 323.</p>
+  <aside class="notes">
+    <p>La vimos en la Sesión 5. La diferenciación automática en modo reverso, que es la base matemática, la describió Linnainmaa en 1970, y Werbos propuso usarla en redes neuronales en 1974. El artículo de 1986 mostró que las capas ocultas aprenden representaciones útiles, y eso convenció al campo.</p>
+    <p>En 2024, Hinton recibió el Premio Nobel de Física, junto con John Hopfield, por sus descubrimientos fundamentales para el aprendizaje de máquina con redes neuronales artificiales.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · Q-LEARNING ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 10 de 22</div>
+  <h2><span class="anio">1989</span>Q-learning</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Chris Watkins, en su tesis doctoral en Cambridge (1989); con Peter Dayan demuestra su convergencia en 1992.</p>
+      <p>Aprende una función de valor de acción y estado, Q(s, a), probando y corrigiendo con la recompensa recibida, para encontrar la política que maximiza la recompensa.</p>
+      <p class="importa"><strong>Por qué importa:</strong> es uno de los algoritmos fundacionales del aprendizaje por refuerzo.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 6, charla intermedia y Laboratorio 6B.</p>
+    </div>
+    <figure class="figure">
+      <video src="assets/img/hist_q_learning.webm" poster="assets/img/hist_q_learning.jpg" data-autoplay muted loop playsinline controls width="1280" height="720" aria-label="Animación: un agente recorre una cuadrícula desde S hasta G esquivando un muro; en cada paso se muestra la transición y la actualización de Q para ese estado"></video>
+      <figcaption class="credit">Q-learning en una cuadrícula: el agente va de S a G, y cada paso actualiza Q(s, ·). Juanciño, <a href="https://commons.wikimedia.org/wiki/File:Animacion_02_q_learning_gridworld.webm">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Watkins (1989), <em>Learning from delayed rewards</em>, tesis doctoral, Universidad de Cambridge · Watkins y Dayan (1992), «Q-learning», <em>Machine Learning</em> 8.</p>
+  <aside class="notes">
+    <p>Es el agente que aprende de la charla intermedia y del Laboratorio 6B: no conoce el modelo del mundo, prueba acciones y corrige su tabla Q con cada recompensa. El video muestra cada actualización: el estado, la acción, la recompensa y el nuevo valor.</p>
+    <p>En 2015, DeepMind reemplazó la tabla por una red convolucional y obtuvo el DQN, que aprendió 49 juegos de Atari mirando la pantalla: es el hito de Atari que vimos en la charla intermedia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · CNN ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 11 de 22</div>
+  <h2><span class="anio">1989</span>Redes neuronales convolucionales (CNN)</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Yann LeCun y colegas, en Bell Labs (1989), sobre el neocognitrón de Kunihiko Fukushima (1980). Le siguen LeNet-5 (1998), AlexNet (2012), VGG, GoogLeNet y ResNet.</p>
+      <p>Aprenden jerarquías de características espaciales mediante convoluciones: las primeras capas detectan bordes y las siguientes los combinan en partes y objetos.</p>
+      <p class="importa"><strong>Por qué importa:</strong> revolucionaron la visión por computador. AlexNet, en 2012, marcó un punto de inflexión en ImageNet.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 4, charla intermedia, y Sesión 5, charla inicial.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_lenet_alexnet.png" alt="Comparación capa por capa: LeNet, para imágenes de 28 por 28 en gris y 10 clases, con dos convoluciones y tres capas densas; AlexNet, para imágenes de 224 por 224 en color y 1000 clases, con cinco convoluciones y tres capas densas" width="1400" height="1050" style="max-height:440px">
+      <figcaption class="credit">LeNet frente a AlexNet, capa por capa. Cmglee, <a href="https://commons.wikimedia.org/wiki/File:Comparison_image_neural_networks.svg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">LeCun et ál. (1989), «Backpropagation applied to handwritten zip code recognition», <em>Neural Computation</em> 1(4) · Krizhevsky, Sutskever y Hinton (2012), <em>NeurIPS</em> 25.</p>
+  <aside class="notes">
+    <p>Las vimos en las sesiones 4 y 5. LeCun las entrenó con retropropagación para leer los códigos postales escritos a mano del correo de Estados Unidos; a finales de los noventa, LeNet-5 leía cheques en bancos.</p>
+    <p>La figura compara las dos redes emblemáticas: la misma idea de convoluciones y submuestreo, pero AlexNet es mucho más grande. En 2012 ganó ImageNet con un error top-5 de 15,3 %, frente a 26,2 % del segundo lugar, gracias a más datos y a las GPU; con eso empieza la cuarta etapa.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · SVM ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 12 de 22</div>
+  <h2><span class="anio">1995</span>Máquinas de vectores de soporte (SVM)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Corinna Cortes y Vladimir Vapnik (1995). El margen máximo con núcleos viene de Boser, Guyon y Vapnik (1992).</p>
+      <p>Encuentran el hiperplano que maximiza el margen entre las clases. Los núcleos permiten modelar fronteras no lineales.</p>
+      <p class="importa"><strong>Por qué importa:</strong> dominaron muchas aplicaciones de clasificación antes del auge del aprendizaje profundo.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 4, charla intermedia: el pipeline clásico de reconocimiento.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_svm.png" alt="Dos clases de puntos, azules y verdes, separadas por una recta roja; dos rectas punteadas paralelas marcan el margen y pasan por los puntos más cercanos de cada clase" width="1000" height="972" style="max-height:400px">
+      <figcaption class="credit">El hiperplano de margen máximo; los puntos sobre el margen son los vectores de soporte. Larhmam, <a href="https://commons.wikimedia.org/wiki/File:SVM_margin.png">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Cortes y Vapnik (1995), «Support-vector networks», <em>Machine Learning</em> 20(3) · Boser, Guyon y Vapnik (1992), <em>COLT '92</em>.</p>
+  <aside class="notes">
+    <p>La idea del hiperplano de margen máximo la tenía Vapnik desde los años sesenta, en la Unión Soviética. En 1992, con Boser y Guyon, le agregó los núcleos, que permiten fronteras curvas sin calcular explícitamente nuevas variables; en 1995, con Cortes, el margen suave, que tolera algunos errores.</p>
+    <p>Solo importan los puntos sobre el margen, los vectores de soporte: los demás se pueden quitar sin cambiar la frontera. En la Sesión 4, el pipeline clásico de reconocimiento combinaba características hechas a mano con un clasificador como este.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · BOOSTING ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 13 de 22</div>
+  <h2><span class="anio">1995</span>AdaBoost y gradient boosting</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">AdaBoost, de Yoav Freund y Robert Schapire (1995; versión de revista, 1997). Gradient boosting, de Jerome Friedman (2001). XGBoost lo llevó a la práctica en 2016.</p>
+      <p>Combinan modelos débiles para construir uno más potente: cada nuevo modelo corrige los errores de los anteriores.</p>
+      <p class="importa"><strong>Por qué importa:</strong> dieron origen a una de las familias más exitosas para datos estructurados.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 6, charla inicial y Laboratorio 6A.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_boosting.png" alt="Esquema: los datos originales entrenan un clasificador; los casos mal clasificados reciben más peso para entrenar el siguiente, y al final los clasificadores se combinan en un ensamble" width="1400" height="788">
+      <figcaption class="credit">Cada clasificador da más peso a los casos que falló el anterior. Sirakorn, <a href="https://commons.wikimedia.org/wiki/File:Ensemble_Boosting.svg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Freund y Schapire (1997), <em>Journal of Computer and System Sciences</em> 55(1) · Friedman (2001), «Greedy function approximation: a gradient boosting machine», <em>Annals of Statistics</em> 29(5).</p>
+  <aside class="notes">
+    <p>La pregunta teórica era si se podían juntar muchos clasificadores apenas mejores que el azar para lograr uno muy bueno. AdaBoost respondió que sí: cada ronda pesa más los casos mal clasificados. Freund y Schapire recibieron el Premio Gödel en 2003 por este trabajo.</p>
+    <p>Friedman lo generalizó como un descenso por gradiente: cada árbol nuevo aprende el error que les falta a los anteriores. Con XGBoost, LightGBM y CatBoost, sigue siendo de lo mejor en datos en tabla, como mostró Grinsztajn en la charla inicial; en el Laboratorio 6A lo compararon con un árbol y un bosque.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · RNN, LSTM Y GRU ============================ -->
+<section data-min="0" class="alg e2">
+  <div class="kicker">Etapa 2 · Algoritmos clásicos y consolidación · 14 de 22</div>
+  <h2><span class="anio">1997</span>RNN, LSTM y GRU</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Las redes recurrentes de Michael Jordan (1986) y Jeffrey Elman (1990); la LSTM de Sepp Hochreiter y Jürgen Schmidhuber (1997); la GRU de Kyunghyun Cho y colegas (2014).</p>
+      <p>Redes que procesan secuencias paso a paso, con una memoria que pasa de un paso al siguiente. La LSTM y la GRU agregan compuertas que controlan qué información se guarda y cuál se olvida.</p>
+      <p class="importa"><strong>Por qué importa:</strong> procesamiento de lenguaje, series de tiempo y reconocimiento de voz.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charla intermedia y Laboratorio 5B.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_lstm.png" alt="Una unidad LSTM desplegada en tres pasos de tiempo: en cada paso recibe la entrada x y el estado anterior, y entrega la salida o y el estado siguiente; dentro, las compuertas sigmoide y tanh" width="1400" height="623">
+      <figcaption class="credit">Una unidad LSTM desplegada en el tiempo, con sus compuertas. fdeloche, <a href="https://commons.wikimedia.org/wiki/File:Long_Short-Term_Memory.svg">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Hochreiter y Schmidhuber (1997), «Long short-term memory», <em>Neural Computation</em> 9(8) · Elman (1990), <em>Cognitive Science</em> 14(2) · Cho et ál. (2014), <em>EMNLP</em>.</p>
+  <aside class="notes">
+    <p>Las redes recurrentes simples olvidan rápido: al retropropagar el error por muchos pasos, el gradiente se desvanece. Hochreiter lo estudió en su tesis de 1991, y la LSTM fue la solución: una celda de memoria con compuertas que deciden qué entra, qué sale y qué se borra. La GRU, de 2014, es una versión más simple.</p>
+    <p>En la Sesión 5 vimos su límite: leen en orden, una palabra a la vez, y no se pueden paralelizar. Fueron el estándar en traducción y voz hasta el transformer; Google Translate usó LSTM desde 2016.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · BOSQUES ALEATORIOS ============================ -->
+<section data-min="0" class="alg e3">
+  <div class="kicker">Etapa 3 · Aprendizaje de máquina moderno · 15 de 22</div>
+  <h2><span class="anio">2001</span>Bosques aleatorios (random forest)</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Leo Breiman (2001), sobre su <em>bagging</em> (1996) y los bosques de decisión aleatorios de Tin Kam Ho (1995).</p>
+      <p>Combinan muchos árboles, cada uno entrenado con una muestra aleatoria de los datos y con subconjuntos aleatorios de las características; deciden por votación.</p>
+      <p class="importa"><strong>Por qué importa:</strong> robustez, buen rendimiento y un desempeño excelente en datos tabulares.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 6, charla inicial («Muchos árboles votan») y Laboratorio 6A.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_bosque.png" alt="Esquema: un conjunto de datos alimenta tres árboles de decisión; sus tres resultados se combinan por votación de mayoría o promedio en el resultado final" width="1280" height="720">
+      <figcaption class="credit">Muchos árboles, una votación. TseKiChun, <a href="https://commons.wikimedia.org/wiki/File:Random_forest_explain.png">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Breiman (2001), «Random forests», <em>Machine Learning</em> 45(1).</p>
+  <aside class="notes">
+    <p>Un solo árbol sin límite memoriza, como vimos en la charla inicial. El bosque corrige eso con azar: cada árbol ve una muestra distinta de los datos y, en cada división, solo un subconjunto de las variables. Los errores de los árboles se parecen menos entre sí, y al votar se cancelan.</p>
+    <p>Breiman era estadístico, también coautor de CART. Además del bosque, dejó dos herramientas que se usan hasta hoy: el error con los datos que cada árbol no vio y la importancia de las variables.</p>
+  </aside>
+</section>
+
+<!-- ============================ 18 · GAN ============================ -->
+<section data-min="0" class="alg e4">
+  <div class="kicker">Etapa 4 · Aprendizaje profundo · 16 de 22</div>
+  <h2><span class="anio">2014</span>Redes generativas antagónicas (GAN)</h2>
+  <div class="cuerpo">
+    <div class="txt">
+      <p class="quien">Ian Goodfellow y colegas, en la Universidad de Montreal (2014).</p>
+      <p>Dos redes compiten: un generador produce muestras y un discriminador intenta distinguirlas de los datos reales. Cada una obliga a la otra a mejorar.</p>
+      <p class="importa"><strong>Por qué importa:</strong> generación de imágenes, síntesis de datos y transformación de dominios, por ejemplo de boceto a fotografía.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_gan_rostro.jpg" alt="Retrato realista de una mujer joven de cabello castaño con flequillo; la persona no existe" width="800" height="800" style="max-height:400px">
+      <figcaption class="credit">Esta persona no existe: la generó StyleGAN (Karras et ál., 2019). Owlsmcgee, <a href="https://commons.wikimedia.org/wiki/File:Woman_1.jpg">Wikimedia Commons</a>, dominio público.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Goodfellow et ál. (2014), «Generative adversarial nets», <em>NeurIPS</em> 27 · Karras, Laine y Aila (2019), <em>CVPR</em>.</p>
+  <aside class="notes">
+    <p>La analogía clásica es la de un falsificador y un detective: el generador aprende a falsificar porque el discriminador aprende a detectar. En cinco años, las imágenes pasaron de rostros borrosos de baja resolución a retratos como este, de NVIDIA, que no corresponden a ninguna persona real.</p>
+    <p>Esa calidad trajo también los deepfakes. Para generar imágenes, las GAN fueron desplazadas por los modelos de difusión, que veremos en dos diapositivas; siguen en uso para síntesis rápida de datos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 19 · ATENCIÓN ============================ -->
+<section data-min="0" class="alg e4">
+  <div class="kicker">Etapa 4 · Aprendizaje profundo · 17 de 22</div>
+  <h2><span class="anio">2014</span>Mecanismo de atención</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Dzmitry Bahdanau, Kyunghyun Cho y Yoshua Bengio (2014), para la traducción automática con redes recurrentes.</p>
+      <p>Permite que el modelo determine qué partes de una secuencia son relevantes para producir cada parte de la salida, en lugar de resumir toda la entrada en un solo vector.</p>
+      <p class="importa"><strong>Por qué importa:</strong> abrió el camino hacia los transformers.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charla intermedia.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_atencion.gif" alt="Animación: un codificador lee la frase china 知识就是力量 palabra por palabra; al generar cada palabra en inglés, el decodificador se conecta con más fuerza a las palabras de entrada relevantes" width="800" height="407">
+      <figcaption class="credit">Traducir «知识就是力量» («el conocimiento es poder») con atención: cada palabra de salida atiende a las de entrada. Google, del repositorio google/seq2seq; <a href="https://commons.wikimedia.org/wiki/File:Seq2seq_with_RNN_and_attention_mechanism.gif">Wikimedia Commons</a>, licencia Apache 2.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Bahdanau, Cho y Bengio (2015), «Neural machine translation by jointly learning to align and translate», <em>ICLR</em>; arXiv, 2014.</p>
+  <aside class="notes">
+    <p>Antes de la atención, el traductor recurrente comprimía toda la frase de entrada en un solo vector, y las frases largas se perdían. Bahdanau propuso que, al generar cada palabra, el decodificador mire de nuevo todas las palabras de entrada y les dé un peso: así aprende solo el alineamiento entre los dos idiomas.</p>
+    <p>En la animación, las líneas más gruesas son los pesos más altos. Tres años después, el transformer se quedó solo con la atención y quitó la recurrencia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 20 · DIFUSIÓN ============================ -->
+<section data-min="0" class="alg e4">
+  <div class="kicker">Etapa 4 · Aprendizaje profundo · 18 de 22</div>
+  <h2><span class="anio">2015</span>Modelos de difusión</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Jascha Sohl-Dickstein y colegas (2015). Jonathan Ho, Ajay Jain y Pieter Abbeel los vuelven competitivos en 2020 (DDPM).</p>
+      <p>Aprenden a revertir un proceso de adición progresiva de ruido: parten de ruido puro y lo quitan paso a paso hasta obtener una imagen.</p>
+      <p class="importa"><strong>Por qué importa:</strong> revolucionaron la generación de imágenes y video.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_difusion.jpg" alt="Diez imágenes de un castillo europeo en Japón generadas con 1, 2, 3, 5, 8, 10, 15, 20, 30 y 40 pasos: con pocos pasos es ruido, con más pasos aparece el castillo nítido" width="1400" height="948">
+      <figcaption class="credit">El mismo castillo con 1 a 40 pasos de eliminación de ruido (Stable Diffusion 1.5, muestreo DDIM). Benlisquare, <a href="https://commons.wikimedia.org/wiki/File:X-Y_plot_of_algorithmically-generated_AI_art_of_European-style_castle_in_Japan_demonstrating_DDIM_diffusion_steps.png">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Sohl-Dickstein et ál. (2015), <em>ICML</em>, PMLR 37 · Ho, Jain y Abbeel (2020), «Denoising diffusion probabilistic models», <em>NeurIPS</em> 33.</p>
+  <aside class="notes">
+    <p>La idea viene de la física: la difusión de una gota de tinta en el agua. Para entrenar, se toman imágenes reales y se les añade ruido poco a poco; la red aprende a predecir el ruido que hay que quitar en cada paso. Para generar, se parte de ruido puro y se aplica la red una y otra vez, como en la figura.</p>
+    <p>La idea de 2015 tardó cinco años en dar buenos resultados. Después vinieron DALL·E 2, Imagen y Stable Diffusion, todos de 2022, y los generadores de video.</p>
+  </aside>
+</section>
+
+<!-- ============================ 21 · TRANSFORMER ============================ -->
+<section data-min="0" class="alg e5">
+  <div class="kicker">Etapa 5 · Transformers y modelos fundacionales · 19 de 22</div>
+  <h2><span class="anio">2017</span>Transformer</h2>
+  <div class="cuerpo alta">
+    <div class="txt">
+      <p class="quien">Ashish Vaswani y colegas, de Google, en el artículo «Attention is all you need» (2017).</p>
+      <p>Usa autoatención y procesamiento en paralelo para modelar las relaciones entre los elementos de una secuencia: cada elemento mira a todos los demás a la vez.</p>
+      <p class="importa"><strong>Por qué importa:</strong> es la arquitectura fundamental de GPT, BERT, T5 y prácticamente toda la revolución de los LLMs.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charla intermedia y Laboratorio 5B.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/vaswani_fig1_arquitectura.png" alt="Figura 1 de Vaswani et al.: la arquitectura transformer, con el codificador a la izquierda y el decodificador a la derecha; cada uno apila N bloques de atención multicabeza, suma y normalización y red de alimentación directa, sobre los embeddings de entrada con la codificación posicional" width="800" height="1178" style="max-height:450px">
+      <figcaption class="credit">Vaswani et ál. (2017), fig. 1. Reproducida con el permiso de Google para uso académico que trae <a href="https://arxiv.org/abs/1706.03762">arXiv</a> (v7).</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Vaswani et ál. (2017), «Attention is all you need», <em>NeurIPS</em> 30.</p>
+  <aside class="notes">
+    <p>Lo abrimos en la Sesión 5. Su ventaja no es solo la calidad: al leer toda la secuencia a la vez, se entrena en paralelo en GPU, y eso permitió escalar a modelos y datos mucho más grandes que con redes recurrentes. Las dos diapositivas siguientes usan cada una media figura: GPT, el decodificador; BERT, el codificador. La última, LoRA, es una forma barata de adaptarlos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 22 · GPT ============================ -->
+<section data-min="0" class="alg e5">
+  <div class="kicker">Etapa 5 · Transformers y modelos fundacionales · 20 de 22</div>
+  <h2><span class="anio">2018</span>Modelado autorregresivo del lenguaje (GPT)</h2>
+  <div class="cuerpo alta">
+    <div class="txt">
+      <p class="quien">Alec Radford y colegas, de OpenAI (junio de 2018). Le siguen GPT-2 (2019) y GPT-3 (2020).</p>
+      <p>Predice el siguiente token a partir de los tokens anteriores; al generar, agrega el token elegido y vuelve a predecir.</p>
+      <p class="importa"><strong>Por qué importa:</strong> escalabilidad, generación de lenguaje y la aparición de los grandes modelos de lenguaje.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charlas intermedia y de cierre; y los LLMs de todas las sesiones.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_gpt.png" alt="Arquitectura completa de un GPT: los tokens de entrada pasan por embeddings y codificación posicional, una pila de bloques transformer con atención enmascarada y, al final, una capa lineal y softmax que da la probabilidad del siguiente token" width="917" height="1100" style="max-height:450px">
+      <figcaption class="credit">La arquitectura completa de un GPT. Marxav y Mrmw, <a href="https://commons.wikimedia.org/wiki/File:Full_GPT_architecture.svg">Wikimedia Commons</a>, CC0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Radford et ál. (2018), «Improving language understanding by generative pre-training», OpenAI · Brown et ál. (2020), «Language models are few-shot learners», <em>NeurIPS</em> 33.</p>
+  <aside class="notes">
+    <p>Predecir la siguiente palabra es una idea vieja: Shannon la usó en 1948 y Bengio la hizo con redes neuronales en 2003. Lo nuevo de GPT fue hacerlo con el decodificador del transformer, preentrenar con mucho texto y después ajustar a cada tarea.</p>
+    <p>GPT salió en junio de 2018, cuatro meses antes que BERT; por eso va primero. Con GPT-2 y GPT-3 se vio que, al crecer el modelo y los datos, aparecen capacidades que nadie entrenó por separado: es el camino a los LLMs que usamos en el curso.</p>
+  </aside>
+</section>
+
+<!-- ============================ 23 · BERT ============================ -->
+<section data-min="0" class="alg e5">
+  <div class="kicker">Etapa 5 · Transformers y modelos fundacionales · 21 de 22</div>
+  <h2><span class="anio">2018</span>Modelado de lenguaje enmascarado (BERT)</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Jacob Devlin y colegas, de Google (octubre de 2018).</p>
+      <p>Entrena al modelo para reconstruir tokens enmascarados dentro de un contexto bidireccional: mira las palabras a ambos lados del hueco.</p>
+      <p class="importa"><strong>Por qué importa:</strong> transformó el procesamiento de lenguaje con el esquema de preentrenar una vez y ajustar para cada tarea.</p>
+      <p class="curso"><span class="pill">En el curso</span>Sesión 5, charla intermedia: las tres familias del transformer.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_bert.png" alt="La frase «alice is in … the white rabbit» entra tokenizada; algunos tokens se reemplazan por [MASK] y el codificador de BERT debe predecir los originales en su salida" width="1426" height="708">
+      <figcaption class="credit">Algunos tokens se reemplazan por [MASK] y el codificador debe reconstruirlos. Daniel Voigt Godoy, <a href="https://commons.wikimedia.org/wiki/File:BERT_masked_language_modelling_task.png">Wikimedia Commons</a>, CC BY 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Devlin, Chang, Lee y Toutanova (2019), «BERT: pre-training of deep bidirectional transformers for language understanding», <em>NAACL-HLT</em>; arXiv, 2018.</p>
+  <aside class="notes">
+    <p>GPT solo mira hacia atrás, porque debe generar; BERT mira a ambos lados, porque su tarea es entender. Durante el preentrenamiento se oculta el 15 % de los tokens y el modelo los adivina por el contexto.</p>
+    <p>BERT no genera texto, pero produce buenos vectores de frases: en 2019, Google lo incorporó a su buscador. Los codificadores de frases, como el que usaron en el Laboratorio 5B para clasificar las órdenes de trabajo, son de esta familia.</p>
+  </aside>
+</section>
+
+<!-- ============================ 24 · LORA ============================ -->
+<section data-min="0" class="alg e5">
+  <div class="kicker">Etapa 5 · Transformers y modelos fundacionales · 22 de 22</div>
+  <h2><span class="anio">2021</span>LoRA (adaptación de bajo rango)</h2>
+  <div class="cuerpo ancha">
+    <div class="txt">
+      <p class="quien">Edward Hu y colegas, de Microsoft (2021).</p>
+      <p>Ajuste fino eficiente: congela los pesos del modelo preentrenado y aprende solo una corrección de bajo rango, el producto de dos matrices delgadas, A y B.</p>
+      <p class="importa"><strong>Por qué importa:</strong> democratizó la adaptación de LLMs y de modelos grandes con recursos de cómputo limitados.</p>
+    </div>
+    <figure class="figure">
+      <img src="assets/img/hist_lora.gif" alt="Animación: dos matrices delgadas, A y B, se entrenan durante mil pasos para que su producto, una matriz de 100 por 100, reproduzca las letras M.K." width="800" height="460">
+      <figcaption class="credit">Una matriz de 100 × 100 aproximada con rango 8: 1600 valores entrenables en vez de 10 000. Matejkoncal, <a href="https://commons.wikimedia.org/wiki/File:Low-rank_matrix_approximation_illustrating_LoRA.gif">Wikimedia Commons</a>, CC BY-SA 4.0.</figcaption>
+    </figure>
+  </div>
+  <p class="credit ref">Hu et ál. (2022), «LoRA: low-rank adaptation of large language models», <em>ICLR</em>; arXiv, 2021.</p>
+  <aside class="notes">
+    <p>Ajustar todos los pesos de un modelo de miles de millones de parámetros exige tantas GPU como entrenarlo. LoRA deja quietos los pesos originales y aprende solo una corrección pequeña: dos matrices delgadas cuyo producto se suma a cada capa. En GPT-3, sus autores redujeron unas 10 000 veces los parámetros entrenables y a un tercio la memoria de GPU.</p>
+    <p>La animación muestra la idea con una imagen: una matriz de 100 por 100 se aproxima con solo 1600 números. Con LoRA, un laboratorio pequeño o una empresa pueden adaptar un modelo abierto a sus propios datos, por ejemplo a las órdenes de trabajo de MantenIA.</p>
+  </aside>
+</section>
+
+<!-- ============================ 25 · REFERENCIAS (1) ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla adicional · 1 de 2</div>
+  <h2>Etapas 1 y 2, hasta las redes convolucionales</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Legendre, A.-M. (1805). <em>Nouvelles méthodes pour la détermination des orbites des comètes</em>. París · Galton, F. (1886). Regression towards mediocrity in hereditary stature. <em>Journal of the Anthropological Institute</em> 15, 246–263. <a href="https://doi.org/10.2307/2841583">DOI</a></li>
+    <li>Pearson, K. (1901). On lines and planes of closest fit to systems of points in space. <em>Philosophical Magazine</em> 2(11), 559–572. <a href="https://doi.org/10.1080/14786440109462720">DOI</a> · Hotelling, H. (1933). Analysis of a complex of statistical variables into principal components. <em>Journal of Educational Psychology</em> 24(6), 417–441. <a href="https://doi.org/10.1037/h0071325">DOI</a></li>
+    <li>Fix, E. y Hodges, J. L. (1951/1989). Discriminatory analysis. Nonparametric discrimination: consistency properties. <em>International Statistical Review</em> 57(3), 238–247. <a href="https://doi.org/10.2307/1403797">DOI</a> · Cover, T. y Hart, P. (1967). Nearest neighbor pattern classification. <em>IEEE Transactions on Information Theory</em> 13(1), 21–27. <a href="https://doi.org/10.1109/TIT.1967.1053964">DOI</a></li>
+    <li>Lloyd, S. P. (1982). Least squares quantization in PCM. <em>IEEE Transactions on Information Theory</em> 28(2), 129–137. <a href="https://doi.org/10.1109/TIT.1982.1056489">DOI</a> · MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. <em>Proceedings of the 5th Berkeley Symposium</em> 1, 281–297</li>
+    <li>Rosenblatt, F. (1958). The perceptron: a probabilistic model for information storage and organization in the brain. <em>Psychological Review</em> 65(6), 386–408. <a href="https://doi.org/10.1037/h0042519">DOI</a></li>
+    <li>Maron, M. E. (1961). Automatic indexing: an experimental inquiry. <em>Journal of the ACM</em> 8(3), 404–417. <a href="https://doi.org/10.1145/321075.321084">DOI</a></li>
+    <li>Baum, L. E. y Petrie, T. (1966). Statistical inference for probabilistic functions of finite state Markov chains. <em>Annals of Mathematical Statistics</em> 37(6), 1554–1563. <a href="https://doi.org/10.1214/aoms/1177699147">DOI</a> · Rabiner, L. R. (1989). A tutorial on hidden Markov models and selected applications in speech recognition. <em>Proceedings of the IEEE</em> 77(2), 257–286. <a href="https://doi.org/10.1109/5.18626">DOI</a></li>
+    <li>Breiman, L., Friedman, J., Olshen, R. y Stone, C. (1984). <em>Classification and Regression Trees</em>. Wadsworth. <a href="https://doi.org/10.1201/9781315139470">DOI</a> · Quinlan, J. R. (1986). Induction of decision trees. <em>Machine Learning</em> 1(1), 81–106. <a href="https://doi.org/10.1007/BF00116251">DOI</a> · Quinlan, J. R. (1993). <em>C4.5: Programs for Machine Learning</em>. Morgan Kaufmann</li>
+    <li>Rumelhart, D. E., Hinton, G. E. y Williams, R. J. (1986). Learning representations by back-propagating errors. <em>Nature</em> 323, 533–536. <a href="https://doi.org/10.1038/323533a0">DOI</a></li>
+    <li>Watkins, C. J. C. H. (1989). <em>Learning from delayed rewards</em>. Tesis doctoral, Universidad de Cambridge · Watkins, C. J. C. H. y Dayan, P. (1992). Q-learning. <em>Machine Learning</em> 8, 279–292. <a href="https://doi.org/10.1007/BF00992698">DOI</a></li>
+    <li>LeCun, Y. et ál. (1989). Backpropagation applied to handwritten zip code recognition. <em>Neural Computation</em> 1(4), 541–551. <a href="https://doi.org/10.1162/neco.1989.1.4.541">DOI</a> · Krizhevsky, A., Sutskever, I. y Hinton, G. E. (2012). ImageNet classification with deep convolutional neural networks. <em>NeurIPS</em> 25</li>
+  </ol></div>
+  <aside class="notes"><p>Referencias de las diapositivas 1 a 11 de la línea de tiempo, con enlaces.</p></aside>
+</section>
+
+<!-- ============================ 26 · REFERENCIAS (2) ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla adicional · 2 de 2</div>
+  <h2>De las SVM a LoRA</h2>
+  <div class="refs-tight"><ol class="refs" start="12">
+    <li>Cortes, C. y Vapnik, V. (1995). Support-vector networks. <em>Machine Learning</em> 20(3), 273–297. <a href="https://doi.org/10.1007/BF00994018">DOI</a> · Boser, B. E., Guyon, I. M. y Vapnik, V. N. (1992). A training algorithm for optimal margin classifiers. <em>COLT '92</em>, 144–152. <a href="https://doi.org/10.1145/130385.130401">DOI</a></li>
+    <li>Freund, Y. y Schapire, R. E. (1997). A decision-theoretic generalization of on-line learning and an application to boosting. <em>Journal of Computer and System Sciences</em> 55(1), 119–139. <a href="https://doi.org/10.1006/jcss.1997.1504">DOI</a> · Friedman, J. H. (2001). Greedy function approximation: a gradient boosting machine. <em>Annals of Statistics</em> 29(5), 1189–1232. <a href="https://doi.org/10.1214/aos/1013203451">DOI</a></li>
+    <li>Hochreiter, S. y Schmidhuber, J. (1997). Long short-term memory. <em>Neural Computation</em> 9(8), 1735–1780. <a href="https://doi.org/10.1162/neco.1997.9.8.1735">DOI</a> · Elman, J. L. (1990). Finding structure in time. <em>Cognitive Science</em> 14(2), 179–211. <a href="https://doi.org/10.1207/s15516709cog1402_1">DOI</a> · Cho, K. et ál. (2014). Learning phrase representations using RNN encoder–decoder for statistical machine translation. <em>EMNLP</em>. <a href="https://arxiv.org/abs/1406.1078">arXiv</a></li>
+    <li>Breiman, L. (2001). Random forests. <em>Machine Learning</em> 45(1), 5–32. <a href="https://doi.org/10.1023/A:1010933404324">DOI</a></li>
+    <li>Goodfellow, I. et ál. (2014). Generative adversarial nets. <em>NeurIPS</em> 27. <a href="https://arxiv.org/abs/1406.2661">arXiv</a> · Karras, T., Laine, S. y Aila, T. (2019). A style-based generator architecture for generative adversarial networks. <em>CVPR</em>. <a href="https://arxiv.org/abs/1812.04948">arXiv</a></li>
+    <li>Bahdanau, D., Cho, K. y Bengio, Y. (2015). Neural machine translation by jointly learning to align and translate. <em>ICLR</em>. <a href="https://arxiv.org/abs/1409.0473">arXiv</a></li>
+    <li>Sohl-Dickstein, J. et ál. (2015). Deep unsupervised learning using nonequilibrium thermodynamics. <em>ICML</em>, PMLR 37. <a href="https://arxiv.org/abs/1503.03585">arXiv</a> · Ho, J., Jain, A. y Abbeel, P. (2020). Denoising diffusion probabilistic models. <em>NeurIPS</em> 33. <a href="https://arxiv.org/abs/2006.11239">arXiv</a></li>
+    <li>Vaswani, A. et ál. (2017). Attention is all you need. <em>NeurIPS</em> 30. <a href="https://arxiv.org/abs/1706.03762">arXiv</a></li>
+    <li>Radford, A. et ál. (2018). <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf">Improving language understanding by generative pre-training</a>. OpenAI · Brown, T. et ál. (2020). Language models are few-shot learners. <em>NeurIPS</em> 33. <a href="https://arxiv.org/abs/2005.14165">arXiv</a></li>
+    <li>Devlin, J., Chang, M.-W., Lee, K. y Toutanova, K. (2019). BERT: pre-training of deep bidirectional transformers for language understanding. <em>NAACL-HLT</em>, 4171–4186. <a href="https://arxiv.org/abs/1810.04805">arXiv</a></li>
+    <li>Hu, E. J. et ál. (2022). LoRA: low-rank adaptation of large language models. <em>ICLR</em>. <a href="https://arxiv.org/abs/2106.09685">arXiv</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla2_el_agente_que_aprende_por_refuerzo.html">← Charla intermedia</a><a href="index.html">Volver a la agenda</a><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes"><p>Referencias de las diapositivas 12 a 22 de la línea de tiempo, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 6 · Charla adicional · Historia de los algoritmos de aprendizaje de máquina</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

@@ -25,7 +25,7 @@
   .tag.dis { color: var(--violet); border-color: rgba(167,139,250,.45); }
   a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(56,189,248,.45); }
   a:hover { color: #7dd3fc; }
-  .decks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .decks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
   .deck { display: block; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: linear-gradient(180deg, var(--bg-3), var(--bg-2)); border-bottom: 1px solid var(--line); }
   .deck:hover { border-color: var(--accent); }
   .deck .n { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
@@ -52,6 +52,7 @@
   <div class="decks">
     <a class="deck" href="charla1_del_dato_al_conocimiento.html"><span class="n">Charla inicial</span><span class="tt">Del dato al conocimiento</span><span class="m">30 min · con la matemática ↓</span></a>
     <a class="deck" href="charla2_el_agente_que_aprende_por_refuerzo.html"><span class="n">Charla intermedia</span><span class="tt">El agente que aprende por refuerzo</span><span class="m">30 min · con la matemática ↓</span></a>
+    <a class="deck" href="charla_adicional_historia_de_los_algoritmos.html"><span class="n">Charla adicional</span><span class="tt">Historia de los algoritmos de aprendizaje de máquina</span><span class="m">Sin tiempo · consulta</span></a>
     <a class="deck" href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html"><span class="n">Charla de cierre</span><span class="tt">Aprender en los sistemas inteligentes</span><span class="m">30 min</span></a>
     <a class="deck" href="club_lectura.html"><span class="n">Club de lectura</span><span class="tt">Specification gaming</span><span class="m">15 min · discusión</span></a>
   </div>
@@ -64,6 +65,7 @@
     <tr class="ext"><td class="t">1:30</td><td>Pausa</td><td class="k">—</td><td>15 min</td></tr>
     <tr><td class="t">1:45</td><td><a href="charla2_el_agente_que_aprende_por_refuerzo.html">Charla intermedia · El agente que aprende por refuerzo</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
     <tr><td class="t">2:15</td><td>Laboratorio 6B · Aprendizaje por refuerzo y <em>specification gaming</em></td><td class="k"><span class="tag lab">Práctica</span></td><td>60 min</td></tr>
+    <tr class="ext"><td class="t">—</td><td><a href="charla_adicional_historia_de_los_algoritmos.html">Charla adicional · Los algoritmos más importantes en la historia del aprendizaje de máquina</a>: 22 algoritmos en orden histórico, para consulta</td><td class="k"><span class="tag">Consulta</span></td><td>Sin tiempo</td></tr>
     <tr><td class="t">3:15</td><td><a href="charla3_aprender_en_los_sistemas_inteligentes_y_cierre.html">Charla de cierre · Aprender en los sistemas inteligentes, y cierre de la sesión</a></td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
     <tr><td class="t">3:45</td><td><a href="club_lectura.html">Club de lectura</a> · Krakovna et ál. (2020), <em>Specification gaming: the flip side of AI ingenuity</em></td><td class="k"><span class="tag dis">Discusión</span></td><td>15 min</td></tr>
   </table>
@@ -86,5 +88,6 @@
   </ul>
   <footer>Elaboró: Ernesto Cuartas Morales · Sesión 6 de 8 · Créditos de imágenes en cada diapositiva y en README.md</footer>
 </main>
+<script src="assets/js/deck.js"></script>
 </body>
 </html>

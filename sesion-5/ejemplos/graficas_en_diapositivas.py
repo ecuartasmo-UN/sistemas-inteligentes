@@ -210,16 +210,49 @@ def continuaciones(d: dict) -> str:
 # ---------- Charla de cierre ----------
 
 def piloto(d: dict) -> str:
-    nombres = {"bolsa de palabras": "Bolsa de palabras (sin orden ni significado)",
-               "ibm-granite/granite-embedding-107m-multilingual": "Transformer · Granite (214 MB), el del 5B",
-               "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2": "Transformer · MiniLM multilingüe (471 MB)",
-               "intfloat/multilingual-e5-small": "Transformer · e5-small multilingüe (471 MB)"}
-    filas = ["<tr><th>Representación</th><th>Aciertos</th><th>«Hay fuga» frente a «No hay fuga»</th></tr>"]
-    for r in d["resultados"]:
-        sim = num(r["similitud_fuga_no_fuga"]) if "similitud_fuga_no_fuga" in r else "—"
-        clase = ' class="hi"' if r["representacion"].startswith("ibm") else ""
-        filas.append(f'<tr><td>{nombres[r["representacion"]]}</td><td{clase}>{r["aciertos"]} de {d["prueba"]}</td><td>{sim}</td></tr>')
-    return f'<table class="tbl num">{"".join(filas)}</table>'
+    # Una orden de la prueba y uno de los tres ejemplos de fugas (EJEMPLOS en codificador_5b.py): solo comparten «de»
+    orden, ejemplo = "Escape de lubricante debajo del equipo", "Fuga de aceite en la caja reductora"
+    r = {x["representacion"]: x for x in d["resultados"]}
+    bolsa, granite = r["bolsa de palabras"], r["ibm-granite/granite-embedding-107m-multilingual"]
+    i, n = d["textos_prueba"].index(orden), d["prueba"]
+
+    def destino(x: dict) -> str:
+        p = x["predicciones"][i]
+        return f'<span class="ok">{p}&nbsp;✓</span>' if p == d["reales"][i] else f'<span class="bad">{p}&nbsp;✗</span>'
+
+    def barra(etiqueta: str, valor: float, texto: str, clase: str = "") -> str:
+        # Sin etiqueta, la barra ocupa también la columna de la etiqueta y queda alineada con la frase de arriba
+        et = f'<span class="et">{etiqueta}</span><span class="pista">' if etiqueta else '<span class="pista" style="grid-column:1/3">'
+        return f'{et}<span class="bar {clase}" style="width:{100 * valor:.0f}%"></span></span><span class="val">{texto}</span>'
+
+    def frase(texto: str, nota: str) -> str:
+        return f'<span class="et" style="grid-column:1/-1">«{escape(texto)}» <span class="muted">· {nota}</span></span>'
+
+    otros = "; ".join(f'{nombre}, {x["aciertos"]} de {n} y {num(x["similitud_fuga_no_fuga"])} frente a {num(x["similitud_fuga_escape"])}'
+                      for nombre, x in (("MiniLM", r["sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"]),
+                                        ("e5-small", r["intfloat/multilingual-e5-small"])))
+    gana = (f'<div class="card ok"><h4>Gana: entiende otras palabras</h4>'
+            f'<p class="muted">Un ejemplo del equipo de fugas y una orden nueva:</p>'
+            f'<p class="frase">«{escape(ejemplo)}»<br>«{escape(orden)}»</p>'
+            f'<p>No comparten ninguna palabra que importe. La <strong>bolsa de palabras</strong>, que solo cuenta palabras, '
+            f'envía la orden a {destino(bolsa)}; el <strong>transformer</strong>, a {destino(granite)}.</p>'
+            f'<div class="toklbl">Órdenes nuevas bien enviadas</div><div class="sim">'
+            + barra("Bolsa de palabras", bolsa["aciertos"] / n, f'{bolsa["aciertos"]} de {n}', "a")
+            + barra("Transformer", granite["aciertos"] / n, f'{granite["aciertos"]} de {n}')
+            + "</div></div>")
+    pierde = (f'<div class="card bad fragment"><h4>No gana: la negación</h4>'
+              f'<p class="muted">¿Cuánto se parece cada frase a «{escape(d["negacion"][0])}»?</p><div class="sim">'
+              + frase(d["negacion"][2], "dice lo mismo")
+              + barra("", granite["similitud_fuga_escape"], num(granite["similitud_fuga_escape"]), "ok")
+              + frase(d["negacion"][1], "dice lo contrario")
+              + barra("", granite["similitud_fuga_no_fuga"], num(granite["similitud_fuga_no_fuga"]), "bad")
+              + '</div><p>La frase contraria le parece <strong>más parecida</strong> que la que dice lo mismo con otras palabras: '
+              'el «no» casi no mueve su vector.</p></div>')
+    credito = (f'<p class="credit">Prueba piloto del 29 de octubre de 2026, con el transformer del 5B (Granite, 214 MB) sin ajustarlo. '
+               f'Similitud coseno entre los vectores de las frases: 1 es idéntico. Los otros dos transformers probados repiten el patrón '
+               f'(órdenes bien enviadas; similitud con la contraria frente a la que dice lo mismo): {otros}. '
+               f'Generado con <code>ejemplos/codificador_5b.py</code>.</p>')
+    return f'<div class="cols piloto">{gana}{pierde}</div>{credito}'
 
 
 GRAFICAS = {
