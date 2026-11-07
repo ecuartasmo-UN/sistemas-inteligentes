@@ -62,6 +62,8 @@ Para forzar una vía, cambie `PROVEEDOR` en la celda ✏️ de configuración de
 
 **Nunca suba su archivo `.env` ni escriba la clave en un notebook.** El `.gitignore` de este repositorio excluye `.env` y `.venv`.
 
+La sección 0.1 del 5B imprime la clave a propósito, para mostrar qué es. Antes de entregar ese notebook, deje `CLAVE_EN_TEXTO = ""` y `MOSTRAR_CLAVE = False` y ejecútelo de nuevo.
+
 ## Respaldo: Google Colab
 
 Si no puede instalar el entorno, cada laboratorio también corre en Google Colab: descargue el `.zip` del laboratorio desde la sección **Releases** de este repositorio, súbalo a `/content` y siga las instrucciones del desplegable «Respaldo: trabajar en Google Colab» del notebook.

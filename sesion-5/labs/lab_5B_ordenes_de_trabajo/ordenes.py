@@ -13,10 +13,12 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import html
 import io
 import os
 import platform
 import re
+import sys
 import time
 import unicodedata
 import warnings
@@ -676,6 +678,141 @@ def similitudes(frases) -> None:
 
 # ------------------------------------------------------------------ el LLM
 
+MODELO_PREGUNTAS = "claude-haiku-5-5"
+_NOMBRE_PREGUNTAS = "Claude Haiku 5.5"
+_CLAVE_ESCRITA = None   # la última clave de CLAVE_EN_TEXTO que se puso en el entorno, para quitarla si la borran
+
+
+def _buscar_env():
+    """La ruta del archivo .env más cercano: en la carpeta del notebook o en una superior, como la del curso."""
+    try:
+        from dotenv import find_dotenv
+    except ImportError:
+        raise ErrorDeLaboratorio("Falta el paquete python-dotenv: ejecute la primera celda del notebook.") from None
+    ruta = find_dotenv(usecwd=True)
+    return Path(ruta) if ruta else None
+
+
+def _mostrar_clave(valor: str, variable: str, origen: str, escrita: bool = False) -> None:
+    """Imprime la clave para que se vea cómo es una clave de API, con el aviso de que es secreta.
+
+    En la corrida docente (variable de entorno LAB_OCULTAR_CLAVE) solo se muestra su comienzo, que es igual en todas
+    las claves de Anthropic, para que la clave del docente no quede guardada en el notebook ni en el repositorio."""
+    prefijo = "sk-ant-"   # el comienzo de todas las claves de Anthropic
+    if os.environ.get("LAB_OCULTAR_CLAVE"):
+        texto = prefijo + "•" * 12 + "  (versión docente: el resto de la clave se oculta para no guardarla en el repositorio)"
+    else:
+        texto = valor
+    comienzo = ("Empieza por <code>sk-ant-</code>: así se reconocen las claves de Anthropic." if valor.startswith(prefijo)
+                else "No empieza por <code>sk-ant-</code>, como las claves de Anthropic: revise que copió la clave correcta.")
+    if escrita:
+        presentacion = "La clave escrita en <code>CLAVE_EN_TEXTO</code> es:"
+        consejo = ("borre la clave de <code>CLAVE_EN_TEXTO</code> (deje las comillas vacías) y guárdela en el archivo "
+                   "<code>.env</code>: escrita en la celda, queda en el notebook aunque no se imprima.")
+    else:
+        presentacion = f"La variable <code>{html.escape(variable)}</code> {html.escape(origen)} contiene:"
+        consejo = ("cambie <code>MOSTRAR_CLAVE</code> a <code>False</code> y vuelva a ejecutar esta celda, para que la clave "
+                   "no quede escrita en él.")
+    p.caja(f"<div>{presentacion}</div>"
+           f"<pre style='white-space:pre-wrap;word-break:break-all;margin:6px 0;font-size:13px'>{html.escape(texto)}</pre>"
+           f"<div>{len(valor)} caracteres. {comienzo} "
+           "Una clave de API identifica su cuenta ante el proveedor, y cada llamada que se haga con ella se cobra "
+           "a esa cuenta. Es secreta, como una contraseña: por eso vive en el archivo <code>.env</code> y no en el código.</div>"
+           f"<div style='margin-top:6px'><b>Antes de entregar o compartir este notebook</b>, {consejo}</div>",
+           "aviso", "Así es una clave de API")
+
+
+@_amable
+def conectar_claude(variable: str = "ANTHROPIC_API_KEY", mostrar_clave: bool = True, clave_en_texto: str | None = ""):
+    """Lee la clave de API de una variable del archivo .env, la imprime si se pide y crea el cliente de Claude Haiku 5.5.
+
+    clave_en_texto: la clave escrita directamente en la celda, si no se quiere usar el .env; vacía, se usa el .env."""
+    if not isinstance(variable, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", variable.strip()):
+        raise ErrorDeLaboratorio(f"VARIABLE_CLAVE debe ser el nombre de una variable entre comillas, sin espacios, como "
+                                 f"\"ANTHROPIC_API_KEY\"; escribió {variable!r}.")
+    if not isinstance(mostrar_clave, bool):
+        raise ErrorDeLaboratorio(f"MOSTRAR_CLAVE debe ser True o False, sin comillas y con mayúscula inicial; escribió "
+                                 f"{mostrar_clave!r}.")
+    if clave_en_texto is not None and not isinstance(clave_en_texto, str):
+        raise ErrorDeLaboratorio("CLAVE_EN_TEXTO debe ir entre comillas, como \"sk-ant-…\", o quedar vacía: \"\".")
+    escrita = (clave_en_texto or "").strip().strip("\"'").strip()
+    if escrita and (re.search(r"\s", escrita) or len(escrita) < 20):
+        raise ErrorDeLaboratorio("La clave de CLAVE_EN_TEXTO no parece una clave de API: debe ser una sola cadena larga, sin "
+                                 "espacios ni saltos de línea, como la copió de la consola de Anthropic.")
+    variable = variable.strip()
+    try:
+        import anthropic  # noqa: F401  (solo se comprueba que esté instalado)
+    except ImportError:
+        raise ErrorDeLaboratorio("Falta el paquete anthropic: ejecute la primera celda del notebook.") from None
+    global _CLAVE_ESCRITA
+    if not escrita and _CLAVE_ESCRITA and os.environ.get("ANTHROPIC_API_KEY") == _CLAVE_ESCRITA:
+        del os.environ["ANTHROPIC_API_KEY"]   # la borraron de la celda: no se sigue usando sin que se vea
+    _CLAVE_ESCRITA = escrita or None
+    ruta = None if escrita else _buscar_env()
+    valor = escrita or None
+    origen = "escrita en esta celda"
+    if ruta:
+        from dotenv import dotenv_values
+        valor = dotenv_values(ruta).get(variable)
+        origen = f"del archivo .env de la carpeta «{ruta.parent.name}»"
+    if not valor and not escrita:
+        cliente_llm.cargar_claves()   # una variable del sistema o, en Colab, sus Secrets
+        valor = os.environ.get(variable)
+        origen = "de una variable de entorno" + (" o de los Secrets de Colab" if "google.colab" in sys.modules else "")
+    valor = (valor or "").strip().lstrip("=").strip().strip("\"'").strip()
+    if not valor:
+        donde = f"El archivo .env que se encontró está en la carpeta «{ruta.parent.name}», pero no tiene esa variable." if ruta \
+            else "No se encontró ningún archivo .env en esta carpeta ni en las superiores."
+        raise ErrorDeLaboratorio(f"No se encontró la variable {variable}. {donde} En la carpeta del curso, cree un archivo "
+                                 f"llamado .env con una sola línea, sin espacios ni comillas: {variable}=su-clave. Luego "
+                                 "vuelva a ejecutar esta celda. Sin clave, el resto del laboratorio funciona igual.")
+    os.environ["ANTHROPIC_API_KEY"] = valor   # el cliente común lee la clave de Anthropic de esta variable
+    try:
+        claude = cliente_llm.ClienteLLM(proveedor="anthropic", modelo=MODELO_PREGUNTAS, max_llamadas=50, mostrar=False)
+    except cliente_llm.ErrorLLM as e:
+        raise ErrorDeLaboratorio(str(e)) from None
+    if mostrar_clave:
+        _mostrar_clave(valor, variable, origen, escrita=bool(escrita))
+    elif escrita:
+        p.nota("La clave quedó escrita en el código de esta celda, así que se guarda con el notebook aunque no se imprima. "
+               "Antes de entregarlo o compartirlo, bórrela de CLAVE_EN_TEXTO y guárdela en el archivo .env.", "aviso")
+    entrada, salida = cliente_llm.PRECIOS[MODELO_PREGUNTAS]
+    leida = "Se usa la clave escrita en CLAVE_EN_TEXTO, no el .env." if escrita else f"Clave leída de la variable {variable}, {origen}."
+    p.nota(leida + ("" if mostrar_clave else " No se imprime.") + "\n"
+           f"Modelo: {_NOMBRE_PREGUNTAS} ({MODELO_PREGUNTAS}) · US${_n(entrada, 2)} / US${_n(salida, 2)} por millón de "
+           f"tokens de entrada / salida · hasta {claude.max_llamadas} preguntas en este notebook.", "exito", "Listo para preguntar")
+    return claude
+
+
+@_amable
+def preguntar(claude, pregunta, max_tokens: int = 1500) -> None:
+    """Envía una pregunta libre a Claude Haiku 5.5 y muestra la respuesta, con sus tokens, su costo y su tiempo."""
+    if claude is None:
+        raise ErrorDeLaboratorio("No hay conexión con Claude: ejecute la celda anterior, la que lee la clave del archivo .env, "
+                                 "y revise su mensaje.")
+    if not isinstance(pregunta, str):
+        raise ErrorDeLaboratorio("La pregunta debe ir entre las comillas triples, como en el ejemplo.")
+    pregunta = pregunta.strip()
+    if not pregunta:
+        raise ErrorDeLaboratorio("La pregunta está vacía: escríbala entre las comillas triples y vuelva a ejecutar la celda.")
+    try:
+        r = claude.completar(pregunta, max_tokens_respuesta=max_tokens)
+    except (cliente_llm.ErrorLLM, cliente_llm.PresupuestoAgotado) as e:
+        if "401" in str(e) or "authentication" in str(e).lower():
+            raise ErrorDeLaboratorio("Anthropic rechazó la clave (error 401): no es válida o fue revocada. Revise que la copió "
+                                     "completa, sin espacios, desde la consola de Anthropic, y vuelva a ejecutar la celda de "
+                                     "la clave.") from None
+        raise ErrorDeLaboratorio(str(e)) from None
+    p.mostrar_conversacion([{"role": "user", "content": pregunta}], "Su pregunta", etiquetas={"user": "Pregunta"})
+    p.mostrar_markdown(r.texto or "*(Claude no devolvió texto.)*")
+    if r.costo_usd is None:
+        costo = "costo no registrado"
+    else:
+        costo = "menos de US$0,0001" if r.costo_usd < 0.00005 else f"US${_n(r.costo_usd, 4)}"
+    print(f"{_NOMBRE_PREGUNTAS} · {_n(r.tokens_entrada)} tokens de entrada y {_n(r.tokens_salida)} de salida · {costo} · "
+          f"{_n(r.segundos, 1)} s")
+
+
 def instruccion(conjunto: Conjunto, definiciones: dict | None = None) -> str:
     """La instrucción de sistema: quién responde, las clases con su definición y el formato de la respuesta."""
     if not conjunto.propio:
@@ -710,12 +847,12 @@ def clasificar_llm(llm, conjunto: Conjunto, experimento: str = "clase", definici
                    extras=(), mostrar: bool = True) -> Clasificacion | None:
     """Envía cada orden de prueba y cada trampa al LLM, con la misma instrucción, y mide aciertos, tokens, costo y tiempo."""
     if llm is None:
-        raise ErrorDeLaboratorio("El LLM no está configurado: ejecute la celda de la sección 0.2.")
+        raise ErrorDeLaboratorio("El LLM no está configurado: ejecute la celda de la sección 0.3.")
     if conjunto is None:
         raise ErrorDeLaboratorio("Primero ejecute la celda que carga los textos.")
     if llm.proveedor == "grabado" and conjunto.propio:
         p.nota("Con respuestas grabadas no hay respuestas para sus textos. Para clasificarlos con un LLM, configure una "
-               "clave de API o Ollama en la sección 0.2, o use el chat del LLM, como dice el enunciado del TI-2.", "aviso")
+               "clave de API o Ollama en la sección 0.3, o use el chat del LLM, como dice el enunciado del TI-2.", "aviso")
         return None
     sistema = instruccion(conjunto, definiciones)
     textos, reales, grupos = _a_clasificar(conjunto, extras)
@@ -885,7 +1022,7 @@ def avisar_privacidad(enviar: bool, llm=None) -> bool:
         return False
     if llm is not None and llm.proveedor == "grabado":
         p.nota("Con respuestas grabadas no hay respuestas para sus textos. Para clasificarlos con un LLM, configure una "
-               "clave de API o Ollama en la sección 0.2, o use el chat del LLM, como dice el enunciado del TI-2.", "aviso")
+               "clave de API o Ollama en la sección 0.3, o use el chat del LLM, como dice el enunciado del TI-2.", "aviso")
         return False
     p.nota("Con la vía API, cada texto sale de su computador hacia los servidores del proveedor. Envíe solo textos sin datos "
            "personales (nombres, documentos, teléfonos, correos, direcciones) ni información confidencial de su "

@@ -29,6 +29,8 @@ El notebook elige solo la primera vía disponible y siempre dice cuál usa.
 - **Local:** Ollama con un modelo de texto, por ejemplo `ollama pull qwen3:4b-instruct` (2,5 GB). Nada sale de su computador.
 - **Grabado:** sin clave ni Ollama, el notebook usa respuestas reales de Claude Haiku 5.5, grabadas el 29-oct-2026.
 
+Además, la sección 0.1 explica qué es una clave de API: lee la clave de Anthropic de una variable del `.env`, la imprime y le deja hacer una pregunta libre a Claude Haiku 5.5. Escriba su pregunta en la celda ✏️ y ejecútela. Si no tiene el `.env`, puede pegar la clave en `CLAVE_EN_TEXTO`, aunque así queda escrita en el notebook. Antes de entregarlo, deje `CLAVE_EN_TEXTO` vacía y `MOSTRAR_CLAVE` en `False`, para que no contenga su clave. Sin clave, muestra un aviso y el resto del laboratorio funciona igual.
+
 ## Archivos
 
 | Archivo o carpeta | Para qué sirve |
