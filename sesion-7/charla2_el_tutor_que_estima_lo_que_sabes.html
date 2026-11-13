@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla intermedia · El tutor que estima lo que sabes · Sesión 7 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .cols-4 .card h4 { font-size: 21px; margin-bottom: 2px; }
+  .evid .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .evid .card p { font-size: 22px; margin: 0 0 8px; line-height: 1.32; }
+  .sintesis .card h4 { font-size: 27px; }
+  .sintesis .card p { font-size: 24px; margin: 0; line-height: 1.32; }
+  .cols-3 .card p { font-size: 22px !important; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="1">
+  <div class="kicker">Sesión 7 · Unidad 7 · Charla intermedia</div>
+  <h1>El tutor que estima lo que sabes</h1>
+  <p class="lead muted">Modelos que cambian en el tiempo, sistemas tutoriales inteligentes, Bayesian Knowledge Tracing y tutores con LLMs</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla1_creer_con_evidencia_y_decidir.html">← Charla inicial</a><a href="index.html">Agenda</a><a href="charla3_decidir_bajo_incertidumbre_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes">
+    <p>Después de la pausa. En el 7A la incertidumbre estaba quieta: el robo pasó o no pasó. Ahora lo que no vemos cambia en el tiempo.</p>
+    <p>El caso es una persona que aprende. Esta charla prepara el Laboratorio 7B: un tutor que estima qué sabe cada estudiante.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LO QUE NO SE VE CAMBIA ============================ -->
+<section data-min="2">
+  <div class="kicker">Modelos temporales · AIMA, cap. 14 (panorama)</div>
+  <h2>Lo que no se ve cambia en el tiempo</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 300" role="img" aria-label="Un modelo oculto de Márkov: el desgaste de la bomba es un estado oculto que pasa de una semana a la siguiente; en cada semana se observa la vibración">
+    <defs><marker id="pt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <text class="t2" x="10" y="80">oculto</text><text class="t2" x="10" y="230">se observa</text>
+    <ellipse class="nodo violet" cx="230" cy="75" rx="120" ry="36"/><text class="t1" x="230" y="70" text-anchor="middle">desgaste</text><text class="t3" x="230" y="92" text-anchor="middle">semana 1</text>
+    <ellipse class="nodo violet" cx="560" cy="75" rx="120" ry="36"/><text class="t1" x="560" y="70" text-anchor="middle">desgaste</text><text class="t3" x="560" y="92" text-anchor="middle">semana 2</text>
+    <ellipse class="nodo violet" cx="890" cy="75" rx="120" ry="36"/><text class="t1" x="890" y="70" text-anchor="middle">desgaste</text><text class="t3" x="890" y="92" text-anchor="middle">semana 3</text>
+    <path class="arista fuerte" d="M352,75 L432,75" marker-end="url(#pt)"/><path class="arista fuerte" d="M682,75 L762,75" marker-end="url(#pt)"/>
+    <path class="arista fuerte" d="M1012,75 L1070,75" marker-end="url(#pt)"/><text class="t2" x="1080" y="80">…</text>
+    <rect class="nodo" x="140" y="200" width="180" height="56" rx="10"/><text class="t1" x="230" y="235" text-anchor="middle">vibración</text>
+    <rect class="nodo" x="470" y="200" width="180" height="56" rx="10"/><text class="t1" x="560" y="235" text-anchor="middle">vibración</text>
+    <rect class="nodo" x="800" y="200" width="180" height="56" rx="10"/><text class="t1" x="890" y="235" text-anchor="middle">vibración</text>
+    <path class="arista" d="M230,113 L230,194" marker-end="url(#pt)"/><path class="arista" d="M560,113 L560,194" marker-end="url(#pt)"/><path class="arista" d="M890,113 L890,194" marker-end="url(#pt)"/>
+    <g class="fragment"><text class="t2" x="392" y="58" text-anchor="middle">transición</text><text class="t2" x="245" y="160">emisión</text></g>
+  </svg>
+  <div class="cols mid" style="margin-top:6px">
+    <p class="fragment" style="font-size:21px">Es un <strong>modelo oculto de Márkov</strong>: la red bayesiana de la charla inicial, repetida en cada paso del tiempo.</p>
+    <p class="fragment" style="font-size:21px">Lo viste en la charla adicional de la Sesión 6 (1966). Reconoció voz durante décadas (Rabiner, 1989).</p>
+  </div>
+  <p class="credit">Diagrama propio. Panorama de las redes bayesianas dinámicas: Russell y Norvig (2021), <em>AIMA</em>, 4.ª ed., cap. 14.</p>
+  <aside class="notes">
+    <p>En la red de la alarma, nada cambiaba. Ahora el estado oculto cambia con el tiempo.</p>
+    <p>La bomba de MantenIA. Su desgaste no se ve, y avanza semana a semana: es la transición. Cada semana medimos la vibración, que depende del desgaste: es la emisión.</p>
+    <p>Este es un modelo oculto de Márkov: una red bayesiana que se repite en cada paso. Lo vimos en la charla adicional de la Sesión 6. Durante décadas fue la base del reconocimiento de voz. El tutorial de Rabiner, de 1989, es la referencia clásica.</p>
+    <p>Ahora cambiemos la bomba por una persona. Lo que no se ve es lo que sabe.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · EL PROBLEMA DE LAS 2 SIGMAS ============================ -->
+<section data-min="2">
+  <div class="kicker">La IA en educación</div>
+  <h2>El problema de las 2 sigmas</h2>
+  <div class="cols c64 mid">
+    <figure class="figure"><img src="assets/img/bloom1984_fig1.png" alt="Figura 1 de Bloom: tres curvas de logro; la de la tutoría uno a uno está muy a la derecha de la de mastery learning y de la clase convencional" width="2134" height="1517" style="max-height:400px"><figcaption class="credit">Bloom (1984), <em>Educational Researcher</em> 13(6), fig. 1. El logro con clase convencional, mastery learning y tutoría. © AERA; cita con fines educativos.</figcaption></figure>
+    <div>
+      <p style="font-size:22px">Bloom (1984): con un tutor personal, el estudiante promedio superó al <strong>98 %</strong> de la clase convencional.</p>
+      <p class="fragment" style="font-size:21px">El problema: un tutor por estudiante no escala. ¿Puede un sistema hacer parte de ese trabajo?</p>
+      <p class="fragment" style="font-size:19px" >Estudios posteriores encuentran efectos menores. Por ejemplo, 0.79 desviaciones estándar para la tutoría humana (VanLehn, 2011).</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>El punto de partida de los tutores inteligentes es un artículo de Benjamin Bloom, de 1984.</p>
+    <p>La figura es la original. Tiene tres curvas de logro. La de la tutoría uno a uno está muy a la derecha de las otras dos.</p>
+    <p>Bloom resumió dos tesis de sus estudiantes. Compararon la clase convencional, el aprendizaje para el dominio y la tutoría uno a uno. Con tutor, el estudiante promedio superó al 98 % de la clase convencional: dos desviaciones estándar. De ahí el nombre.</p>
+    <p>El problema es el costo: no hay un tutor para cada estudiante. ¿Puede un sistema hacer parte del trabajo?</p>
+    <p>Una advertencia honesta. Estudios posteriores encuentran efectos más pequeños. VanLehn, en 2011, estima 0.79 desviaciones estándar para la tutoría humana. Sigue siendo mucho.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · LA ARQUITECTURA DE UN STI ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Sistemas tutoriales inteligentes</div>
+  <h2>Un tutor inteligente tiene cuatro modelos</h2>
+  <div class="cols c64 mid">
+    <svg class="diagram dg" viewBox="0 0 700 380" role="img" aria-label="La arquitectura de un sistema tutorial inteligente: el modelo del dominio, el modelo del estudiante y el modelo pedagógico se conectan con la interfaz, que habla con el estudiante">
+      <defs><marker id="ps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="nodo" x="20" y="20" width="200" height="90" rx="12"/><text class="t1" x="120" y="58" text-anchor="middle">Modelo del</text><text class="t1" x="120" y="84" text-anchor="middle">dominio</text>
+      <rect class="nodo violet" x="250" y="20" width="200" height="90" rx="12"/><text class="t1" x="350" y="58" text-anchor="middle">Modelo del</text><text class="t1" x="350" y="84" text-anchor="middle">estudiante</text>
+      <rect class="nodo amber" x="480" y="20" width="200" height="90" rx="12"/><text class="t1" x="580" y="58" text-anchor="middle">Modelo</text><text class="t1" x="580" y="84" text-anchor="middle">pedagógico</text>
+      <rect class="nodo ok" x="200" y="190" width="300" height="70" rx="12"/><text class="t1" x="350" y="232" text-anchor="middle">Interfaz</text>
+      <ellipse class="nodo gris" cx="350" cy="335" rx="110" ry="32"/><text class="t1" x="350" y="342" text-anchor="middle">Estudiante</text>
+      <path class="arista" d="M120,112 L270,186" marker-end="url(#ps)"/><path class="arista" d="M350,112 L350,186" marker-end="url(#ps)"/><path class="arista" d="M580,112 L430,186" marker-end="url(#ps)"/>
+      <path class="arista" d="M335,262 L335,300" marker-end="url(#ps)"/><path class="arista" d="M365,301 L365,264" marker-end="url(#ps)"/>
+      <g class="fragment"><text class="t3" x="120" y="132" text-anchor="middle">qué hay que saber</text><text class="t3" x="350" y="132" text-anchor="middle">qué sabe, con qué certeza</text><text class="t3" x="580" y="132" text-anchor="middle">qué hacer después</text></g>
+    </svg>
+    <div>
+      <p style="font-size:21px"><strong>Dominio:</strong> las habilidades y los errores típicos.</p>
+      <p style="font-size:21px" class="fragment"><strong>Estudiante:</strong> una estimación incierta de lo que domina. Es el corazón del 7B.</p>
+      <p style="font-size:21px" class="fragment"><strong>Pedagógico:</strong> qué ejercicio, pista o explicación viene ahora.</p>
+      <p style="font-size:19px" class="fragment">Es el agente de la Sesión 1: percibe respuestas, estima un estado y actúa.</p>
+    </div>
+  </div>
+  <p class="credit">Diagrama propio, a partir de la arquitectura clásica que describe Woolf (2009), <em>Building Intelligent Interactive Tutors</em>.</p>
+  <aside class="notes">
+    <p>Un sistema tutorial inteligente tiene cuatro piezas. El modelo del dominio sabe qué hay que aprender: las habilidades y los errores típicos. El modelo del estudiante estima qué sabe cada persona, y con qué certeza. El modelo pedagógico decide qué hacer después: otro ejercicio, una pista, una explicación. Y la interfaz conversa con el estudiante.</p>
+    <p>Es el agente de la Sesión 1. Percibe las respuestas, estima un estado que no ve y actúa. El modelo del estudiante es un problema de incertidumbre, y es el corazón del Laboratorio 7B.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · LA EVIDENCIA (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">¿Funcionan los tutores inteligentes?</div>
+  <h2>La evidencia, con sus matices</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p class="toklbl">Efecto frente a no tener tutoría (VanLehn, 2011), en desviaciones estándar</p>
+      <div class="bars" style="font-size:20px;gap:8px 12px">
+        <span class="lb">tutor humano</span><span class="bar" style="width:79%"></span><span class="val">0.79</span>
+        <span class="lb">tutor paso a paso</span><span class="bar ok" style="width:76%"></span><span class="val">0.76</span>
+        <span class="lb">tutor por subpasos</span><span class="bar a" style="width:40%"></span><span class="val">0.40</span>
+        <span class="lb">tutor de respuesta</span><span class="bar g" style="width:31%"></span><span class="val">0.31</span>
+      </div>
+      <p class="fragment" style="font-size:20px;margin-top:14px">Cognitive Tutor de álgebra, en 147 colegios de 7 estados (Pane et al., 2014). Sin efecto el primer año; <strong>+0.21</strong> desviaciones estándar el segundo, en bachillerato.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/mathia.png" alt="Captura de MATHia en una tableta: un problema de funciones con su gráfica, una ventana de pista y los indicadores de dominio de cada habilidad" width="985" height="720" style="max-height:320px"><figcaption class="credit">MATHia, el sucesor comercial del Cognitive Tutor. © Carnegie Learning; cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. ¿Funcionan? VanLehn revisó estudios de 2011. Un tutor inteligente que acompaña paso a paso logra 0.76 desviaciones estándar, casi lo mismo que un tutor humano, 0.79. Los que solo revisan la respuesta final logran menos: 0.31.</p>
+    <p>La captura es de MATHia, el sucesor comercial del Cognitive Tutor. Arriba se ven los indicadores de dominio de cada habilidad: es el modelo del estudiante a la vista.</p>
+    <p>Y un ensayo grande en aulas reales. Pane y sus colegas probaron el Cognitive Tutor de álgebra en 147 colegios de 7 estados de Estados Unidos. El primer año no hubo efecto. El segundo año, en bachillerato, el efecto fue de 0.21 desviaciones estándar: pasar del percentil 50 al 58. La lección: los profesores necesitan tiempo para adoptarlo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · EL ESTADO OCULTO DEL ESTUDIANTE ============================ -->
+<section data-min="2">
+  <div class="kicker">Bayesian Knowledge Tracing (Corbett y Anderson, 1994)</div>
+  <h2>Lo que sabes es un estado oculto</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 290" role="img" aria-label="Bayesian Knowledge Tracing: el estado oculto es dominar o no dominar la habilidad; con cada práctica se puede aprender; cada respuesta, correcta o incorrecta, es la evidencia">
+    <defs><marker id="pk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <text class="t2" x="10" y="80">oculto</text><text class="t2" x="10" y="232">se observa</text>
+    <ellipse class="nodo violet" cx="250" cy="75" rx="135" ry="38"/><text class="t1" x="250" y="70" text-anchor="middle">¿domina?</text><text class="t3" x="250" y="92" text-anchor="middle">práctica 1</text>
+    <ellipse class="nodo violet" cx="590" cy="75" rx="135" ry="38"/><text class="t1" x="590" y="70" text-anchor="middle">¿domina?</text><text class="t3" x="590" y="92" text-anchor="middle">práctica 2</text>
+    <ellipse class="nodo violet" cx="930" cy="75" rx="135" ry="38"/><text class="t1" x="930" y="70" text-anchor="middle">¿domina?</text><text class="t3" x="930" y="92" text-anchor="middle">práctica 3</text>
+    <path class="arista fuerte" d="M387,75 L451,75" marker-end="url(#pk)"/><path class="arista fuerte" d="M727,75 L791,75" marker-end="url(#pk)"/>
+    <rect class="nodo" x="160" y="200" width="180" height="56" rx="10"/><text class="t1" x="250" y="236" text-anchor="middle">✓ o ✗</text>
+    <rect class="nodo" x="500" y="200" width="180" height="56" rx="10"/><text class="t1" x="590" y="236" text-anchor="middle">✓ o ✗</text>
+    <rect class="nodo" x="840" y="200" width="180" height="56" rx="10"/><text class="t1" x="930" y="236" text-anchor="middle">✓ o ✗</text>
+    <path class="arista" d="M250,115 L250,194" marker-end="url(#pk)"/><path class="arista" d="M590,115 L590,194" marker-end="url(#pk)"/><path class="arista" d="M930,115 L930,194" marker-end="url(#pk)"/>
+    <g class="fragment"><text class="t2" x="420" y="56" text-anchor="middle">aprender</text><text class="t2" x="760" y="56" text-anchor="middle">aprender</text>
+      <text class="t2" x="265" y="155">adivinar o descuidarse</text></g>
+  </svg>
+  <div class="cols mid" style="margin-top:6px">
+    <p class="fragment" style="font-size:21px">Dos estados: domina o no domina la habilidad. Una vez aprendida, no se olvida.</p>
+    <p class="fragment" style="font-size:21px">Cada respuesta es evidencia imperfecta: se puede acertar sin saber y fallar sabiendo.</p>
+  </div>
+  <p class="credit">Diagrama propio del modelo de Corbett y Anderson (1994), <em>User Modeling and User-Adapted Interaction</em> 4.</p>
+  <aside class="notes">
+    <p>Este es el modelo del Laboratorio 7B: Bayesian Knowledge Tracing, de Corbett y Anderson, de 1994. Es un modelo oculto de Márkov con solo dos estados: el estudiante domina la habilidad, o no.</p>
+    <p>Lo que se ve son las respuestas: correcta o incorrecta. Pero son evidencia imperfecta. Se puede acertar adivinando, y fallar por un descuido aunque se sepa.</p>
+    <p>Entre una práctica y otra, el estudiante puede aprender. En el modelo clásico, una vez aprendida la habilidad, no se olvida.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · LOS CUATRO PARÁMETROS ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">El modelo del estudiante del Laboratorio 7B</div>
+  <h2>Cuatro números describen al estudiante</h2>
+  <!--DATOS:parametros--><div class="cols-4"><div class="card accent"><h4>Dominio inicial</h4><p style="font-size:30px;font-weight:800;margin:2px 0">0.10</p><p style="font-size:18px;margin:0">con qué dominio llega el técnico · <span class="mono">P(L₀)</span></p></div><div class="card ok fragment"><h4>Aprendizaje</h4><p style="font-size:30px;font-weight:800;margin:2px 0">0.12</p><p style="font-size:18px;margin:0">cuánto aprende en cada práctica · <span class="mono">P(T)</span></p></div><div class="card amber fragment"><h4>Adivinanza</h4><p style="font-size:30px;font-weight:800;margin:2px 0">0.15</p><p style="font-size:18px;margin:0">cuánto acierta sin dominar · <span class="mono">P(G)</span></p></div><div class="card violet fragment"><h4>Descuido</h4><p style="font-size:30px;font-weight:800;margin:2px 0">0.10</p><p style="font-size:18px;margin:0">cuánto falla aunque domine · <span class="mono">P(S)</span></p></div></div><p class="toklbl" style="margin-top:10px">Habilidad del ejemplo: Alineación de una bomba</p><!--/DATOS:parametros-->
+  <p class="fragment" style="font-size:21px;margin-top:12px">Con cada respuesta, el tutor aplica la regla de Bayes y, después, le da una oportunidad de aprender.</p>
+  <p class="credit">Valores de una simulación con parámetros conocidos (<code>ejemplos/bkt_7b.py</code>). Los datos del 7B salen de una simulación: no hay personas reales.</p>
+  <p class="godown">Detalle: las ecuaciones de actualización</p>
+  <aside class="notes">
+    <p>Cuatro números describen al estudiante en una habilidad. El ejemplo es la alineación de una bomba, en el curso de inducción de técnicos de MantenIA.</p>
+    <p>Con qué dominio llega: el 10 %. Cuánto aprende en cada práctica: el 12 %. Cuánto acierta adivinando: el 15 %. Y cuánto falla por descuido aunque domine: el 10 %.</p>
+    <p>Con cada respuesta, el tutor hace dos cosas. Primero aplica la regla de Bayes, como con la alarma. Después le da al estudiante la oportunidad de haber aprendido.</p>
+    <p>Los datos del laboratorio salen de una simulación con estos parámetros. No hay datos de personas reales.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="vtag">Consulta</div><div class="kicker">Bayesian Knowledge Tracing</div><h3>Las ecuaciones de actualización</h3>
+  <div class="cols mid">
+    <div class="eqbox eqlist">
+      <div class="lbl">Si la respuesta es correcta</div>
+      <math display="block"><mrow><mi>P</mi><mo>(</mo><mi>L</mi><mo>|</mo><mtext>✓</mtext><mo>)</mo><mo>=</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>L</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>S</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>L</mi><mo>)</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>S</mi><mo>)</mo><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>P</mi><mo>(</mo><mi>L</mi><mo>)</mo><mo>)</mo><mi>G</mi></mrow></mfrac></mrow></math>
+      <div class="lbl" style="margin-top:8px">Si la respuesta es incorrecta</div>
+      <math display="block"><mrow><mi>P</mi><mo>(</mo><mi>L</mi><mo>|</mo><mtext>✗</mtext><mo>)</mo><mo>=</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>L</mi><mo>)</mo><mi>S</mi></mrow><mrow><mi>P</mi><mo>(</mo><mi>L</mi><mo>)</mo><mi>S</mi><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>P</mi><mo>(</mo><mi>L</mi><mo>)</mo><mo>)</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>G</mi><mo>)</mo></mrow></mfrac></mrow></math>
+      <div class="lbl" style="margin-top:8px">La oportunidad de aprender</div>
+      <math display="block"><mrow><msub><mi>P</mi><mtext>siguiente</mtext></msub><mo>(</mo><mi>L</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>L</mi><mo>|</mo><mtext>obs</mtext><mo>)</mo><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>P</mi><mo>(</mo><mi>L</mi><mo>|</mo><mtext>obs</mtext><mo>)</mo><mo>)</mo><mi>T</mi></mrow></math>
+    </div>
+    <div class="dense">
+      <p>L es «domina la habilidad». G es la adivinanza, S el descuido y T el aprendizaje. Al inicio, P(L) = P(L₀).</p>
+      <p>Las dos primeras ecuaciones son la regla de Bayes. La tercera supone que no se olvida.</p>
+      <p>Así las escribe la literatura que sigue a Corbett y Anderson (1994).</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta: las ecuaciones de actualización de Bayesian Knowledge Tracing. Las dos primeras son la regla de Bayes; la tercera, la transición del modelo oculto.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 8 · LA CURVA DE DOMINIO ============================ -->
+<section data-min="3">
+  <div class="kicker">Un técnico simulado, respuesta a respuesta</div>
+  <h2>La curva de dominio</h2>
+  <!--DATOS:curva_dominio--><svg class="diagram dg" viewBox="0 0 860 390" role="img" aria-label="Curva del dominio estimado de un técnico simulado: empieza en 0.10 y, con 8 respuestas, llega a 0.98, por encima del umbral de 0.95"><line class="eje" x1="70" y1="20" x2="70" y2="320"/><line class="rejilla" x1="70" y1="320.0" x2="830" y2="320.0"/><text class="t3" x="60" y="325.0" text-anchor="end">0.0</text><line class="rejilla" x1="70" y1="170.0" x2="830" y2="170.0"/><text class="t3" x="60" y="175.0" text-anchor="end">0.5</text><line class="rejilla" x1="70" y1="20.0" x2="830" y2="20.0"/><text class="t3" x="60" y="25.0" text-anchor="end">1.0</text><line class="umbral" x1="70" y1="35.0" x2="830" y2="35.0"/><text class="t2" x="78" y="27.0">umbral de dominio: 0.95</text><circle class="c-accent" cx="70.0" cy="290.0" r="6"/><text class="t2" x="70.0" y="372" text-anchor="middle">inicio</text><g class="fragment"><line class="curva" x1="70.0" y1="290.0" x2="165.0" y2="280.7"/><circle class="c-accent" cx="165.0" cy="280.7" r="6"/><text class="tn" x="165.0" y="266.7" text-anchor="middle">0.13</text><text x="165.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-bad">✗</tspan></text><text class="t3" x="165.0" y="372" text-anchor="middle">1</text></g><g class="fragment"><line class="curva" x1="165.0" y1="280.7" x2="260.0" y2="279.5"/><circle class="c-accent" cx="260.0" cy="279.5" r="6"/><text class="tn" x="260.0" y="265.5" text-anchor="middle">0.14</text><text x="260.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-bad">✗</tspan></text><text class="t3" x="260.0" y="372" text-anchor="middle">2</text></g><g class="fragment"><line class="curva" x1="260.0" y1="279.5" x2="355.0" y2="156.2"/><circle class="c-accent" cx="355.0" cy="156.2" r="6"/><text class="tn" x="355.0" y="142.2" text-anchor="middle">0.55</text><text x="355.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-ok">✓</tspan></text><text class="t3" x="355.0" y="372" text-anchor="middle">3</text></g><g class="fragment"><line class="curva" x1="355.0" y1="156.2" x2="450.0" y2="251.3"/><circle class="c-accent" cx="450.0" cy="251.3" r="6"/><text class="tn" x="450.0" y="237.3" text-anchor="middle">0.23</text><text x="450.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-bad">✗</tspan></text><text class="t3" x="450.0" y="372" text-anchor="middle">4</text></g><g class="fragment"><line class="curva" x1="450.0" y1="251.3" x2="545.0" y2="275.0"/><circle class="c-accent" cx="545.0" cy="275.0" r="6"/><text class="tn" x="545.0" y="261.0" text-anchor="middle">0.15</text><text x="545.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-bad">✗</tspan></text><text class="t3" x="545.0" y="372" text-anchor="middle">5</text></g><g class="fragment"><line class="curva" x1="545.0" y1="275.0" x2="640.0" y2="148.4"/><circle class="c-accent" cx="640.0" cy="148.4" r="6"/><text class="tn" x="640.0" y="134.4" text-anchor="middle">0.57</text><text x="640.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-ok">✓</tspan></text><text class="t3" x="640.0" y="372" text-anchor="middle">6</text></g><g class="fragment"><line class="curva" x1="640.0" y1="148.4" x2="735.0" y2="49.4"/><circle class="c-accent" cx="735.0" cy="49.4" r="6"/><text class="tn" x="735.0" y="35.4" text-anchor="middle">0.90</text><text x="735.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-ok">✓</tspan></text><text class="t3" x="735.0" y="372" text-anchor="middle">7</text></g><g class="fragment"><line class="curva" x1="735.0" y1="49.4" x2="830.0" y2="24.8"/><circle class="c-accent" cx="830.0" cy="24.8" r="6"/><text class="tn" x="830.0" y="10.8" text-anchor="middle">0.98</text><text x="830.0" y="350" text-anchor="middle" style="font-size:24px;font-weight:800"><tspan class="c-ok">✓</tspan></text><text class="t3" x="830.0" y="372" text-anchor="middle">8</text></g></svg><!--/DATOS:curva_dominio-->
+  <p class="credit">Alineación de una bomba, con los parámetros de la diapositiva anterior. Simulación con la semilla 7 (<code>ejemplos/bkt_7b.py</code>).</p>
+  <aside class="notes">
+    <p>Así trabaja el modelo del estudiante. Es un técnico simulado que practica la alineación de una bomba. Empieza con un dominio estimado de 0.10.</p>
+    <p>Falla las dos primeras. El dominio sube apenas, por la oportunidad de aprender. En la tercera acierta: el dominio salta a 0.55. Pero podría ser una adivinanza.</p>
+    <p>Falla dos veces más, y el tutor baja su estimación. Después acierta tres seguidas, y el dominio llega a 0.98, por encima del umbral de 0.95.</p>
+    <p>Fíjense: el tutor no cuenta aciertos. Pesa cada respuesta con lo que sabe de adivinanzas y descuidos.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · ELEGIR EL SIGUIENTE EJERCICIO ============================ -->
+<section data-min="2">
+  <div class="kicker">La planificación instruccional</div>
+  <h2>Elegir el siguiente ejercicio</h2>
+  <div class="cols c46 mid">
+    <div>
+      <p style="font-size:21px"><strong>Mastery learning</strong> (avanzar solo cuando se domina): practicar cada habilidad hasta que el dominio estimado supere <strong>0.95</strong>.</p>
+      <p class="fragment" style="font-size:21px">Es planificar, como en la Sesión 2: el plan se ajusta con cada respuesta.</p>
+    </div>
+    <div>
+      <!--DATOS:reglas_dominio--><table class="tbl cuenta"><tr><th>Habilidad</th><th>Hasta dominar (0.95)</th><th>Siempre 5 ejercicios</th></tr><tr><td>Bloqueo y etiquetado</td><td class="pos">100 % dominan · 6.8 ejercicios</td><td class="neg">77 % dominan</td></tr><tr><td>Alineación de una bomba</td><td class="pos">96 % dominan · 10.3 ejercicios</td><td class="neg">52 % dominan</td></tr><tr><td>Lectura de vibración</td><td class="pos">97 % dominan · 8.8 ejercicios</td><td class="neg">60 % dominan</td></tr></table><!--/DATOS:reglas_dominio-->
+    </div>
+  </div>
+  <p class="credit">200 técnicos simulados por habilidad, con la semilla 7 (<code>ejemplos/bkt_7b.py</code>). El umbral de 0.95 es el que usaban Corbett y Anderson (1994).</p>
+  <aside class="notes">
+    <p>El modelo pedagógico decide qué ejercicio sigue. La regla clásica se llama mastery learning: practicar cada habilidad hasta dominarla, y solo entonces avanzar. Aquí, hasta que el dominio estimado supere 0.95.</p>
+    <p>Comparémosla con una regla fija: cinco ejercicios para todos. Con 200 técnicos simulados por habilidad, la regla de dominio deja a casi todos dominando la habilidad. La regla fija deja entre la mitad y tres cuartos.</p>
+    <p>Es planificación, como en la Sesión 2. Pero el plan cambia con cada respuesta: monitoreo y replanificación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · AGENTES PEDAGÓGICOS (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker">Sistemas multiagente pedagógicos · panorama</div>
+  <h2>Agentes pedagógicos animados</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p style="font-size:21px">Personajes que demuestran, señalan y conversan dentro del entorno de aprendizaje (Johnson, Rickel y Lester, 2000).</p>
+      <p class="fragment" style="font-size:21px">Varios agentes se reparten el trabajo: el que explica, el que pregunta, el compañero que se equivoca a propósito.</p>
+      <p class="fragment" style="font-size:20px">Son los sistemas multiagente de la Sesión 1, aplicados a enseñar.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/johnson2000_steve.jpg" alt="Steve, un agente pedagógico tridimensional, señala un panel de control en la sala de máquinas virtual de un barco" width="1135" height="1024" style="max-height:330px"><figcaption class="credit">Steve, un agente que enseña a operar los equipos de un barco. Johnson, Rickel y Lester (2000), fig. 1; cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Un panorama de los sistemas multiagente pedagógicos. Johnson, Rickel y Lester revisaron en 2000 los agentes pedagógicos animados: personajes que demuestran una tarea, señalan, preguntan y conversan.</p>
+    <p>En la imagen, Steve, de la Universidad del Sur de California. Enseñaba a operar los equipos de un barco de la Armada en un mundo virtual.</p>
+    <p>A veces trabajan varios agentes. Uno explica, otro pregunta, y otro hace de compañero que se equivoca para que el estudiante lo corrija. Son los sistemas multiagente de la Sesión 1, aplicados a enseñar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · TUTORES CON LLMs ============================ -->
+<section data-min="2">
+  <div class="kicker">Tutores con LLMs</div>
+  <h2>Qué cambia cuando el tutor conversa</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p style="font-size:21px">El diálogo es en lenguaje natural. El LLM genera explicaciones, pistas y ejercicios nuevos.</p>
+      <p class="fragment" style="font-size:21px"><strong>Khanmigo</strong>, de Khan Academy, empezó como piloto el 14 de marzo de 2023. Su promesa: guiar sin dar la respuesta.</p>
+      <p class="fragment" style="font-size:20px">Construir un tutor así es tema de <em>Agentes de IA</em> y de PLN. Aquí interesa cómo razona sobre lo que sabes.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/khanmigo_dialogo.png" alt="Diálogo de Khanmigo: el estudiante pregunta la respuesta de 27 = x + 15 y el tutor le hace preguntas para que despeje x por sí mismo" width="1118" height="924" style="max-height:400px"><figcaption class="credit">Khanmigo guía sin dar la respuesta. <a href="https://blog.khanacademy.org/searching-for-tutoring-near-me-check-out-khanmigo-kl/">Khan Academy, blog</a> (2024); cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Los LLMs cambian la interfaz del tutor. Ahora conversa en lenguaje natural, y genera explicaciones, pistas y ejercicios que nadie escribió antes.</p>
+    <p>En la captura, el estudiante pide la respuesta de una ecuación. Khanmigo no se la da: le pregunta qué operación usaría.</p>
+    <p>Un ejemplo real: Khanmigo, de Khan Academy. Empezó como piloto el 14 de marzo de 2023. Su promesa es guiar al estudiante sin darle la respuesta, como un Sócrates virtual.</p>
+    <p>No vamos a construir un tutor con LLMs. Eso es de las asignaturas de Agentes de IA y de Procesamiento de Lenguaje Natural. Nos interesa otra pregunta: cómo estima lo que sabes.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · LA EVIDENCIA DE LOS TUTORES CON LLMs ============================ -->
+<section data-min="2.5">
+  <div class="kicker">La evidencia, con fuente primaria</div>
+  <h2>El mismo GPT-4 puede dañar o ayudar: depende del diseño</h2>
+  <div class="cols evid">
+    <div class="card bad"><h4>Sin salvaguardas · Turquía, unos 1000 estudiantes</h4>
+      <p>Con GPT-4 abierto, la práctica mejoró 48 %. En el examen sin acceso, las notas bajaron 17 %.</p>
+      <p>Con un tutor que daba pistas sin la solución, el daño desapareció.</p>
+      <p class="muted" style="font-size:16px">Bastani et al. (2025), <em>PNAS</em> 122(26).</p></div>
+    <div class="card ok fragment"><h4>Diseñado con pedagogía · Harvard, 194 estudiantes</h4>
+      <p>Un tutor de física con siete principios pedagógicos superó a la clase activa.</p>
+      <p>La ganancia mediana fue más del doble, en menos tiempo.</p>
+      <p class="muted" style="font-size:16px">Kestin et al. (2025), <em>Scientific Reports</em> 15.</p></div>
+  </div>
+  <aside class="notes">
+    <p>¿Ayudan los tutores con LLMs? Dos estudios aleatorizados recientes dan respuestas opuestas, y se explican por el diseño.</p>
+    <p>Bastani y sus colegas probaron GPT-4 con unos mil estudiantes de un colegio en Turquía. Con GPT-4 abierto, la práctica mejoró 48 %. Pero en el examen sin acceso, las notas bajaron 17 %: lo usaban como muleta. Una versión que daba pistas sin la solución eliminó ese daño.</p>
+    <p>Kestin y sus colegas, en Harvard, diseñaron un tutor de física con siete principios pedagógicos. Con 194 estudiantes, el tutor superó a la clase de aprendizaje activo. Aprendieron más del doble, en menos tiempo.</p>
+    <p>La lección: el LLM no basta. Importa qué hace el tutor con lo que sabe del estudiante.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · EL CONTRAPUNTO DEL 7B ============================ -->
+<section data-min="1.5">
+  <div class="kicker">El contrapunto del Laboratorio 7B</div>
+  <h2>El LLM conversa bien. ¿Estima bien lo que sabes?</h2>
+  <div class="cols-3" style="margin-top:10px">
+    <div class="card violet"><h4>La misma evidencia</h4><p style="font-size:20px">El LLM y el modelo bayesiano leen las mismas secuencias de respuestas.</p></div>
+    <div class="card fragment"><h4>Tres criterios</h4><p style="font-size:20px">Exactitud frente al estado simulado, consistencia entre corridas y la explicación.</p></div>
+    <div class="card amber fragment"><h4>El patrón del curso</h4><p style="font-size:20px">El LLM conversa; un modelo auditable estima y decide cuándo avanzar.</p></div>
+  </div>
+  <aside class="notes">
+    <p>El contrapunto del laboratorio. Un LLM y el modelo bayesiano reciben las mismas secuencias de respuestas, y estiman el dominio.</p>
+    <p>Los vamos a comparar con tres criterios. La exactitud: como simulamos los datos, sabemos quién domina de verdad. La consistencia: si el LLM da lo mismo cuando se lo preguntamos dos veces. Y la explicación.</p>
+    <p>Es el patrón del curso: el LLM propone o conversa, y otra técnica, auditable, verifica y decide.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · FORMACIÓN CORPORATIVA EN MANTENIA ============================ -->
+<section data-min="2">
+  <div class="kicker">En MantenIA · la formación corporativa</div>
+  <h2>Formar a los técnicos nuevos</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p style="font-size:21px">El problema de la Sesión 1: un técnico senior se jubila. La Sesión 6 aprendió sus reglas de los datos.</p>
+      <p class="fragment" style="font-size:21px"><strong>Se mide:</strong> las respuestas en ejercicios de bloqueo y etiquetado, alineación y lectura de vibración.</p>
+      <p class="fragment" style="font-size:21px"><strong>Se decide:</strong> qué practica cada técnico, y cuándo está listo para ir a la planta.</p>
+      <p class="fragment" style="font-size:21px"><strong>Supervisa:</strong> el técnico senior, que revisa antes de habilitar a alguien.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/capacitacion_planta.jpg" alt="Técnicos con equipo de protección practican junto a un tablero eléctrico, mientras un instructor observa" width="1400" height="865" style="max-height:330px"><figcaption class="credit">Capacitación de técnicos en una planta piloto. PEO ACWA (2017), <a href="https://commons.wikimedia.org/wiki/File:Pueblo_Chemical_Agent-Destruction_Pilot_Plant_Training_Facility_(32255120430).jpg">Wikimedia Commons</a>, CC BY 2.0.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>La traducción a MantenIA. La otra mitad del problema de la Sesión 1. Un técnico senior se jubila. En la Sesión 6 aprendimos sus reglas de los datos. Ahora hay que formar a los técnicos que llegan.</p>
+    <p>La foto es de una capacitación real en una planta: técnicos con equipo de protección y un instructor que observa. Así se ve la formación que el tutor apoya.</p>
+    <p>El tutor mide las respuestas en ejercicios de tres habilidades: bloqueo y etiquetado, alineación de bombas y lectura de vibración. Decide qué practica cada técnico y cuándo está listo.</p>
+    <p>Pero habilitar a alguien para trabajar en la planta es una decisión de seguridad. La supervisa una persona: el técnico senior revisa antes de habilitar.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · SÍNTESIS ============================ -->
+<section data-min="1">
+  <div class="kicker">Para llevar</div>
+  <h2>El tutor que estima lo que sabes</h2>
+  <div class="cols-3 sintesis">
+    <div class="card violet"><h4>Lo oculto cambia</h4><p>Un modelo oculto de Márkov sigue un estado que no se ve.</p></div>
+    <div class="card fragment"><h4>El modelo del estudiante</h4><p>Cuatro números y la regla de Bayes estiman el dominio, respuesta a respuesta.</p></div>
+    <div class="card amber fragment"><h4>El diseño importa</h4><p>Un LLM sin diseño pedagógico puede dañar el aprendizaje.</p></div>
+  </div>
+  <aside class="notes">
+    <p>Tres ideas. Lo que no se ve puede cambiar en el tiempo, y un modelo oculto de Márkov lo sigue. El modelo del estudiante usa cuatro números y la regla de Bayes para estimar el dominio. Y con los LLMs, el diseño pedagógico importa más que el modelo.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · ANUNCIO DEL LABORATORIO 7B ============================ -->
+<section data-min="1">
+  <div class="kicker amber">A continuación · 60 min</div>
+  <h1 style="font-size:56px">Laboratorio 7B · Sistema tutorial inteligente: el modelo del estudiante</h1>
+  <p class="lead">Bayesian Knowledge Tracing con técnicos simulados de un curso de formación corporativa. La regla para elegir el siguiente ejercicio. Y un LLM que estima el mismo dominio.</p>
+  <div class="cols-3" style="margin-top:18px">
+    <div class="card"><h4>Cambiar</h4><p>los cuatro parámetros, las respuestas y el umbral de dominio</p></div>
+    <div class="card"><h4>Comparar</h4><p>la estimación bayesiana con la de un LLM</p></div>
+    <div class="card"><h4>Sin escribir código</h4><p>notebook de configuración, en parejas</p></div>
+  </div>
+  <aside class="notes">
+    <p>Pasamos al Laboratorio 7B, una hora en parejas. Van a usar Bayesian Knowledge Tracing con técnicos simulados. Van a cambiar los cuatro parámetros y el umbral, y ver cómo cambia la curva de dominio.</p>
+    <p>Después, la regla para elegir el siguiente ejercicio. Y al final, el contrapunto: un LLM estima el dominio con las mismas respuestas. No se escribe código.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla intermedia</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Russell, S. y Norvig, P. (2021). <em>AIMA</em>, 4.ª ed., cap. 14. · Rabiner, L. R. (1989). A tutorial on hidden Markov models and selected applications in speech recognition. <em>Proceedings of the IEEE</em> 77(2), 257–286. <a href="https://doi.org/10.1109/5.18626">DOI</a></li>
+    <li>Bloom, B. S. (1984). The 2 sigma problem: the search for methods of group instruction as effective as one-to-one tutoring. <em>Educational Researcher</em> 13(6), 4–16. <a href="http://web.archive.org/web/20250626022058/https://journals.sagepub.com/doi/10.3102/0013189X013006004">DOI (Wayback)</a></li>
+    <li>Woolf, B. P. (2009). <em>Building Intelligent Interactive Tutors</em>. Morgan Kaufmann. <a href="https://doi.org/10.1016/B978-0-12-373594-2.X0001-9">DOI</a></li>
+    <li>VanLehn, K. (2011). The relative effectiveness of human tutoring, intelligent tutoring systems, and other tutoring systems. <em>Educational Psychologist</em> 46(4), 197–221. <a href="http://web.archive.org/web/20241003220809/https://www.tandfonline.com/doi/abs/10.1080/00461520.2011.611369">DOI (Wayback)</a></li>
+    <li>Pane, J. F., Griffin, B. A., McCaffrey, D. F. y Karam, R. (2014). Effectiveness of Cognitive Tutor Algebra I at scale. <em>Educational Evaluation and Policy Analysis</em> 36(2), 127–144. <a href="http://web.archive.org/web/20250805143929/https://journals.sagepub.com/doi/10.3102/0162373713507480">DOI (Wayback)</a> · <a href="http://web.archive.org/web/20250505122528/https://www.rand.org/content/dam/rand/pubs/research_briefs/RB9700/RB9746/RAND_RB9746.pdf">resumen de RAND (copia en Wayback)</a></li>
+    <li>Corbett, A. T. y Anderson, J. R. (1994). Knowledge tracing: modeling the acquisition of procedural knowledge. <em>User Modeling and User-Adapted Interaction</em> 4(4), 253–278. <a href="https://doi.org/10.1007/BF01099821">DOI</a> · Baker, R., Corbett, A. T. y Aleven, V. (2008). <a href="https://learninganalytics.upenn.edu/ryanbaker/BCA2008W.pdf">More accurate student modeling through contextual estimation of slip and guess probabilities</a>. <em>ITS 2008</em></li>
+    <li>Johnson, W. L., Rickel, J. W. y Lester, J. C. (2000). Animated pedagogical agents: face-to-face interaction in interactive learning environments. <em>IJAIED</em> 11, 47–78. <a href="https://people.ict.usc.edu/~traum/cs599s04/apa.pdf">PDF</a></li>
+    <li>Bastani, H. et al. (2025). Generative AI without guardrails can harm learning: evidence from high school mathematics. <em>PNAS</em> 122(26), e2422633122. <a href="http://web.archive.org/web/20260724030348/https://www.pnas.org/doi/10.1073/pnas.2422633122">DOI (Wayback)</a></li>
+    <li>Kestin, G., Miller, K., Klales, A., Milbourne, T. y Ponti, G. (2025). AI tutoring outperforms in-class active learning. <em>Scientific Reports</em> 15, 17458. <a href="https://doi.org/10.1038/s41598-025-97652-6">DOI</a></li>
+    <li>Khan Academy (2023, 14 de marzo). <a href="https://blog.khanacademy.org/harnessing-ai-so-that-all-students-benefit-a-nonprofit-approach-for-equal-access/">Harnessing AI so that all students benefit</a> · <a href="https://www.khanmigo.ai/">khanmigo.ai</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla1_creer_con_evidencia_y_decidir.html">← Charla inicial</a><a href="index.html">Volver a la agenda</a><a href="charla3_decidir_bajo_incertidumbre_y_cierre.html">Charla de cierre →</a></p>
+  <aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 7 · Charla intermedia · El tutor que estima lo que sabes</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

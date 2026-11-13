@@ -1,0 +1,46 @@
+{
+ "tabla": {
+  "nuevas": {
+   "frecuente": {
+    "bombas": 60,
+    "fallas": 3
+   },
+   "poco": {
+    "bombas": 240,
+    "fallas": 24
+   }
+  },
+  "viejas": {
+   "frecuente": {
+    "bombas": 240,
+    "fallas": 72
+   },
+   "poco": {
+    "bombas": 60,
+    "fallas": 27
+   }
+  }
+ },
+ "tasas_por_edad": {
+  "nuevas": {
+   "frecuente": 0.05,
+   "poco": 0.1
+  },
+  "viejas": {
+   "frecuente": 0.3,
+   "poco": 0.45
+  }
+ },
+ "total": {
+  "frecuente": {
+   "bombas": 300,
+   "fallas": 75,
+   "tasa": 0.25
+  },
+  "poco": {
+   "bombas": 300,
+   "fallas": 51,
+   "tasa": 0.17
+  }
+ }
+}

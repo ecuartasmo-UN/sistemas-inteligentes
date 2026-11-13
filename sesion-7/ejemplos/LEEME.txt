@@ -1,0 +1,72 @@
+Ejemplos de la Sesión 7 · Material para el docente
+====================================================
+
+Estos scripts calculan los números reales que muestran las diapositivas.
+Las gráficas no se dibujaron a mano: salen de los cálculos de esta carpeta.
+Usan las mismas redes, tablas, utilidades y parámetros que van a usar los laboratorios 7A y 7B.
+
+Requisitos: Python 3.12 o 3.13 con
+  python -m pip install pyagrum==3.3.2 numpy
+Todo corre en CPU en un par de segundos. No descarga datos.
+Los decimales de las diapositivas llevan punto, como pide Especializacion AI/normas.md.
+
+tasa_base_7a.py
+  Charla inicial, «Una creencia que cambia cuando llega evidencia», «Una alarma que acierta el 95 %…»
+  y «Decidir: la utilidad esperada». Ejemplo ilustrativo de MantenIA, con cifras inventadas.
+  - De 1000 bombas fallan 20 (2 %). La alarma acierta el 95 %: detecta 19 y da 49 falsas alarmas.
+  - De 68 avisos, 19 son fallas: 27.9 % (con la fórmula de Bayes, 0.2794).
+  - Reemplazar cuesta 8 y una falla sin aviso, 40 (millones de pesos). Sin alarma conviene esperar
+    (−0.8 frente a −8). Con la alarma conviene reemplazar (−11.18 frente a −8).
+  Escribe salidas/tasa_base_7a.json.
+
+alarma_7a.py
+  Charla inicial, «Causas, efectos y tablas pequeñas», «Predecir y diagnosticar…» y «Una causa que explica…».
+  La red de la alarma de Pearl (1988) con las tablas de AIMA, 4.ª ed., fig. 13.2.
+  - P(robo) = 0.001; con la llamada de Juan, 0.0163; con las dos llamadas, 0.2842 (el libro da 0.284).
+  - Si hay robo: la alarma suena con 0.94, Juan llama con 0.849 y María con 0.659.
+  - Explaining away: P(robo | alarma) = 0.3736; con sismo, 0.0033.
+  - Independencia condicional: P(robo | alarma, Juan) = 0.3736, igual que sin la llamada.
+  - La red usa 10 números; la tabla conjunta, 31.
+  Escribe salidas/alarma_7a.json.
+
+petrolero_7a.py
+  Charla inicial, «El petrolero: perforar o no perforar» y «¿Cuánto pagarías por saber antes de decidir?».
+  Los números de Raiffa (1968) que reproducen Shenoy (1995) y el ejemplo OilWildcatter de pyAgrum.
+  - Pozo seco, húmedo o empapado: 0.5, 0.3 y 0.2. Perforar gana −70, 50 o 200. La prueba cuesta 10.
+  - Sin la prueba, perforar vale 20.
+  - Si la prueba dice «sin estructura» (p = 0.41), perforar vale −30.49: no perforar.
+    Si dice «abierta» (0.35), vale 32.86. Si dice «cerrada» (0.24), vale 87.5: perforar.
+  - Con la prueba gratis, la decisión vale 32.5. El valor de la información es 12.5, mayor que el precio: probar.
+    Con el precio, 22.5. pyAgrum (ShaferShenoyLIMIDInference) y la cuenta a mano dan lo mismo.
+  Escribe salidas/petrolero_7a.json.
+
+bkt_7b.py
+  Charla intermedia, «Cuatro números describen al estudiante», «La curva de dominio» y
+  «Elegir el siguiente ejercicio». Datos simulados de un curso de inducción de técnicos de MantenIA:
+  no hay personas reales. Semilla 7, 200 técnicos por habilidad, umbral de dominio 0.95, tope de 30 ejercicios.
+  - Parámetros (dominio inicial, aprendizaje, adivinanza, descuido):
+    bloqueo y etiquetado 0.30 · 0.20 · 0.20 · 0.08; alineación 0.10 · 0.12 · 0.15 · 0.10;
+    lectura de vibración 0.15 · 0.15 · 0.25 · 0.10. Todos dentro de los topes de Baker et al. (2008).
+  - Hasta dominar (0.95): dominan al terminar el 99.5, 95.5 y 97.0 %, con 6.8, 10.35 y 8.8 ejercicios.
+    Con 5 ejercicios fijos: el 77.0, 52.5 y 59.5 %.
+  - El técnico de ejemplo (alineación, el número 2 de la secuencia con semilla 7): ✗ ✗ ✓ ✗ ✗ ✓ ✓ ✓.
+    Dominio estimado: 0.10, 0.13, 0.14, 0.55, 0.23, 0.15, 0.57, 0.90, 0.98.
+  Escribe salidas/bkt_7b.json.
+
+confusion_7.py
+  Charla de cierre, «Más mantenimiento, más fallas». Ejemplo ilustrativo de MantenIA, con cifras inventadas.
+  - En el total, el mantenimiento frecuente tiene más fallas: 25 % frente a 17 %.
+  - Por edad: en las nuevas, 5 % frente a 10 %; en las viejas, 30 % frente a 45 %.
+  Escribe salidas/confusion_7.json.
+
+graficas_en_diapositivas.py
+  Pone los números de salidas/ en las diapositivas, entre los comentarios <!--DATOS:nombre--> y
+  <!--/DATOS:nombre-->. Córrelo después de los ejemplos. Solo usa la biblioteca estándar.
+
+Orden de ejecución, desde esta carpeta:
+  python tasa_base_7a.py
+  python alarma_7a.py
+  python petrolero_7a.py
+  python bkt_7b.py
+  python confusion_7.py
+  python graficas_en_diapositivas.py

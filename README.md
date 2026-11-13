@@ -14,6 +14,7 @@ Las diapositivas se abren en el navegador desde **https://ecuartasmo-un.github.i
 - [Sesión 4](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-4/): visión por computador: procesamiento digital de imágenes, CLIP, YOLO y LLMs multimodales
 - [Sesión 5](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-5/): redes neuronales y aprendizaje profundo: de la neurona a la red profunda, la arquitectura transformer y los LLMs
 - [Sesión 6](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-6/): aprendizaje de máquina: árboles de decisión, ensambles, el costo del error y aprendizaje por refuerzo
+- [Sesión 7](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-7/): razonamiento bajo incertidumbre y toma de decisiones: redes bayesianas, valor de la información y sistemas tutoriales inteligentes
 
 También funcionan sin internet: descargue el repositorio y abra `sesion-N/index.html` con doble clic. Use las flechas del teclado para avanzar.
 
@@ -40,6 +41,9 @@ También funcionan sin internet: descargue el repositorio y abra `sesion-N/index
 | [`sesion-6/`](sesion-6/) | Diapositivas de la sesión 6 (con el club de lectura y una charla adicional de consulta: la historia de 22 algoritmos de aprendizaje de máquina, de la regresión lineal a LoRA), trabajo independiente y los scripts que producen las gráficas con datos reales |
 | [`sesion-6/labs/lab_6A_del_dato_al_conocimiento/`](sesion-6/labs/lab_6A_del_dato_al_conocimiento/) | Laboratorio 6A · Del dato al conocimiento: árboles de decisión con el Titanic, ensambles, las reglas de un LLM y el costo del error con el German Credit. **Antes de la clase**, ejecute en casa su primera celda, que instala `scikit-learn` (unos 40 MB) |
 | [`sesion-6/labs/lab_6B_refuerzo_y_specification_gaming/`](sesion-6/labs/lab_6B_refuerzo_y_specification_gaming/) | Laboratorio 6B · Aprendizaje por refuerzo y *specification gaming*: la iteración de valores y Q-learning en el mundo de 4×3, y la carrera de botes. No usa LLM |
+| [`sesion-7/`](sesion-7/) | Diapositivas de la sesión 7 (con el club de lectura), trabajo independiente y los scripts que producen las gráficas con datos reales |
+| [`sesion-7/labs/lab_7A_red_bayesiana_y_valor_de_la_informacion/`](sesion-7/labs/lab_7A_red_bayesiana_y_valor_de_la_informacion/) | Laboratorio 7A · Red bayesiana y decisión con valor de la información: la red de la alarma y el problema del petrolero, con pyAgrum. No usa LLM. **Antes de la clase** conviene ejecutar en casa su primera celda, que instala `pyagrum` (unos 35 MB, o unos 5 MB si ya se hizo el 6A) |
+| [`sesion-7/labs/lab_7B_tutor_y_modelo_del_estudiante/`](sesion-7/labs/lab_7B_tutor_y_modelo_del_estudiante/) | Laboratorio 7B · Sistema tutorial inteligente: el modelo del estudiante con *Bayesian Knowledge Tracing*, la regla para elegir el siguiente ejercicio y un LLM que estima el dominio |
 
 Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación está dentro del notebook. Se trabajan en parejas, en VS Code, en su propio computador. Cada uno tiene su propio `README.md` con el tiempo, el modo de trabajo y lo que se entrega. La excepción es el 3A: un solo archivo Markdown con el problema y el prompt, que se usa con su asistente de IA (Claude o Gemini), en VS Code o en el navegador.
 
@@ -50,12 +54,12 @@ Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación e
 3. **Compruebe la instalación** abriendo `entorno/verificar_entorno.ipynb` en VS Code, con el kernel `.venv`, y ejecutándolo completo.
 4. **Abra el laboratorio** de la sesión, en `sesion-N/labs/`, y ejecute sus celdas en orden.
 
-## Acceso a un modelo de lenguaje (2B, 2C, 3B, 4B, 5B y 6A)
+## Acceso a un modelo de lenguaje (2B, 2C, 3B, 4B, 5B, 6A y 7B)
 
 Los laboratorios que usan un LLM eligen solos la primera vía disponible:
 
 1. **Una clave de API**, en un archivo `.env` en la carpeta del curso, con una sola línea, sin espacios ni comillas: `ANTHROPIC_API_KEY=su-clave`.
-2. **Un modelo local** con Ollama (`ollama pull qwen3:4b-instruct`, unos 2,5 GB), sin clave ni costo; sirve para el 2B, el 2C, el 3B, el 5B y el 6A. El 4B necesita un modelo que vea imágenes, por ejemplo `ollama pull qwen2.5vl:3b` (unos 3 GB).
+2. **Un modelo local** con Ollama (`ollama pull qwen3:4b-instruct`, unos 2,5 GB), sin clave ni costo; sirve para el 2B, el 2C, el 3B, el 5B, el 6A y el 7B. El 4B necesita un modelo que vea imágenes, por ejemplo `ollama pull qwen2.5vl:3b` (unos 3 GB).
 3. **Respuestas grabadas** de una corrida real: el notebook corre completo sin clave y sin internet, aunque no puede probar instrucciones nuevas.
 
 Para forzar una vía, cambie `PROVEEDOR` en la celda ✏️ de configuración del LLM, en la sección 0 del notebook; por ejemplo, `PROVEEDOR = "grabado"`.

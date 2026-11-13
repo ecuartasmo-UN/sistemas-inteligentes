@@ -1,0 +1,84 @@
+{
+ "p_pozo": {
+  "seco": 0.5,
+  "humedo": 0.3,
+  "empapado": 0.2
+ },
+ "ganancia": {
+  "seco": -70,
+  "humedo": 50,
+  "empapado": 200
+ },
+ "costo_prueba": 10,
+ "p_resultado": {
+  "seco": {
+   "sin_estructura": 0.6,
+   "abierta": 0.3,
+   "cerrada": 0.1
+  },
+  "humedo": {
+   "sin_estructura": 0.3,
+   "abierta": 0.4,
+   "cerrada": 0.3
+  },
+  "empapado": {
+   "sin_estructura": 0.1,
+   "abierta": 0.4,
+   "cerrada": 0.5
+  }
+ },
+ "a_mano": {
+  "ue_sin_prueba": 20.0,
+  "decision_sin_prueba": "perforar",
+  "ue_con_prueba_gratis": 32.5,
+  "valor_informacion": 12.5,
+  "ue_con_prueba_pagada": 22.5,
+  "por_resultado": {
+   "sin_estructura": {
+    "p": 0.41,
+    "posterior": {
+     "seco": 0.7317,
+     "humedo": 0.2195,
+     "empapado": 0.0488
+    },
+    "ue_perforar": -30.49,
+    "decision": "no perforar"
+   },
+   "abierta": {
+    "p": 0.35,
+    "posterior": {
+     "seco": 0.4286,
+     "humedo": 0.3429,
+     "empapado": 0.2286
+    },
+    "ue_perforar": 32.86,
+    "decision": "perforar"
+   },
+   "cerrada": {
+    "p": 0.24,
+    "posterior": {
+     "seco": 0.2083,
+     "humedo": 0.375,
+     "empapado": 0.4167
+    },
+    "ue_perforar": 87.5,
+    "decision": "perforar"
+   }
+  },
+  "conviene_probar": true
+ },
+ "pyagrum": {
+  "pagada": {
+   "meu": 22.5,
+   "probar": "si"
+  },
+  "gratis": {
+   "meu": 32.5,
+   "probar": "si"
+  },
+  "sin_prueba": {
+   "meu": 20.0
+  },
+  "valor_informacion": 12.5
+ }
+}

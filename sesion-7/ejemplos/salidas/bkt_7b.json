@@ -1,0 +1,239 @@
+{
+ "semilla": 7,
+ "tecnicos": 200,
+ "umbral": 0.95,
+ "fijo": 5,
+ "max_ejercicios": 30,
+ "habilidades": {
+  "bloqueo": {
+   "nombre": "Bloqueo y etiquetado",
+   "L0": 0.3,
+   "T": 0.2,
+   "G": 0.2,
+   "S": 0.08,
+   "reglas": {
+    "dominio": {
+     "ejercicios_promedio": 6.8,
+     "ejercicios_min": 3,
+     "ejercicios_max": 22,
+     "dominan_al_terminar": 0.995
+    },
+    "fijo": {
+     "ejercicios_promedio": 5.0,
+     "ejercicios_min": 5,
+     "ejercicios_max": 5,
+     "dominan_al_terminar": 0.77
+    }
+   }
+  },
+  "alineacion": {
+   "nombre": "Alineación de una bomba",
+   "L0": 0.1,
+   "T": 0.12,
+   "G": 0.15,
+   "S": 0.1,
+   "reglas": {
+    "dominio": {
+     "ejercicios_promedio": 10.35,
+     "ejercicios_min": 3,
+     "ejercicios_max": 30,
+     "dominan_al_terminar": 0.955
+    },
+    "fijo": {
+     "ejercicios_promedio": 5.0,
+     "ejercicios_min": 5,
+     "ejercicios_max": 5,
+     "dominan_al_terminar": 0.525
+    }
+   }
+  },
+  "vibracion": {
+   "nombre": "Lectura de vibración",
+   "L0": 0.15,
+   "T": 0.15,
+   "G": 0.25,
+   "S": 0.1,
+   "reglas": {
+    "dominio": {
+     "ejercicios_promedio": 8.8,
+     "ejercicios_min": 4,
+     "ejercicios_max": 27,
+     "dominan_al_terminar": 0.97
+    },
+    "fijo": {
+     "ejercicios_promedio": 5.0,
+     "ejercicios_min": 5,
+     "ejercicios_max": 5,
+     "dominan_al_terminar": 0.595
+    }
+   }
+  }
+ },
+ "ejemplo": {
+  "habilidad": "alineacion",
+  "indice": 2,
+  "respuestas": [
+   false,
+   false,
+   true,
+   false,
+   false,
+   true,
+   true,
+   true
+  ],
+  "curva": [
+   0.1,
+   0.131,
+   0.135,
+   0.546,
+   0.229,
+   0.15,
+   0.572,
+   0.902,
+   0.984
+  ]
+ },
+ "seleccion": [
+  {
+   "habilidad": "alineacion",
+   "acierto": false,
+   "estimado": 0.131
+  },
+  {
+   "habilidad": "alineacion",
+   "acierto": false,
+   "estimado": 0.135
+  },
+  {
+   "habilidad": "alineacion",
+   "acierto": false,
+   "estimado": 0.136
+  },
+  {
+   "habilidad": "alineacion",
+   "acierto": true,
+   "estimado": 0.547
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.48
+  },
+  {
+   "habilidad": "bloqueo",
+   "acierto": true,
+   "estimado": 0.731
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.243
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.185
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.175
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.173
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.173
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.515
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.256
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.187
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.175
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.519
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.826
+  },
+  {
+   "habilidad": "alineacion",
+   "acierto": true,
+   "estimado": 0.893
+  },
+  {
+   "habilidad": "bloqueo",
+   "acierto": true,
+   "estimado": 0.941
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.479
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.243
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.605
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": false,
+   "estimado": 0.294
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.66
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.894
+  },
+  {
+   "habilidad": "alineacion",
+   "acierto": true,
+   "estimado": 0.983
+  },
+  {
+   "habilidad": "vibracion",
+   "acierto": true,
+   "estimado": 0.973
+  },
+  {
+   "habilidad": "bloqueo",
+   "acierto": true,
+   "estimado": 0.989
+  }
+ ]
+}

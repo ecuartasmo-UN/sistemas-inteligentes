@@ -1,0 +1,5 @@
+# Laboratorio 7A · librerías (probadas con Python 3.12 y 3.13 el 9-nov-2026)
+# pyAgrum calcula las redes y los diagramas. Pide scikit-learn: es el mismo del 6A
+pyagrum==3.3.2
+scikit-learn==1.9.1
+matplotlib==3.11.2

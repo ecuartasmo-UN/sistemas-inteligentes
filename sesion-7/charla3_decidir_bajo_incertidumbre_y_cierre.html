@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla de cierre · Decidir bajo incertidumbre en las organizaciones · Sesión 7 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .guia td, .guia th { font-size: 16px !important; padding: 5px 8px !important; line-height: 1.25; }
+  .guia th:first-child { width: 150px; }
+  .casos .card h4 { font-size: 23px; margin-bottom: 6px; }
+  .casos .card p { font-size: 19px; margin: 0 0 6px; line-height: 1.3; }
+  .cols-3 .card p { font-size: 22px; }
+  .cols-3 .card h4 { font-size: 24px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 7 · Unidad 7 · Charla de cierre</div>
+  <h1>Decidir bajo incertidumbre en las organizaciones</h1>
+  <p class="lead muted">Casos reales, de la correlación a la causalidad, los LLMs, una guía de decisión y el cierre de la sesión</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="charla2_el_tutor_que_estima_lo_que_sabes.html">← Charla intermedia</a><a href="index.html">Agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes">
+    <p>Después del Laboratorio 7B. Ya razonaron con redes bayesianas, decidieron con el valor de la información y siguieron el dominio de un estudiante.</p>
+    <p>Esta charla mira afuera: casos reales, la frontera de la causalidad y el lugar de los LLMs. Al final, el cierre de la sesión.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LO QUE MOSTRARON LOS LABORATORIOS ============================ -->
+<section data-min="2">
+  <div class="kicker">De los laboratorios</div>
+  <h2>Creer, decidir y estimar lo que alguien sabe</h2>
+  <!--DATOS:laboratorios--><div class="cols-3"><div class="card accent"><h4>Red de la alarma</h4><p>Con las dos llamadas, el robo pasa de 0.1 % a <strong>28.4 %</strong>.</p></div><div class="card amber fragment"><h4>El petrolero</h4><p>La prueba vale <strong>12.5</strong> y cuesta 10: conviene probar.</p></div><div class="card ok fragment"><h4>El tutor</h4><p>Con la regla de dominio, el 96 % domina; con 5 ejercicios fijos, el 52 %.</p></div></div><!--/DATOS:laboratorios-->
+  <p class="fragment" style="font-size:22px;margin-top:16px">En los tres casos, el sistema dice <strong>cuánto</strong> cree, y decide con eso. Y una persona puede revisar por qué.</p>
+  <p class="credit">Cifras de <code>ejemplos/</code>, con los mismos datos y parámetros de los laboratorios 7A y 7B.</p>
+  <aside class="notes">
+    <p>Lo que vieron en los laboratorios. En la red de la alarma, dos llamadas llevaron el robo de 1 en 1000 a casi 3 en 10. En el petrolero, la prueba sísmica valía 12.5 y costaba 10: convenía hacerla. Y en el tutor, la regla de dominio dejó a casi todos los técnicos dominando la habilidad. Cinco ejercicios fijos dejaron a la mitad.</p>
+    <p>El hilo común: el sistema no responde solo sí o no. Dice cuánto cree, decide con eso, y deja ver por qué. Ahora veamos casos reales.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · DIAGNÓSTICO DE FALLAS ============================ -->
+<section data-min="2.5">
+  <div class="kicker">Caso real · redes bayesianas y valor de la información</div>
+  <h2>Un solucionador que elige la siguiente prueba</h2>
+  <div class="cols mid">
+    <div>
+      <p style="font-size:21px">Heckerman, Breese y Rommelse (1995): ordenar las pruebas y reparaciones según la probabilidad de falla y el costo.</p>
+      <p class="fragment" style="font-size:21px">Una observación extra se hace <strong>solo si baja el costo esperado</strong> de la reparación: es el valor de la información.</p>
+      <p class="fragment" style="font-size:21px">En 1000 casos simulados de un auto que no arranca: $154 por caso, frente a $298 con una secuencia fija.</p>
+      <p class="fragment" style="font-size:20px">Un solucionador de impresión salió en el kit de soporte de Windows 95 (Breese y Heckerman, 1996).</p>
+    </div>
+    <figure class="figure"><img src="assets/img/heckerman1995_red_auto.png" alt="La red bayesiana de un auto que no arranca: nodos como batería, alternador, bomba de combustible y bujías apuntan a la luz, la radio, el giro del motor y el arranque" width="1563" height="555" style="max-height:260px"><figcaption class="credit">Heckerman, Breese y Rommelse (1995), fig. 2: la red bayesiana de «mi auto no arranca». Cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>El primer caso real usa justo el valor de la información. Heckerman, Breese y Rommelse, de Microsoft Research, publicaron en 1995 un método para diagnosticar fallas.</p>
+    <p>La figura es la red del artículo: las flechas van de la causa al efecto, como en la alarma. La batería, el combustible y las bujías explican si el auto arranca.</p>
+    <p>Una red bayesiana estima qué componente falló. El sistema prueba primero lo más probable y barato. Y hace una observación extra solo si baja el costo esperado de la reparación.</p>
+    <p>Una advertencia: sus cifras salen de una simulación. Simularon 1000 casos de un auto que no arranca. El método costó 154 dólares por caso, frente a 298 con una secuencia fija.</p>
+    <p>Llegó a un producto: un solucionador de problemas de impresión salió en el kit de soporte de Windows 95.</p>
+  </aside>
+</section>
+
+<!-- ============================ 4 · LUMIÈRE Y EL ASISTENTE DE OFFICE ============================ -->
+<section data-min="2">
+  <div class="kicker">Caso real · un producto masivo</div>
+  <h2>Lumière: inferir qué necesita el usuario</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p style="font-size:21px">Microsoft Research (Horvitz et al., 1998). Una red bayesiana infiere la meta del usuario según sus acciones y su pregunta.</p>
+      <p class="fragment" style="font-size:21px">El análisis bayesiano de las preguntas llegó a Office 95 y, después, al asistente de Office 97.</p>
+      <p class="fragment" style="font-size:21px">Pero los consejos que el asistente daba sin que se los pidieran salían de <strong>reglas simples</strong>, no de la red.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/horvitz1998_asistente_office.png" alt="Captura de Excel con el asistente de Office 97 y su globo de ayuda con opciones" width="1356" height="848" style="max-height:330px"><figcaption class="credit">Horvitz et al. (1998), fig. 11: el asistente de Office 97, basado en la investigación de Lumière. Cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>El segundo caso es famoso. El proyecto Lumière, de Microsoft Research, usaba redes bayesianas para inferir qué quería el usuario. Miraba sus acciones, el estado del programa y las palabras de su pregunta.</p>
+    <p>La captura es del artículo: el asistente de Office 97 en Excel, con su globo de ayuda.</p>
+    <p>Una parte llegó a millones de usuarios. Fue el análisis bayesiano de las preguntas, en Office 95 y en el asistente de Office 97.</p>
+    <p>Pero hay un detalle que cuenta el propio Horvitz. Los consejos que el asistente daba sin que nadie los pidiera venían de reglas simples, no de la red. La asistencia proactiva de Lumière no llegó al producto.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · PATHFINDER (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Caso real · salud</div>
+  <h2>Pathfinder: tan bueno como el experto, y la persona decide</h2>
+  <div class="cols-3">
+    <div class="card"><h4>El problema</h4><p>Diagnóstico de enfermedades de los ganglios linfáticos: más de 60 enfermedades y más de 100 rasgos.</p></div>
+    <div class="card ok fragment"><h4>El resultado</h4><p>Coincidió con el diagnóstico de referencia en 50 de 53 casos: al menos tan bien como el experto.</p></div>
+    <div class="card amber fragment"><h4>Lo que no hace</h4><p>Recomienda qué rasgo observar después, con el valor de la información. No recomienda el diagnóstico.</p></div>
+  </div>
+  <p class="credit">Heckerman y Nathwani (1992), <em>Computers and Biomedical Research</em> 25; Heckerman, Horvitz y Nathwani (1992), <em>Methods of Information in Medicine</em> 31. Muestra pequeña y un solo experto.</p>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. Un caso de salud. Pathfinder es una red bayesiana para diagnosticar enfermedades de los ganglios linfáticos.</p>
+    <p>En 53 casos de referencia, su diagnóstico más probable coincidió en 50. Los autores lo consideran al menos tan bueno como el experto que lo construyó. La muestra es pequeña.</p>
+    <p>Lo interesante es lo que no hace. Recomienda qué rasgo observar después, con el valor de la información. Pero no recomienda el diagnóstico, porque depende de las preferencias del paciente. Esa decisión queda en manos de una persona.</p>
+  </aside>
+</section>
+
+<!-- ============================ 6 · LA VARIABLE DE CONFUSIÓN ============================ -->
+<section data-min="3">
+  <div class="kicker">De la correlación a la causalidad · panorama</div>
+  <h2>Más mantenimiento, más fallas</h2>
+  <div class="cols c46 mid">
+    <svg class="diagram dg" viewBox="0 0 470 330" role="img" aria-label="Red causal: la edad de la bomba causa más mantenimiento y más fallas; el mantenimiento reduce las fallas">
+      <defs><marker id="pc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <ellipse class="nodo amber" cx="235" cy="60" rx="120" ry="36"/><text class="t1" x="235" y="67" text-anchor="middle">Edad de la bomba</text>
+      <ellipse class="nodo" cx="100" cy="260" rx="95" ry="36"/><text class="t1" x="100" y="267" text-anchor="middle">Mantenimiento</text>
+      <ellipse class="nodo bad" cx="370" cy="260" rx="85" ry="36"/><text class="t1" x="370" y="267" text-anchor="middle">Fallas</text>
+      <path class="arista fuerte" d="M190,94 L122,222" marker-end="url(#pc)"/><path class="arista fuerte" d="M280,94 L350,222" marker-end="url(#pc)"/>
+      <path class="arista" d="M197,260 L278,260" marker-end="url(#pc)"/>
+      <text class="t2" x="110" y="160" text-anchor="end">más viejas,</text><text class="t2" x="110" y="180" text-anchor="end">más cuidado</text>
+      <text class="t2" x="330" y="160">más viejas,</text><text class="t2" x="330" y="180">más fallas</text>
+      <text class="t3" x="237" y="250" text-anchor="middle">reduce</text>
+    </svg>
+    <div>
+      <!--DATOS:confusion--><table class="tbl cuenta"><tr><th></th><th>Mantenimiento frecuente</th><th>Poco mantenimiento</th></tr><tr><td><strong>Todas las bombas</strong></td><td class="neg">25 % fallan</td><td class="pos">17 % fallan</td></tr><tr class="fragment"><td>Bombas nuevas</td><td class="pos">5 %</td><td class="neg">10 %</td></tr><tr class="fragment"><td>Bombas viejas</td><td class="pos">30 %</td><td class="neg">45 %</td></tr></table><!--/DATOS:confusion-->
+      <p class="fragment" style="font-size:21px;margin-top:12px">La edad causa las dos cosas: es una <strong>variable de confusión</strong>. Mirar los datos juntos engaña.</p>
+    </div>
+  </div>
+  <p class="credit">Cifras ilustrativas de MantenIA (<code>ejemplos/confusion_7.py</code>). El dibujo es una red bayesiana leída como causas.</p>
+  <aside class="notes">
+    <p>Un dato que confunde en MantenIA. En el total, las bombas con mantenimiento frecuente fallan más: 25 % frente a 17 %. ¿Dejamos de hacer mantenimiento?</p>
+    <p>Separemos por edad. En las bombas nuevas, el mantenimiento frecuente reduce las fallas: 5 % frente a 10 %. En las viejas también: 30 % frente a 45 %.</p>
+    <p>¿Qué pasa? Las bombas viejas reciben más mantenimiento y también fallan más. La edad causa las dos cosas. Es una variable de confusión. El dibujo lo muestra: es una red bayesiana, leída como causas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 7 · VER NO ES INTERVENIR ============================ -->
+<section data-min="2">
+  <div class="kicker">De la correlación a la causalidad</div>
+  <h2>Ver no es intervenir</h2>
+  <div class="cols mid">
+    <div class="card"><h4>Lo que responden los datos</h4><p style="font-size:21px">¿Qué bombas fallan más, entre las que veo?</p></div>
+    <div class="card amber fragment"><h4>Lo que quiere saber el gerente</h4><p style="font-size:21px">¿Qué pasa con las fallas <strong>si</strong> aumento el mantenimiento?</p></div>
+  </div>
+  <p class="fragment" style="font-size:22px;margin-top:16px">Un modelo que aprende de datos observados responde la primera pregunta. Para la segunda necesita saber qué causa qué.</p>
+  <p class="fragment" style="font-size:21px">El club de lectura discute esta frontera con Pearl (2019).</p>
+  <aside class="notes">
+    <p>La diferencia de fondo. Los datos responden qué veo: qué bombas fallan más entre las que tengo. El gerente quiere saber qué pasa si actúa: si aumenta el mantenimiento, ¿bajan las fallas?</p>
+    <p>Un modelo que aprende solo de datos observados responde la primera pregunta. Para la segunda necesita un modelo de causas, como el dibujo de la diapositiva anterior. Esa frontera es el tema del club de lectura, con el artículo de Judea Pearl.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · LLMs Y CALIBRACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Los LLMs y la incertidumbre · retoma la Sesión 5</div>
+  <h2>Un LLM da probabilidades sobre tokens, no sobre el mundo</h2>
+  <div class="cols c64 mid">
+    <div>
+      <p style="font-size:21px">En la Sesión 5 vimos la softmax: una probabilidad para cada token siguiente.</p>
+      <p class="fragment" style="font-size:21px">Kadavath et al. (2022): los modelos grandes están bien <strong>calibrados</strong> en preguntas de opción múltiple, con el formato adecuado.</p>
+      <p class="fragment" style="font-size:21px">Pero su estimación de «sé la respuesta» se descalibra en tareas nuevas. Y el ajuste con preferencias humanas también la descalibra.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/kadavath2022_calibracion.png" alt="Curvas de calibración de modelos de distintos tamaños: los más grandes siguen de cerca la diagonal, que representa la calibración perfecta" width="1393" height="900" style="max-height:330px"><figcaption class="credit">Kadavath et al. (2022), fig. 4, izquierda: la calibración en preguntas de opción múltiple. La diagonal es la calibración perfecta. arXiv; cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>¿Y los LLMs? En la Sesión 5 vimos que un LLM da una probabilidad para cada token siguiente. Es una probabilidad sobre palabras, no sobre el mundo.</p>
+    <p>La figura es del artículo. Cada curva es un modelo de distinto tamaño; la diagonal punteada es la calibración perfecta. Los modelos grandes, en amarillo, la siguen de cerca.</p>
+    <p>Kadavath y sus colegas, de Anthropic, estudiaron en 2022 si los modelos saben lo que saben. En preguntas de opción múltiple, con el formato adecuado, los modelos grandes están bien calibrados. Cuando dicen 80 %, aciertan cerca del 80 %.</p>
+    <p>Pero su estimación de «sé la respuesta» se descalibra en tareas nuevas. Y el ajuste con preferencias humanas también descalibra al modelo. Conclusión práctica: la confianza declarada de un LLM no reemplaza una probabilidad calculada.</p>
+  </aside>
+</section>
+
+<!-- ============================ 9 · LLMs Y CAUSALIDAD (OPCIONAL) ============================ -->
+<section data-min="2" data-opcional>
+  <div class="kicker">Lectura complementaria · Kıcıman et al. (2024)</div>
+  <h2>¿Razonan los LLMs sobre causas?</h2>
+  <div class="cols-3">
+    <div class="card ok"><h4>Sorprenden</h4><p>GPT-4 acertó el 97 % de las direcciones causales de un banco de pruebas. Los mejores métodos con datos llegaban al 83 %.</p></div>
+    <div class="card amber fragment"><h4>Pero memorizan</h4><p>GPT-4 recordaba buena parte de ese banco de pruebas: estaba en sus datos de entrenamiento.</p></div>
+    <div class="card bad fragment"><h4>Y fallan sin aviso</h4><p>Se equivocan de formas inesperadas, y el resultado cambia mucho con el prompt.</p></div>
+  </div>
+  <p class="credit">Kıcıman, Ness, Sharma y Tan (2024), <em>Transactions on Machine Learning Research</em>, tabla 2 y discusión.</p>
+  <aside class="notes">
+    <p>Opcional si el tiempo aprieta. La lectura complementaria de la sesión. Kıcıman y sus colegas, de Microsoft, probaron GPT-4 en preguntas causales.</p>
+    <p>GPT-4 acertó la dirección causal en el 97 % de los pares de variables de un banco de pruebas. Los mejores métodos con datos llegaban al 83 %.</p>
+    <p>Pero hay dos alertas de los propios autores. GPT-4 recordaba buena parte de ese banco de pruebas, porque estaba en sus datos. Y falla de formas inesperadas, según cómo se le pregunte. Conclusión: el LLM puede proponer causas, pero hay que verificarlas.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · EL PATRÓN HÍBRIDO ============================ -->
+<section data-min="2">
+  <div class="kicker">El lugar de cada técnica</div>
+  <h2>El LLM propone; la red calcula; una persona revisa</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 230" role="img" aria-label="El patrón híbrido: el LLM propone la estructura y las preguntas; la red bayesiana calcula las probabilidades de forma exacta y auditable; una persona revisa y decide">
+    <defs><marker id="ph" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="nodo violet" x="20" y="40" width="300" height="120" rx="14"/><text class="t1" x="170" y="88" text-anchor="middle">LLM</text><text class="t2" x="170" y="116" text-anchor="middle">propone causas, variables</text><text class="t2" x="170" y="138" text-anchor="middle">y preguntas</text>
+    <g class="fragment"><rect class="nodo" x="425" y="40" width="300" height="120" rx="14"/><text class="t1" x="575" y="88" text-anchor="middle">Red bayesiana</text><text class="t2" x="575" y="116" text-anchor="middle">calcula probabilidades</text><text class="t2" x="575" y="138" text-anchor="middle">exactas y auditables</text>
+      <path class="arista" d="M322,100 L419,100" marker-end="url(#ph)"/></g>
+    <g class="fragment"><rect class="nodo ok" x="830" y="40" width="300" height="120" rx="14"/><text class="t1" x="980" y="88" text-anchor="middle">Persona experta</text><text class="t2" x="980" y="116" text-anchor="middle">revisa el dibujo</text><text class="t2" x="980" y="138" text-anchor="middle">y toma la decisión</text>
+      <path class="arista" d="M727,100 L824,100" marker-end="url(#ph)"/></g>
+    <text class="t3 fragment" x="575" y="205" text-anchor="middle">el patrón del curso: generar, y verificar con otra técnica o con una persona</text>
+  </svg>
+  <aside class="notes">
+    <p>El lugar de cada técnica. Un LLM es bueno para proponer: qué variables importan, qué podría causar qué, qué preguntar. La red bayesiana es buena para calcular: da probabilidades exactas y se puede auditar. Y una persona experta revisa el dibujo y decide.</p>
+    <p>Es el patrón que repetimos en el curso: un componente genera, y otra técnica o una persona verifica.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · GUÍA DE DECISIÓN ============================ -->
+<section data-min="3">
+  <div class="kicker">Para tu proyecto · amplía la guía de las sesiones 5 y 6</div>
+  <h2>Guía de decisión: ¿cómo maneja la incertidumbre tu sistema?</h2>
+  <table class="tbl guia">
+    <tr><th></th><th>Red bayesiana</th><th>Diagrama de influencia</th><th>MDP o reinforcement learning</th><th>Modelo aprendido</th><th>LLM</th></tr>
+    <tr><th>Datos</th><td>pocos, con conocimiento experto</td><td>pocos, con costos y beneficios conocidos</td><td>simulador o historial de interacción</td><td>muchos, etiquetados</td><td>texto</td></tr>
+    <tr><th>Cuantifica la incertidumbre</th><td>sí, exacta</td><td>sí, y la usa para decidir</td><td>sí, sobre resultados futuros</td><td>a veces, si está calibrado</td><td>poco confiable</td></tr>
+    <tr><th>Explicabilidad</th><td>alta: el dibujo y las tablas</td><td>alta: la cuenta de cada opción</td><td>baja: una política</td><td>de alta a baja</td><td>baja, aunque explique</td></tr>
+    <tr><th>Tipo de decisión</th><td>diagnosticar, combinar evidencia</td><td>un solo paso; comprar información</td><td>en secuencia</td><td>predecir o clasificar</td><td>lenguaje, con verificación</td></tr>
+    <tr><th>En MantenIA</th><td>diagnosticar la bomba</td><td>reemplazar o medir antes</td><td>cuándo mantener cada bomba</td><td>predecir fallas con datos de sensores</td><td>redactar la orden de trabajo</td></tr>
+  </table>
+  <aside class="notes">
+    <p>La guía de decisión de las sesiones 5 y 6, ampliada con esta unidad. La red bayesiana sirve cuando hay pocos datos y mucho conocimiento experto. También cuando hay que combinar evidencia y explicar la conclusión. El diagrama de influencia, para una decisión de un solo paso, cuando se puede comprar información antes.</p>
+    <p>El MDP o el reinforcement learning de la Sesión 6, para decisiones en secuencia. El modelo aprendido, cuando hay muchos datos etiquetados. Y el LLM, para el lenguaje, siempre con verificación.</p>
+    <p>Úsenla de arriba hacia abajo. Qué datos tienen, si necesitan cuantificar la incertidumbre, cuánto deben explicar y qué tipo de decisión es. La última fila tiene el ejemplo de MantenIA de cada columna.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · MAPA DE LA UNIDAD ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Cierre de la sesión</div>
+  <h2>El mapa de la Unidad 7</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 300" role="img" aria-label="Mapa de la unidad: la incertidumbre y Bayes llevan a las redes bayesianas; estas, a la teoría de decisiones y al valor de la información, y al tiempo y el modelo del estudiante; todo lleva a la causalidad">
+    <defs><marker id="pu" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="nodo" x="0" y="110" width="210" height="80" rx="12"/><text class="t1" x="105" y="145" text-anchor="middle">incertidumbre</text><text class="t2" x="105" y="170" text-anchor="middle">y Bayes</text>
+    <rect class="nodo" x="290" y="110" width="210" height="80" rx="12"/><text class="t1" x="395" y="145" text-anchor="middle">redes</text><text class="t2" x="395" y="170" text-anchor="middle">bayesianas</text>
+    <rect class="nodo amber" x="590" y="10" width="260" height="80" rx="12"/><text class="t1" x="720" y="45" text-anchor="middle">decisiones</text><text class="t2" x="720" y="70" text-anchor="middle">utilidad · valor de la información</text>
+    <rect class="nodo violet" x="590" y="210" width="260" height="80" rx="12"/><text class="t1" x="720" y="245" text-anchor="middle">el tiempo</text><text class="t2" x="720" y="270" text-anchor="middle">modelo del estudiante</text>
+    <rect class="nodo bad" x="930" y="110" width="210" height="80" rx="12"/><text class="t1" x="1035" y="145" text-anchor="middle">causalidad</text><text class="t2" x="1035" y="170" text-anchor="middle">club de lectura</text>
+    <text class="t3" x="720" y="112" text-anchor="middle">Laboratorio 7A</text><text class="t3" x="720" y="200" text-anchor="middle">Laboratorio 7B</text>
+    <path class="arista" d="M212,150 H284 M502,140 L584,60 M502,160 L584,240 M852,60 L926,138 M852,240 L926,162" marker-end="url(#pu)"/>
+  </svg>
+  <aside class="notes">
+    <p>El mapa de la unidad. Empezamos con las fuentes de incertidumbre y la regla de Bayes. Las redes bayesianas organizan muchas variables con tablas pequeñas.</p>
+    <p>De ahí salen dos caminos. Las decisiones, con la utilidad esperada y el valor de la información: el Laboratorio 7A. Y el tiempo, con el modelo del estudiante: el Laboratorio 7B.</p>
+    <p>Todo termina en la causalidad: la frontera entre ver e intervenir, que discute el club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ 13 · PROYECTO ============================ -->
+<section data-min="2">
+  <div class="kicker">Proyecto del curso · paso de la unidad</div>
+  <h2>El cierre técnico: tu componente híbrido y tu demostración</h2>
+  <div class="cols">
+    <ul>
+      <li>¿Dónde aparece la <strong>incertidumbre</strong> en tu proyecto, y cómo la manejas o la comunicas?</li>
+      <li class="fragment">¿Cuál es tu <strong>componente híbrido</strong>? Qué propone el LLM, y qué técnica, prueba o persona lo verifica.</li>
+      <li class="fragment">¿Qué vas a mostrar en la <strong>demostración</strong> de la sesión 8, en 3 minutos?</li>
+    </ul>
+    <div class="card amber fragment"><h4>En casa · unos 60 min</h4><p>Agrega estas respuestas al plan.md del equipo y revísalo con la lista de chequeo (J.6).</p><p><strong>Entrega:</strong> la fecha se anuncia en clase.</p></div>
+  </div>
+  <aside class="notes">
+    <p>El paso del proyecto para esta unidad es el cierre técnico, antes de la sesión 8. En casa, cada equipo responde tres preguntas.</p>
+    <p>Dónde aparece la incertidumbre en su proyecto, y cómo la manejan o la comunican al usuario. Cuál es su componente híbrido: qué propone el LLM, y qué técnica, prueba o persona lo verifica. Y qué van a mostrar en la demostración de 3 minutos de la sesión 8.</p>
+    <p>Agregan las respuestas al plan.md y lo revisan con la lista de chequeo J.6. La fecha de entrega la anunciamos en clase.</p>
+  </aside>
+</section>
+
+<!-- ============================ 14 · TRABAJO INDEPENDIENTE ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Trabajo independiente</div>
+  <h2>Dos trabajos, sin programar</h2>
+  <div class="cols">
+    <div class="card"><h4>TI-1 · ¿Cuánto pagarías por saber antes de decidir?</h4><p>Modela una decisión incierta de tu organización, calcula su utilidad esperada y el valor de una información. Unos 70 min.</p></div>
+    <div class="card"><h4>TI-2 · Diseña el tutor de un curso de tu organización</h4><p>Define las habilidades, los parámetros y la regla del siguiente ejercicio. Pruébalo en el notebook del 7B. Unos 65 min.</p></div>
+  </div>
+  <p style="margin-top:14px">Sin datos personales ni confidenciales. Se entregan en la fase de cierre; la fecha exacta se anuncia en clase. Detalles en <code>trabajo_independiente.md</code>.</p>
+  <aside class="notes">
+    <p>Dos trabajos independientes, sin escribir código. En el primero, cada uno modela una decisión incierta de su organización. Por ejemplo: lanzar un producto, aprobar una compra o reemplazar un equipo. Calcula la utilidad esperada y cuánto vale una información antes de decidir.</p>
+    <p>En el segundo, diseñan el tutor de un curso de su organización. Definen las habilidades, los parámetros y la regla para elegir el siguiente ejercicio. Lo prueban en el notebook del 7B con respuestas inventadas.</p>
+    <p>Sin datos personales ni confidenciales. Se entregan en la fase de cierre del curso.</p>
+  </aside>
+</section>
+
+<!-- ============================ 15 · PRÓXIMA SESIÓN ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Próxima sesión · Unidad 8</div>
+  <h2>La muestra de proyectos y la hackatón</h2>
+  <div class="cols c64 mid">
+    <div><p style="font-size:22px"><strong>Lectura de la sesión 8,</strong> en par:</p>
+      <p style="font-size:20px">Shojaee, P. et al. (2025). <a href="https://arxiv.org/abs/2506.06941"><em>The Illusion of Thinking</em></a>. NeurIPS 2025.</p>
+      <p style="font-size:20px">Lawsen, A. (2025). <a href="https://arxiv.org/abs/2506.09250"><em>Comment on The Illusion of Thinking</em></a>. arXiv.</p>
+      <p class="fragment" style="font-size:21px">La sesión 8 reúne las técnicas del curso en sistemas híbridos.</p></div>
+    <div class="card violet fragment"><h4>A continuación</h4><p>Club de lectura: Pearl (2019).</p></div>
+  </div>
+  <aside class="notes">
+    <p>La lectura de la sesión 8 son dos textos que se leen en par. Un artículo de Apple, publicado en NeurIPS 2025, sostiene que los modelos de razonamiento colapsan en problemas complejos. Una réplica cuestiona cómo se midió. Léanlos juntos y pregúntense por qué hay que verificar.</p>
+    <p>La sesión 8 es la muestra de proyectos y la hackatón, donde se juntan las técnicas del curso. Ahora, el club de lectura.</p>
+  </aside>
+</section>
+
+<!-- ============================ 16 · TRANSICIÓN AL CLUB ============================ -->
+<section data-min="0.5" class="transition-slide">
+  <div class="kicker amber">A continuación · 15 min</div>
+  <h1 style="font-size:60px">Club de lectura</h1>
+  <p class="lead">Pearl, J. (2019). <em>The seven tools of causal inference, with reflections on machine learning</em>. <em>Communications of the ACM</em> 62(3).</p>
+  <p><a href="club_lectura.html">Ir al club de lectura →</a></p>
+  <aside class="notes"><p>Pasamos al club de lectura, que cierra la sesión.</p></aside>
+</section>
+
+<!-- ============================ 17 · REFERENCIAS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias de la charla de cierre</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Heckerman, D., Breese, J. S. y Rommelse, K. (1995). Decision-theoretic troubleshooting. <em>Communications of the ACM</em> 38(3), 49–57. <a href="http://web.archive.org/web/20250207005925/https://dl.acm.org/doi/10.1145/203330.203341">DOI (Wayback)</a> · <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/1999/01/Decision-Theoretic-Troubleshooting.pdf">PDF</a></li>
+    <li>Breese, J. S. y Heckerman, D. (1996). Decision-theoretic troubleshooting: a framework for repair and experiment. <em>UAI 1996</em>. <a href="https://arxiv.org/abs/1302.3563">arXiv</a></li>
+    <li>Horvitz, E., Breese, J., Heckerman, D., Hovel, D. y Rommelse, K. (1998). The Lumière project: Bayesian user modeling for inferring the goals and needs of software users. <em>UAI 1998</em>, 256–265. <a href="https://arxiv.org/abs/1301.7385">arXiv</a> · <a href="https://erichorvitz.com/lum.htm">página de Horvitz</a></li>
+    <li>Heckerman, D. y Nathwani, B. (1992). An evaluation of the diagnostic accuracy of Pathfinder. <em>Computers and Biomedical Research</em> 25(1), 56–74. <a href="https://microsoft.com/en-us/research/uploads/prod/2016/11/An-Evaluation-of-the-Diagnostic-Accuracy-of-Pathfinder.pdf">PDF</a> · Heckerman, D., Horvitz, E. y Nathwani, B. (1992). Toward normative expert systems. <em>Methods of Information in Medicine</em> 31. <a href="https://www.erichorvitz.com/Toward_Normative_Systems_MIM.pdf">PDF</a></li>
+    <li>Pearl, J., Glymour, M. y Jewell, N. P. (2016). <em>Causal Inference in Statistics: A Primer</em>. Wiley · Pearl, J. y Mackenzie, D. (2020). <em>El libro del porqué</em>. Pasado y Presente</li>
+    <li>Kadavath, S. et al. (2022). Language models (mostly) know what they know. <a href="https://arxiv.org/abs/2207.05221">arXiv</a></li>
+    <li>Kıcıman, E., Ness, R., Sharma, A. y Tan, C. (2024). Causal reasoning and large language models: opening a new frontier for causality. <em>TMLR</em>. <a href="https://mlanthology.org/tmlr/2024/kiciman2024tmlr-causal/">mlanthology</a> · <a href="https://arxiv.org/abs/2305.00050">arXiv</a></li>
+    <li>Poole, D. L. y Mackworth, A. K. (2023). <em>Artificial Intelligence: Foundations of Computational Agents</em>, 3.ª ed., cap. 9, 11 y 12. <a href="https://artint.info/3e/html/ArtInt3e.html">artint.info</a></li>
+    <li>Shojaee, P. et al. (2025). The illusion of thinking. <em>NeurIPS 2025</em>. <a href="https://arxiv.org/abs/2506.06941">arXiv</a> · Lawsen, A. (2025). Comment on The Illusion of Thinking. <a href="https://arxiv.org/abs/2506.09250">arXiv</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="charla2_el_tutor_que_estima_lo_que_sabes.html">← Charla intermedia</a><a href="index.html">Volver a la agenda</a><a href="club_lectura.html">Club de lectura →</a></p>
+  <aside class="notes"><p>Referencias de la charla, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 7 · Charla de cierre · Decidir bajo incertidumbre en las organizaciones</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

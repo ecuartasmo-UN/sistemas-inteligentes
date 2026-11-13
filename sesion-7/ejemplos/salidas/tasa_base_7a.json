@@ -1,0 +1,31 @@
+{
+ "bombas": 1000,
+ "tasa_falla": 0.02,
+ "sensibilidad": 0.95,
+ "especificidad": 0.95,
+ "fallan": 20,
+ "sanas": 980,
+ "detectadas": 19,
+ "no_detectadas": 1,
+ "falsas": 49,
+ "avisos": 68,
+ "posterior": 0.2794,
+ "p_aviso": 0.068,
+ "posterior_formula": 0.2794,
+ "costo_reemplazo": 8,
+ "costo_falla": 40,
+ "decision": {
+  "sin_alarma": {
+   "p_falla": 0.02,
+   "esperar": -0.8,
+   "reemplazar": -8,
+   "mejor": "esperar"
+  },
+  "con_alarma": {
+   "p_falla": 0.2794,
+   "esperar": -11.18,
+   "reemplazar": -8,
+   "mejor": "reemplazar"
+  }
+ }
+}

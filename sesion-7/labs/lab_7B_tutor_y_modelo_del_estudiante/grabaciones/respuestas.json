@@ -1,0 +1,47 @@
+{
+ "contrapunto-1": {
+  "texto": "T01; 0.02; no domina; ocho errores seguidos, sin evidencia de aprendizaje\nT02; 0.93; no domina; tres errores iniciales y luego cinco aciertos, confianza insuficiente\nT03; 0.01; no domina; ocho errores seguidos, sin evidencia de aprendizaje\nT04; 0.55; no domina; dos aciertos finales tras seis errores, evidencia insuficiente\nT05; 0.94; no domina; cinco aciertos seguidos tras tres errores, aún no alcanza el 95 %\nT06; 0.80; no domina; aciertos intermitentes y dos aciertos finales, evidencia insuficiente\nT07; 0.07; no domina; siete errores y un solo acierto final\nT08; 0.97; domina; seis aciertos seguidos tras un error inicial y un segundo acierto temprano\nT09; 0.98; domina; siete aciertos seguidos tras un error inicial\nT10; 0.92; no domina; aciertos casi constantes, pero dos fallos recientes impiden alcanzar el 95 %",
+  "proveedor": "anthropic",
+  "modelo": "claude-haiku-5-5",
+  "tokens_entrada": 754,
+  "tokens_salida": 374,
+  "tokens_razonamiento": 0,
+  "segundos": 2.55,
+  "costo_usd": 0.0002624,
+  "grabada": false,
+  "disponible": true,
+  "fecha": "2026-11-09T19:24:59",
+  "coincide": true,
+  "huella": "964f5cb425399413"
+ },
+ "contrapunto-2": {
+  "texto": "T01; 0.02; no domina; siete fallos seguidos, sin evidencia de aprendizaje\nT02; 0.93; no domina; tres aciertos seguidos tras un fallo, aún insuficiente para 95 %\nT03; 0.02; no domina; ocho fallos consecutivos, sin progreso visible\nT04; 0.40; no domina; fallos hasta el último tramo, dos aciertos finales insuficientes\nT05; 0.93; no domina; cinco aciertos seguidos, pero la muestra es corta para 95 %\nT06; 0.55; no domina; aciertos intermitentes con dos fallos finales\nT07; 0.08; no domina; siete fallos y solo el último acierto\nT08; 0.97; domina; siete aciertos seguidos tras un único fallo inicial\nT09; 0.97; domina; siete aciertos seguidos tras un único fallo inicial\nT10; 0.90; no domina; aciertos casi constantes, pero dos fallos impiden 95 %",
+  "proveedor": "anthropic",
+  "modelo": "claude-haiku-5-5",
+  "tokens_entrada": 754,
+  "tokens_salida": 345,
+  "tokens_razonamiento": 0,
+  "segundos": 1.9,
+  "costo_usd": 0.0002479,
+  "grabada": false,
+  "disponible": true,
+  "fecha": "2026-11-09T19:25:01",
+  "coincide": true,
+  "huella": "964f5cb425399413"
+ },
+ "contrapunto-parametros": {
+  "texto": "I'll compute the Bayesian Knowledge Tracing posterior for each technician, starting from P(L0)=0.10, with P(T)=0.12, P(G)=0.15, P(S)=0.10.\n\nFor each observation: if correct, posterior = P(L)(1−S) / [P(L)(1−S) + (1−P(L))G]; if incorrect, posterior = P(L)S / [P(L)S + (1−P(L))(1−G)]. Then apply learning: P(L) ← posterior + (1−posterior)·0.12.\n\nKey values: a correct answer from a prior of 0.10 gives about 0.43 posterior; an incorrect answer gives about 0.012. Each step's learning adds roughly 0.12 of the remaining mass.\n\nT01 (all ✗): the posterior stays very low, around 0.2 at most. Not mastered.\n\nT02 (✗✗✗✓✓✓✓✓): five consecutive correct answers after an early streak of errors push mastery well above 0.95? Working through the recurrence: after the ✓ at position 4, P(L) is about 0.43 then roughly 0.5 after learning; after the subsequent ✓s it rises to about 0.92, then about 0.97 by the fifth ✓. Ending posterior after the final correct answer is around 0.97.\n\nT03 (all ✗): same as T01, far from mastery.\n\nT04 (✗✗✗✗✗✗✓✓): two correct answers at the end. Starting near 0.02 after six errors, the first ✓ gives about 0.20 and the second about 0.50 after the posterior and learning are combined. Not at 0.95.\n\nT05 (✗✗✗✓✓✓✓✓): same pattern as T02, ending near 0.97.\n\nT06 (✗✗✗✓✗✗✓✓): one early ✓ then errors drive mastery back down; the final two ✓s bring it to roughly 0.6–0.7. Not mastered.\n\nT07 (all ✗ except last ✓): one correct answer from a low prior gives about 0.1–0.2. Not mastered.\n\nT08 (✗✓✓✓✓✓✓✓): seven consecutive correct answers after one error; mastery climbs to above 0.99.\n\nT09 (✗✓✓✓✓✓✓✓): identical sequence to T08, above 0.99.\n\nT10 (✗✓✓✓✓✗✓✓): a single error at position 6 after a strong run only modestly lowers the posterior, and the final two ✓s restore it above 0.95.\n\nT01; 0.02; no domina; ocho errores seguidos sin señales de aprendizaje.\nT02; 0.97; domina; cinco aciertos consecutivos tras el inicio con fallos.\nT03; 0.02; no domina; ocho errores seguidos sin señales de aprendizaje.\nT04; 0.50; no domina; solo dos aciertos recientes tras seis fallos.\nT05; 0.97; domina; cinco aciertos consecutivos tras el inicio con fallos.\nT06; 0.65; no domina; errores intercalados y solo dos aciertos finales.\nT07; 0.15; no domina; un único acierto final tras ocho intentos fallidos.\nT08; 0.99; domina; siete aciertos consecutivos tras un primer fallo.\nT09; 0.99; domina; siete aciertos consecutivos tras un primer fallo.\nT10; 0.96; domina; rendimiento sostenido con un solo fallo aislado.",
+  "proveedor": "anthropic",
+  "modelo": "claude-haiku-5-5",
+  "tokens_entrada": 901,
+  "tokens_salida": 1175,
+  "tokens_razonamiento": 0,
+  "segundos": 6.32,
+  "costo_usd": 0.0006776,
+  "grabada": false,
+  "disponible": true,
+  "fecha": "2026-11-09T19:27:22",
+  "coincide": true,
+  "huella": "cf642eaaee0569b6"
+ }
+}

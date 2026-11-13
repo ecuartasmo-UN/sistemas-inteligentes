@@ -1,0 +1,6 @@
+# Laboratorio 7B · librerías (probadas con Python 3.12 y 3.13 el 9-nov-2026)
+# Son las del entorno del curso: matplotlib trae numpy, y el cliente del LLM usa anthropic, openai y python-dotenv
+matplotlib==3.11.2
+anthropic==2.1.0
+openai==3.36.0
+python-dotenv==1.2.4
