@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charla · ¿Quién responde por el sistema? · Sesión 8 · Sistemas Inteligentes</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/vendor/reveal/reset.css">
+<link rel="stylesheet" href="assets/vendor/reveal/reveal.css">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  .lado p { font-size: 21px; line-height: 1.35; }
+  .cols-3 .card p { font-size: 22px; }
+  .cols-3 .card h4 { font-size: 26px; }
+  .terminos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 6px; }
+  .terminos .card { padding: 8px 14px; }
+  .terminos .card p { margin: 0; font-size: 19px; line-height: 1.3; }
+  .terminos .card b { display: block; font-size: 20px; }
+  .expl .card h4 { font-size: 24px; margin-bottom: 6px; }
+  .expl .card p { font-size: 21px; line-height: 1.35; margin: 0; }
+  .expl { margin-top: 18px; }
+  .grande.cita-norma { font-size: 23px; }
+  .cons p, .cons li { font-size: 19px; line-height: 1.35; }
+  .cons li { margin-bottom: 5px; }
+  .reveal table.tbl.cons td, .reveal table.tbl.cons th { font-size: 16px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides" data-total-min="30">
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="title-slide" data-min="0.5">
+  <div class="kicker">Sesión 8 · Unidad 8 · Charla · abre la sesión</div>
+  <h1>¿Quién responde por el sistema?</h1>
+  <p class="lead muted">IA responsable en sistemas autónomos: verificación, trazabilidad, rendición de cuentas y el marco regulatorio</p>
+  <p class="meta">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales · <strong>30 min</strong></p>
+  <p class="navlinks"><a href="index.html">Agenda</a><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-8/sustentacion_proyecto.md">Guía de la sustentación →</a></p>
+  <aside class="notes">
+    <p>Es la última charla del curso, y abre la sesión de las sustentaciones.</p>
+    <p>En 30 minutos vemos tres preguntas, dos normas y casos reales. Al final están las preguntas que les puedo hacer en la sustentación.</p>
+  </aside>
+</section>
+
+<!-- ============================ 2 · LA PREGUNTA ============================ -->
+<section data-min="1">
+  <div class="kicker">La pregunta de la unidad</div>
+  <h2>Si un sistema decide solo, ¿quién responde?</h2>
+  <div class="cols-3">
+    <div class="card accent"><h4>Verificación</h4><p>¿Hace lo que debía? ¿Cómo lo sabes?</p></div>
+    <div class="card amber fragment"><h4>Trazabilidad</h4><p>¿Qué quedó registrado para reconstruir lo que pasó?</p></div>
+    <div class="card violet fragment"><h4>Rendición de cuentas</h4><p>¿Quién responde si el sistema se equivoca?</p></div>
+  </div>
+  <p class="fragment" style="font-size:22px;margin-top:18px">En la Sesión 7 viste que una buena decisión bajo incertidumbre puede salir mal. Hoy la decisión la toma un sistema.</p>
+  <p class="fragment" style="font-size:20px;color:var(--muted)">Después de la charla: las sustentaciones, 20 minutos por equipo.</p>
+  <aside class="notes">
+    <p>La Sesión 7 terminó con una idea incómoda. Una buena decisión bajo incertidumbre puede salir mal.</p>
+    <p>Si la decisión la toma un sistema, alguien tiene que responder. Hoy vemos tres preguntas.</p>
+    <p>¿Hace lo que debía, y cómo lo sabes? Es la verificación. ¿Qué quedó registrado? Es la trazabilidad. ¿Quién responde? Es la rendición de cuentas.</p>
+    <p>Las tres preguntas son también el centro del Reglamento europeo de IA. Después de la charla vienen las sustentaciones.</p>
+  </aside>
+</section>
+
+<!-- ============================ 3 · AUTONOMÍA ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Los sistemas autónomos</div>
+  <h2>Más autonomía, menos aprobaciones</h2>
+  <div class="cita-norma">«sistema de IA»: un sistema basado en una máquina que está diseñado para funcionar con <strong>distintos niveles de autonomía</strong>…<span class="src">Reglamento (UE) 2024/1689, art. 3, punto 1</span></div>
+  <svg class="diagram dg" viewBox="0 0 1150 262" role="img" aria-label="Escala de autonomía: con human-in-the-loop una persona aprueba cada decisión; con human-on-the-loop una persona vigila y puede detener; sin supervisión el sistema actúa solo. El sistema experto de la Sesión 1 está en el primer grado, el planificador de la Sesión 2 y el tutor de la Sesión 7 en el segundo, y el agente de refuerzo de la Sesión 6 en el tercero">
+    <defs><marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <path class="arista" d="M40,22 L1105,22" marker-end="url(#pa)"/>
+    <text class="t3" x="40" y="14">la persona decide</text><text class="t3" x="1105" y="14" text-anchor="end">el sistema decide solo</text>
+    <rect class="nodo ok" x="40" y="36" width="350" height="70" rx="12"/><text class="t1" x="215" y="66" text-anchor="middle">human-in-the-loop</text><text class="t2" x="215" y="90" text-anchor="middle">una persona aprueba cada decisión</text>
+    <rect class="nodo amber" x="400" y="36" width="350" height="70" rx="12"/><text class="t1" x="575" y="66" text-anchor="middle">human-on-the-loop</text><text class="t2" x="575" y="90" text-anchor="middle">una persona vigila y puede detener</text>
+    <rect class="nodo bad" x="760" y="36" width="345" height="70" rx="12"/><text class="t1" x="932" y="66" text-anchor="middle">sin supervisión</text><text class="t2" x="932" y="90" text-anchor="middle">el sistema actúa solo</text>
+    <g class="fragment"><circle class="c-ok" cx="215" cy="130" r="8"/><text class="t1" x="215" y="162" text-anchor="middle">Sistema experto · S1</text><text class="t2" x="215" y="184" text-anchor="middle">recomienda, y la persona decide</text></g>
+    <g class="fragment"><circle class="c-amber" cx="480" cy="130" r="8"/><text class="t1" x="480" y="162" text-anchor="middle">Planificador · S2</text><text class="t2" x="480" y="184" text-anchor="middle">ejecuta con monitoreo</text></g>
+    <g class="fragment"><circle class="c-amber" cx="670" cy="130" r="8"/><text class="t1" x="670" y="162" text-anchor="middle">Tutor · S7</text><text class="t2" x="670" y="184" text-anchor="middle">elige el siguiente</text><text class="t2" x="670" y="204" text-anchor="middle">ejercicio</text></g>
+    <g class="fragment"><circle class="c-bad" cx="932" cy="130" r="8"/><text class="t1" x="932" y="162" text-anchor="middle">Agente de refuerzo · S6</text><text class="t2" x="932" y="184" text-anchor="middle">actúa solo en su mundo</text></g>
+    <text class="t2 fragment" x="575" y="250" text-anchor="middle">tu proyecto también tiene un lugar en esta escala</text>
+  </svg>
+  <p class="credit">Detalle ↓: dos escalas conocidas de niveles de automatización.</p>
+  <aside class="notes">
+    <p>El Reglamento europeo define un sistema de IA como uno diseñado para funcionar con distintos niveles de autonomía.</p>
+    <p>La pregunta práctica es cuánto decide el sistema sin que una persona apruebe. Hay tres grados.</p>
+    <p>Con human-in-the-loop, una persona aprueba cada decisión. Con human-on-the-loop, una persona vigila y puede detener. Sin supervisión, el sistema actúa solo.</p>
+    <p>Los sistemas del curso están en distintos puntos. El sistema experto de la Sesión 1 recomienda, y la persona decide. El planificador de la Sesión 2 ejecuta con monitoreo.</p>
+    <p>El tutor de la Sesión 7 elige el siguiente ejercicio, y el docente puede intervenir. El agente de refuerzo de la Sesión 6 actúa solo en su mundo.</p>
+    <p>Su proyecto también tiene un lugar en esta escala. Más autonomía significa menos ocasiones para que una persona detecte un error.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · los sistemas autónomos</div>
+  <h3>Dos escalas conocidas de niveles de automatización</h3>
+  <div class="cols c46 mid">
+    <div class="cons">
+      <p><strong>Sheridan y Verplank (1978)</strong> propusieron 10 niveles para decidir entre una persona y un computador.</p>
+      <p>En un extremo, la persona hace todo el trabajo. En el otro, el computador decide si lo hace y si le informa a la persona.</p>
+      <p><strong>SAE J3016</strong> define 6 niveles de conducción automatizada, del 0 al 5. En los niveles 0 a 2, la persona conduce y supervisa.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/sae_j3016_2021.png" alt="Tabla de SAE J3016 con los niveles de automatización de la conducción del 0 al 5: en los niveles 0 a 2 la persona conduce y supervisa; en los niveles 3 a 5 conducen los sistemas automatizados" width="2924" height="2379" style="max-height:440px"><figcaption class="credit">SAE International (2021), SAE J3016, resumen de los niveles. Se reproduce tal cual, como permite SAE, citando la fuente.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Material de consulta. Dos escalas conocidas.</p>
+    <p>Sheridan y Verplank propusieron en 1978 diez niveles, para el control de robots submarinos. En un extremo la persona hace todo. En el otro, el computador decide si hace el trabajo y si le informa a la persona.</p>
+    <p>La tabla de SAE es la que se usa para los vehículos autónomos. Del nivel 0 al 2, la persona conduce y supervisa. Del 3 al 5, conduce el sistema.</p>
+  </aside>
+</section>
+</section>
+
+<!-- ============================ 4 · UBER Y EL SESGO DE AUTOMATIZACIÓN ============================ -->
+<section data-min="2">
+  <div class="kicker">Caso real · el sesgo de automatización</div>
+  <h2>Cuando quien supervisa deja de mirar</h2>
+  <div class="cols c46 mid">
+    <figure class="figure"><img src="assets/img/uber_ntsb_lo_que_veia_el_sistema.jpg" alt="Reconstrucción de los datos del sistema autónomo de Uber: los carriles, la trayectoria del vehículo en morado y, adelante, un objeto naranja marcado como «Object detected as bicycle»" width="1740" height="1079" style="max-height:330px"><figcaption class="credit">NTSB (2018), informe preliminar HWY18MH010, fig. 2: lo que veía el sistema. Detectó a la persona, pero la clasificó como bicicleta. Dominio público.</figcaption></figure>
+    <div class="lado">
+      <p>Tempe, Arizona, 2018. Un vehículo de pruebas de Uber, en modo autónomo, atropelló y mató a una peatona.</p>
+      <p class="fragment"><strong>Causa probable, según la NTSB:</strong> la conductora de seguridad no vigilaba la vía. Miraba su teléfono.</p>
+      <p class="fragment"><strong>Contribuyó Uber:</strong> supervisaba mal a sus conductores y no tenía cómo controlar su complacencia con la automatización.</p>
+      <p class="fragment">Es el <strong>sesgo de automatización</strong>: confiar de más en el sistema y dejar de mirar (Parasuraman y Manzey, 2010).</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Un caso real del grado human-on-the-loop. En 2018, en Tempe, un vehículo de pruebas de Uber atropelló y mató a una peatona.</p>
+    <p>La figura es del informe preliminar de la NTSB, la junta de seguridad del transporte de Estados Unidos. Es lo que veía el sistema.</p>
+    <p>Según el informe final, el sistema la detectó 5.6 segundos antes del choque. Pero nunca la clasificó como peatona ni predijo su trayectoria.</p>
+    <p>La causa probable, según la NTSB: la conductora de seguridad no vigilaba la vía. Durante el viaje miraba un video en su teléfono.</p>
+    <p>Pero la NTSB no se quedó en la persona. Uber supervisaba mal a sus conductores y no tenía cómo controlar su complacencia con la automatización. Además, había desactivado el frenado de emergencia del Volvo.</p>
+    <p>La NTSB cita a Parasuraman y Manzey. Cuando un sistema casi nunca falla, la persona que lo vigila deja de prestar atención. Es el sesgo de automatización.</p>
+  </aside>
+</section>
+
+<!-- ============================ 5 · VERIFICAR ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Verificación</div>
+  <h2>Verificar y validar no son lo mismo</h2>
+  <div class="cols">
+    <div class="card accent"><h4>Verificar</h4><p style="font-size:22px">¿Construyo bien el producto? ¿Cumple lo que se especificó?</p></div>
+    <div class="card amber"><h4>Validar</h4><p style="font-size:22px">¿Construyo el producto correcto? ¿Resuelve el problema real?</p></div>
+  </div>
+  <svg class="diagram dg" viewBox="0 0 1150 250" role="img" aria-label="El patrón del curso: un componente propone, y cinco verificadores del curso lo comprueban: el validador de planes, el solver con contraejemplos, los casos de prueba del vibe coding, la validación cruzada y el contrapunto con una técnica clásica" style="margin-top:12px">
+    <defs><marker id="pv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="nodo violet" x="10" y="70" width="290" height="100" rx="14"/><text class="t1" x="155" y="112" text-anchor="middle">Un componente propone</text><text class="t2" x="155" y="140" text-anchor="middle">un LLM, un planificador, un modelo</text>
+    <path class="arista" d="M302,120 L400,120" marker-end="url(#pv)"/>
+    <rect class="nodo" x="405" y="70" width="230" height="100" rx="14"/><text class="t1" x="520" y="112" text-anchor="middle">Otra técnica</text><text class="t1" x="520" y="138" text-anchor="middle">verifica</text>
+    <path class="arista" d="M637,120 L700,120"/><path class="arista" d="M700,26 L700,214"/>
+    <g class="fragment"><path class="arista" d="M700,26 L720,26"/><text class="t2" x="728" y="31">validador de planes · Sesión 2</text></g>
+    <g class="fragment"><path class="arista" d="M700,73 L720,73"/><text class="t2" x="728" y="78">solver y contraejemplos · Sesión 3</text></g>
+    <g class="fragment"><path class="arista" d="M700,120 L720,120"/><text class="t2" x="728" y="125">casos de prueba del vibe coding · Sesión 3</text></g>
+    <g class="fragment"><path class="arista" d="M700,167 L720,167"/><text class="t2" x="728" y="172">validación cruzada · Sesión 6</text></g>
+    <g class="fragment"><path class="arista" d="M700,214 L720,214"/><text class="t2" x="728" y="219">contrapunto con una técnica clásica · sesiones 2 a 7</text></g>
+    <text class="t3" x="155" y="205" text-anchor="middle">en MantenIA: la recomendación de reemplazar</text><text class="t3" x="155" y="223" text-anchor="middle">una bomba, comprobada con una regla</text>
+  </svg>
+  <p class="credit">Las dos preguntas son de Boehm (1979; 1984). Detalle ↓: el límite de las pruebas.</p>
+  <aside class="notes">
+    <p>Primero, dos palabras que se confunden. Verificar pregunta si construyo bien el producto: si cumple lo que se especificó. Validar pregunta si construyo el producto correcto: si resuelve el problema real.</p>
+    <p>Las dos preguntas son de Barry Boehm, un clásico de la ingeniería de software.</p>
+    <p>En MantenIA, verificar es comprobar que la recomendación de reemplazar una bomba sigue la regla. Validar es comprobar que, con el sistema, las fallas bajan.</p>
+    <p>El curso ya hizo mucha verificación. El validador de planes de la Sesión 2. Los solvers y sus contraejemplos de la Sesión 3. Los casos de prueba del vibe coding. La validación cruzada de la Sesión 6. Y el contrapunto de cada sesión.</p>
+    <p>Siempre el mismo patrón: un componente propone, y otra técnica verifica.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · verificación</div>
+  <h3>El límite de las pruebas</h3>
+  <div class="cols c64 mid">
+    <div class="cons">
+      <div class="quote" style="font-size:24px">«Program testing can be used to show the presence of bugs, but never to show their absence!»<span class="src">Dijkstra, E. W. (1970). <em>Notes on Structured Programming</em> (EWD249), p. 7</span></div>
+      <p>Las pruebas pueden mostrar que hay errores, pero nunca que no los hay.</p>
+      <p>Por eso los casos de prueba se complementan con la verificación formal de la Sesión 3. También con la supervisión humana.</p>
+    </div>
+    <figure class="figure"><img src="assets/img/dijkstra.jpg" alt="Retrato de Edsger W. Dijkstra, de barba canosa y gafas, con un chaleco rojizo" width="900" height="1200" style="max-height:400px"><figcaption class="credit">Edsger W. Dijkstra. Foto: Hamilton Richards (2002), CC BY-SA 3.0, Wikimedia Commons.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Material de consulta. Dijkstra lo escribió en 1970: las pruebas muestran que hay errores, pero nunca que no los hay.</p>
+    <p>Por eso, en un sistema crítico, los casos de prueba no bastan. Se complementan con la verificación formal, como la de los solvers, y con supervisión humana.</p>
+  </aside>
+</section>
+</section>
+
+<!-- ============================ 6 · EL CONTRAPUNTO DEL CURSO ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Lo que verificaste en el curso · el contrapunto LLM</div>
+  <h2>El LLM acierta mucho, pero no siempre</h2>
+  <!--DATOS:contrapunto--><table class="tbl contra"><tr><th>Lab</th><th>Tarea</th><th>Técnica clásica</th><th>LLM</th><th>Lo que mostró la verificación</th></tr><tr><td>2B</td><td>Planificar 5 órdenes de trabajo</td><td>Fast Downward y el validador: 5 de 5</td><td>Planifica solo: 5 de 5. Como traductor: 3 de 4</td><td>En la orden sin solución, la traducción agregó un hecho. El validador lo detectó</td></tr><tr class="fragment"><td>3B</td><td>Auditar una política de compras</td><td>Z3: 7 de 7 problemas (6 contradicciones y 1 laguna)</td><td>Razona solo: 2 de 7 problemas</td><td>Descartó un choque entre dos reglas con un argumento falso</td></tr><tr class="fragment"><td>4B</td><td>Clasificar 32 cápsulas</td><td>CLIP: 15 de 32. La regla del 4A: 8 de 8 deformes</td><td>24 de 32 con 448 px, pero solo 1 de 8 deformes</td><td>Sus explicaciones de los errores no describían la imagen</td></tr><tr class="fragment"><td>5B</td><td>Asignar 58 órdenes de trabajo</td><td>Transformer con 30 ejemplos por equipo: 48 de 58</td><td>58 de 58, sin ejemplos</td><td>Aquí ganó el LLM. Solo se supo porque había respuestas correctas para comparar</td></tr><tr class="fragment"><td>6A</td><td>Reglas para el Titanic</td><td>Árbol de profundidad 3: 81.3 %</td><td>Reglas escritas sin datos: 76.1 %</td><td>Sus reglas cambian en cada corrida: 76.1, 77.5 y 75.8 %</td></tr><tr class="fragment"><td>7B</td><td>¿Domina el técnico?</td><td>BKT: 8 de 10</td><td>5 de 10 en dos corridas. Con los parámetros: 8 de 10</td><td>Mismas decisiones en las dos corridas, pero con números distintos</td></tr></table><!--/DATOS:contrapunto-->
+  <p class="fragment" style="font-size:21px;margin-top:10px">Y no avisa cuándo falla. Lo supiste porque tenías con qué comparar.</p>
+  <p class="credit">Corridas del docente con respuestas grabadas de Claude Haiku 5.5, no los resultados de cada pareja. Cifras de <code>ejemplos/contrapunto_del_curso.py</code>. Detalle ↓: de dónde sale cada fila.</p>
+  <aside class="notes">
+    <p>Esta es la tabla del contrapunto del curso. Una fila por laboratorio, con las corridas del docente.</p>
+    <p>En el 2B, el LLM planificó bien las cinco órdenes. Pero como traductor agregó un hecho que no existía, y el validador lo detectó.</p>
+    <p>En el 3B, razonando solo, encontró 2 de 7 problemas de la política. Z3 encontró los 7.</p>
+    <p>En el 4B, con imágenes grandes, acertó 24 de 32 cápsulas. Pero casi nunca vio la deforme, que la regla del 4A detectó siempre.</p>
+    <p>En el 5B ganó el LLM: 58 de 58. Y en el 6A y el 7B, sus números cambiaban entre corridas.</p>
+    <p>La lección no es que el LLM sea malo. Acierta mucho, pero no siempre, y no avisa cuándo falla. Ustedes lo supieron porque tenían con qué comparar.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · el contrapunto del curso</div>
+  <h3>De dónde sale cada fila</h3>
+  <!--DATOS:contrapunto_fuentes--><table class="tbl xs"><tr><th>Lab</th><th>Tarea</th><th>De dónde sale</th></tr><tr><td>2B</td><td>Planificar 5 órdenes de trabajo</td><td><code>Sesion 2/labs/laboratorios_docente/README.md · el CSV de referencia, nota de ot512_sin_solucion</code></td></tr><tr><td>3B</td><td>Auditar una política de compras</td><td><code>Sesion 3/labs/laboratorios_docente/README.md · tabla de las corridas de la sección 5</code></td></tr><tr><td>4B</td><td>Clasificar 32 cápsulas</td><td><code>Sesion 4/labs/laboratorios_docente/README.md · 4B, resultados de referencia</code></td></tr><tr><td>5B</td><td>Asignar 58 órdenes de trabajo</td><td><code>Sesion 5/labs/laboratorios_docente/README.md · 5B, el LLM</code></td></tr><tr><td>6A</td><td>Reglas para el Titanic</td><td><code>Sesion 6/labs/laboratorios_docente/README.md · 6A, el LLM (corridas con la API)</code></td></tr><tr><td>7B</td><td>¿Domina el técnico?</td><td><code>Sesion 7/labs/laboratorios_docente/README.md · 7B, el LLM</code></td></tr></table><!--/DATOS:contrapunto_fuentes-->
+  <div class="cons" style="margin-top:14px">
+    <p>Las cuentas salen de los CSV de <code>laboratorios_docente/referencia/</code> de cada sesión. Todos usan el esquema común que definió la Sesión 2.</p>
+    <p>La columna «Lo que mostró la verificación» resume el README docente de cada laboratorio.</p>
+  </div>
+  <aside class="notes"><p>Material de consulta. De dónde sale cada fila de la tabla. Las cuentas salen de los CSV de referencia de cada laboratorio, que usan el mismo esquema desde la Sesión 2.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 7 · VERIFICAR CÓMO SE MIDIÓ ============================ -->
+<section data-min="2">
+  <div class="kicker">La lectura de la sesión · Shojaee et al. y Lawsen (2025)</div>
+  <h2>Verificar también cómo se midió</h2>
+  <div class="cols c46 mid">
+    <figure class="figure"><img src="assets/img/shojaee2025_fig1_hanoi.jpg" alt="Exactitud frente al número de discos en la Torre de Hanói: Claude 3.7 Sonnet, con y sin razonamiento extendido, cae a casi 0 % desde unos 8 discos" width="1600" height="1110" style="max-height:300px"><figcaption class="credit">Shojaee et al. (2025), fig. 1: exactitud en la Torre de Hanói según el número de discos. arXiv, CC BY 4.0.</figcaption></figure>
+    <div class="lado">
+      <p><strong>Shojaee et al.</strong> (NeurIPS 2025): la exactitud de los modelos de razonamiento colapsa cuando crece la complejidad.</p>
+      <p class="fragment"><strong>Lawsen:</strong> parte del colapso venía de la medición. Algunos cruces del río no tenían solución.</p>
+      <p class="fragment">Pero la réplica también tenía errores, como una fórmula equivocada. Lawsen la corrigió en una segunda versión.</p>
+      <p class="fragment">Apple respondió en su versión final y dejó fuera esos cruces del río.</p>
+    </div>
+  </div>
+  <p class="fragment" style="font-size:22px;margin-top:8px"><strong>Antes de concluir que un sistema falla, o que funciona, verifica cómo se midió.</strong></p>
+  <aside class="notes">
+    <p>La lectura de la sesión, en par. Investigadores de Apple probaron modelos de razonamiento con rompecabezas, como la Torre de Hanói. La figura muestra el colapso: desde unos 8 discos, la exactitud cae a casi cero.</p>
+    <p>La réplica de Lawsen dijo que parte del colapso venía de la medición. Algunas instancias del cruce del río no tenían solución. Era como castigar a un solver por decir que no hay solución.</p>
+    <p>Pero la réplica también tenía errores. Una fórmula estaba mal, y citaba el artículo con el número equivocado de arXiv. Su primera versión ponía a Claude como primer autor. Lawsen la corrigió en una segunda versión.</p>
+    <p>Después, Lawsen escribió que la réplica empezó casi como una broma. Y que quien publica responde por lo que publica, aunque lo haya escrito un LLM.</p>
+    <p>Apple respondió en la versión final de su artículo y dejó fuera esos cruces del río. La lección: antes de concluir, verifica cómo se midió. Y verifica también al verificador.</p>
+  </aside>
+</section>
+
+<!-- ============================ 8 · TRAZABILIDAD ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Trazabilidad</div>
+  <h2>Poder reconstruir qué pasó</h2>
+  <div class="cols c46 mid">
+    <figure class="figure"><img src="assets/img/caja_negra_ntsb.jpg" alt="Los dos registradores naranjas del vuelo Asiana 214, el de datos de vuelo y el de voz de cabina, en el laboratorio de la NTSB" width="1280" height="853" style="max-height:290px"><figcaption class="credit">NTSB (2013): los registradores del vuelo Asiana 214, en su laboratorio. Dominio público, Wikimedia Commons.</figcaption></figure>
+    <div class="lado">
+      <p>Un avión registra lo necesario para reconstruir un accidente. Un sistema con IA también debería hacerlo.</p>
+      <div class="card amber fragment" style="padding:10px 16px"><h4 style="font-size:22px;margin-bottom:2px">Qué registrar en un sistema con un LLM</h4>
+        <p style="font-size:19px;margin:0">los datos de entrada · el prompt · el modelo y su versión · la respuesta · la verificación · quién aprobó</p></div>
+      <p class="fragment" style="margin-top:10px">Ya lo hiciste en el curso. Piensa en el registro de avance del plan.md, las bitácoras CSV y las respuestas grabadas del LLM.</p>
+    </div>
+  </div>
+  <p class="credit">El Reglamento lo exige al alto riesgo: el «registro automático de acontecimientos» (art. 12). Detalle ↓: la documentación.</p>
+  <aside class="notes">
+    <p>La segunda pregunta: la trazabilidad. Es poder reconstruir qué hizo el sistema, con qué datos, con qué versión y por qué.</p>
+    <p>La foto son los registradores de un avión, la llamada caja negra. Guardan lo necesario para reconstruir un accidente. La NTSB los abre en su laboratorio.</p>
+    <p>En un sistema con un LLM, conviene registrar seis cosas. Los datos de entrada, el prompt, el modelo y su versión, la respuesta, la verificación y quién aprobó.</p>
+    <p>En MantenIA, cada recomendación de reemplazar una bomba guardaría esos seis datos. Así, si la bomba falla, se puede saber qué pasó.</p>
+    <p>Ustedes ya lo hicieron. El plan.md tiene su registro de avance. Los laboratorios guardaban una bitácora CSV. Y las respuestas grabadas del LLM guardaban el modelo, la fecha y el costo.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · trazabilidad</div>
+  <h3>Documentar el modelo y los datos</h3>
+  <div class="cols c64 mid">
+    <div class="cons">
+      <p><strong>Model cards</strong> (Mitchell et al., 2019): un documento corto que acompaña a un modelo. Dice para qué sirve, cómo se evaluó y en qué grupos falla más.</p>
+      <p><strong>Datasheets</strong> (Gebru et al., 2021): lo mismo para un dataset. Dice por qué se creó, qué contiene, cómo se recogió y para qué se recomienda.</p>
+      <p>El Reglamento pide algo parecido al alto riesgo: la documentación técnica (art. 11 y anexo IV).</p>
+    </div>
+    <figure class="figure"><img src="assets/img/mitchell2019_model_card.png" alt="La model card de ejemplo del artículo: un detector de sonrisas en imágenes, con secciones de detalles del modelo, uso previsto, factores, métricas, datos, consideraciones éticas y gráficos de error por subgrupo" width="1324" height="1642" style="max-height:470px"><figcaption class="credit">Mitchell et al. (2019), fig. 2: model card de un detector de sonrisas. Extracción de Semantic Scholar; el borde derecho de los gráficos se corta. Cita con fines educativos.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Material de consulta. Dos formas de documentar que se volvieron estándar.</p>
+    <p>La model card acompaña a un modelo: para qué sirve, cómo se evaluó y en qué grupos falla más. El ejemplo del artículo es un detector de sonrisas, con su error por grupo.</p>
+    <p>El datasheet hace lo mismo con un dataset. El Reglamento pide al alto riesgo una documentación técnica parecida.</p>
+  </aside>
+</section>
+</section>
+
+<!-- ============================ 9 · AIR CANADA ============================ -->
+<section data-min="2">
+  <div class="kicker">Rendición de cuentas · caso real</div>
+  <h2>La organización responde por su chatbot</h2>
+  <div class="cols c64 mid">
+    <div class="lado">
+      <p>El chatbot de Air Canada le dio a un cliente información equivocada sobre una tarifa por duelo.</p>
+      <p class="fragment">La aerolínea alegó que no respondía por lo que dijera su chatbot. El tribunal lo resumió así: como si fuera una entidad separada.</p>
+      <p class="fragment"><strong>Decisión (2024):</strong> la aerolínea responde por toda la información de su sitio web. Da igual si viene de un chatbot.</p>
+      <p class="fragment">Pagó 812.02 dólares canadienses. Poco dinero, pero una regla clara.</p>
+      <p class="fragment" style="font-size:23px"><strong>Delegar en un sistema no delega la responsabilidad.</strong></p>
+    </div>
+    <figure class="figure"><img src="assets/img/air_canada_787.jpg" alt="Un Boeing 787-9 de Air Canada, blanco con la cola negra y la hoja de arce roja, en ascenso sobre un cielo azul" width="1280" height="721" style="max-height:250px"><figcaption class="credit">Moffatt v. Air Canada, 2024 BCCRT 149, párr. 27 y 44. Foto: Steve Knight (2023), recortada, CC BY 2.0, Wikimedia Commons.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>La tercera pregunta: quién responde. Un caso de Canadá, de 2024.</p>
+    <p>Un cliente preguntó al chatbot de Air Canada por la tarifa por duelo, tras la muerte de un familiar. El chatbot le dijo que podía pedirla después del viaje. La política de la aerolínea decía lo contrario.</p>
+    <p>En el tribunal, la aerolínea alegó que no respondía por lo que dijeran sus agentes, incluido el chatbot. El tribunal lo resumió así: es como decir que el chatbot es una entidad separada.</p>
+    <p>El tribunal decidió que la aerolínea responde por toda la información de su sitio web. Da igual si viene de una página o de un chatbot.</p>
+    <p>Pagó 812 dólares canadienses. Es poco dinero, pero la regla es clara: delegar en un sistema no delega la responsabilidad.</p>
+  </aside>
+</section>
+
+<!-- ============================ 10 · T-323 DE 2024 (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker">Rendición de cuentas · un caso colombiano</div>
+  <h2>Un juez usó ChatGPT, y la Corte fijó reglas</h2>
+  <div class="cols c64 mid">
+    <div class="lado">
+      <p>Cartagena, 2023: un juez resolvía una tutela por la salud de un niño. Usó ChatGPT para ampliar los argumentos de su fallo.</p>
+      <p class="fragment"><strong>Corte Constitucional (T-323 de 2024):</strong> no reemplazó al juez, porque lo usó después de tomar la decisión.</p>
+      <p class="fragment">Pero no cumplió la transparencia ni la responsabilidad. La Corte fijó 12 principios, como el control humano y la verificación.</p>
+      <p class="fragment">La Judicatura expidió después lineamientos para usar IA generativa en la Rama Judicial (Acuerdo PCSJA24-12243).</p>
+    </div>
+    <figure class="figure"><img src="assets/img/palacio_justicia_bogota.jpg" alt="Fachada del Palacio de Justicia de Colombia, en la Plaza de Bolívar de Bogotá, con palomas y los cerros orientales al fondo" width="1280" height="718" style="max-height:250px"><figcaption class="credit">Palacio de Justicia, Bogotá. Foto: Bernard Gagnon (2020), CC BY-SA 4.0, Wikimedia Commons.</figcaption></figure>
+  </div>
+  <aside class="notes">
+    <p>Un caso colombiano. En 2023, en Cartagena, un juez de segunda instancia resolvía una tutela. Era por los copagos y el transporte de un niño con autismo.</p>
+    <p>El juez usó ChatGPT para ampliar los argumentos de su fallo, y lo dijo en la sentencia.</p>
+    <p>La Corte Constitucional revisó el caso en la Sentencia T-323 de 2024. Concluyó que ChatGPT no reemplazó al juez, porque lo usó después de decidir.</p>
+    <p>Pero no se cumplieron la transparencia ni la responsabilidad. La Corte fijó doce principios para los jueces, entre ellos el control humano y la verificación.</p>
+    <p>Y ordenó a la Judicatura una guía, que llegó en diciembre de 2024 con el Acuerdo PCSJA24-12243.</p>
+  </aside>
+</section>
+
+<!-- ============================ 11 · SUPERVISAR EXIGE ENTENDER (OPCIONAL) ============================ -->
+<section data-min="1.5" data-opcional>
+  <div class="kicker">Rendición de cuentas · la supervisión humana</div>
+  <h2>Supervisar exige entender</h2>
+  <div class="cita-norma grande">Quienes supervisan deben poder «ser conscientes de la posible tendencia a confiar automáticamente o en exceso en los resultados de salida […] («sesgo de automatización»)».<span class="src">Reglamento (UE) 2024/1689, art. 14, apartado 4, letra b). El mismo apartado pide poder no usar el sistema, y detenerlo.</span></div>
+  <div class="cols-4 expl">
+    <div class="card ok fragment"><h4>MYCIN · S1</h4><p>Explica qué reglas usó para su conclusión.</p></div>
+    <div class="card ok fragment"><h4>Un árbol · S6</h4><p>Sus reglas se leen, hoja por hoja.</p></div>
+    <div class="card ok fragment"><h4>Una red bayesiana · S7</h4><p>Su dibujo y sus tablas se auditan.</p></div>
+    <div class="card bad fragment"><h4>Un LLM · S3</h4><p>Su traza no es siempre una explicación fiel (Turpin et al., 2023).</p></div>
+  </div>
+  <aside class="notes">
+    <p>El Reglamento europeo pide supervisión humana para el alto riesgo, en el artículo 14. Y nombra el sesgo de automatización, el del caso de Uber.</p>
+    <p>Quien supervisa debe entender el sistema, poder no usarlo y poder detenerlo de forma segura.</p>
+    <p>Entender es más fácil si el sistema explica. El curso vio tres formas. MYCIN explicaba qué reglas usó. Las reglas de un árbol se leen. Y una red bayesiana se audita.</p>
+    <p>La traza de razonamiento de un LLM es otra cosa. En la Sesión 3 vimos que no siempre dice cómo llegó a la respuesta.</p>
+  </aside>
+</section>
+
+<!-- ============================ 12 · LA PIRÁMIDE DE RIESGO ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Marco regulatorio · Reglamento (UE) 2024/1689</div>
+  <h2>Más riesgo, más obligaciones</h2>
+  <div class="cols c73 mid">
+    <svg class="diagram dg" viewBox="0 0 760 420" role="img" aria-label="Pirámide de riesgo del Reglamento europeo de IA. Arriba, el riesgo inaceptable: prácticas prohibidas por el artículo 5. Luego, el alto riesgo: el artículo 6 y el anexo III. Luego, las obligaciones de transparencia del artículo 50. Abajo, el riesgo mínimo o nulo, sin normas nuevas">
+      <g><polygon class="nodo bad" points="170,10 206,100 134,100"/>
+        <text class="t1" x="360" y="44">Inaceptable (art. 5): prohibido</text><text class="t2" x="360" y="68">puntuación ciudadana; inferir emociones</text><text class="t2" x="360" y="88">en el trabajo y en los centros educativos</text></g>
+      <g class="fragment"><polygon class="nodo amber" points="134,104 206,104 245,200 95,200"/>
+        <text class="t1" x="360" y="140">Alto riesgo (art. 6 y anexo III)</text><text class="t2" x="360" y="164">obligaciones estrictas. Por ejemplo, seleccionar</text><text class="t2" x="360" y="184">personal o evaluar los resultados del aprendizaje</text></g>
+      <g class="fragment"><polygon class="nodo violet" points="95,204 245,204 286,300 54,300"/>
+        <text class="t1" x="360" y="240">Transparencia (art. 50): avisar</text><text class="t2" x="360" y="264">decir que hablas con un sistema de IA;</text><text class="t2" x="360" y="284">marcar el contenido sintético</text></g>
+      <g class="fragment"><polygon class="nodo ok" points="54,304 286,304 330,410 10,410"/>
+        <text class="t1" x="360" y="345">Mínimo o nulo: sin normas nuevas</text><text class="t2" x="360" y="369">la mayoría de los sistemas, como los</text><text class="t2" x="360" y="389">filtros de spam (ejemplo de la Comisión)</text></g>
+    </svg>
+    <figure class="figure"><img src="assets/img/reglamento_2024_1689_do.jpg" alt="Primera página del Reglamento (UE) 2024/1689 en el Diario Oficial de la Unión Europea, del 12 de julio de 2024, con el título Reglamento de Inteligencia Artificial" width="1241" height="1754" style="max-height:330px"><figcaption class="credit">Diario Oficial de la UE, L, 12.7.2024. Reutilización autorizada citando la fuente (Decisión 2011/833/UE).</figcaption></figure>
+  </div>
+  <p class="credit">La pirámide es de la Comisión Europea, no del texto legal. Los modelos de IA de uso general tienen su propio capítulo (cap. V). Detalle ↓: las prácticas prohibidas y las áreas del anexo III.</p>
+  <aside class="notes">
+    <p>Ahora, el marco regulatorio. Una aclaración: esto no es asesoría jurídica. Les cuento qué dice el texto oficial. Si un sistema concreto cumple o no, lo decide un análisis jurídico.</p>
+    <p>El Reglamento europeo de IA es de junio de 2024. Su idea central: más riesgo, más obligaciones.</p>
+    <p>Arriba, lo prohibido. Por ejemplo, la puntuación ciudadana, o inferir las emociones de las personas en el trabajo y en los centros educativos.</p>
+    <p>Luego, el alto riesgo, con obligaciones estrictas. El anexo III nombra áreas como el empleo y la educación.</p>
+    <p>Luego, la transparencia: avisar que se habla con un sistema de IA, y marcar el contenido sintético.</p>
+    <p>Abajo, todo lo demás, sin normas nuevas. La Comisión da como ejemplo los filtros de spam. Los modelos de uso general, como los LLMs, tienen su propio capítulo.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · Reglamento (UE) 2024/1689</div>
+  <h3>Las prácticas prohibidas y las áreas de alto riesgo</h3>
+  <div class="cols c64">
+    <div class="cons">
+      <p><strong>Prácticas prohibidas (art. 5, apartado 1):</strong></p>
+      <ul>
+        <li>a) manipulación subliminal o engañosa que cause perjuicios; b) explotar la vulnerabilidad por edad, discapacidad o situación social;</li>
+        <li>c) la puntuación ciudadana; d) predecir delitos solo por el perfil de una persona;</li>
+        <li>e) crear bases de reconocimiento facial con imágenes extraídas de internet o de cámaras;</li>
+        <li>f) inferir emociones en el trabajo y en los centros educativos, salvo por motivos médicos o de seguridad;</li>
+        <li>g) categorización biométrica para inferir la raza o las opiniones políticas;</li>
+        <li>h) identificación biométrica remota en tiempo real con fines policiales, con excepciones;</li>
+        <li>b bis) y b ter), del Ómnibus de 2026: imágenes íntimas sin consentimiento y material de abuso sexual infantil. Desde el 2 de diciembre de 2026.</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <p><strong>Áreas del anexo III:</strong></p>
+      <ol style="columns:2;font-size:18px;margin-bottom:10px"><li>biometría</li><li>infraestructuras críticas</li><li>educación y formación profesional</li><li>empleo y gestión de los trabajadores</li><li>servicios esenciales</li><li>cumplimiento del Derecho</li><li>migración y fronteras</li><li>justicia y procesos democráticos</li></ol>
+      <figure class="figure"><img src="assets/img/ce_piramide_riesgos.jpg" alt="La pirámide de la Comisión Europea con cuatro niveles de riesgo, rotulados en inglés: inaceptable, alto, limitado y mínimo" width="521" height="325" style="max-height:190px"><figcaption class="credit">Comisión Europea, «AI Act», pirámide de riesgos. CC BY 4.0.</figcaption></figure>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Material de consulta. La lista de las prácticas prohibidas del artículo 5, en palabras simples. El Ómnibus de 2026 agregó dos: las imágenes íntimas sin consentimiento y el material de abuso sexual infantil.</p>
+    <p>A la derecha, las ocho áreas del anexo III, y la pirámide original de la Comisión, en inglés.</p>
+  </aside>
+</section>
+</section>
+
+<!-- ============================ 13 · LO QUE EXIGE AL ALTO RIESGO ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Marco regulatorio · el alto riesgo</div>
+  <h2>Lo que exige, con los tres temas de hoy</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 290" role="img" aria-label="Las obligaciones del alto riesgo agrupadas por los tres temas de la charla. Verificación: los artículos 9, 10 y 15. Trazabilidad: los artículos 11 y 12. Rendición de cuentas: los artículos 13, 14 y 26">
+    <rect class="nodo" x="10" y="8" width="370" height="54" rx="12"/><text class="t1" x="195" y="42" text-anchor="middle">Verificación</text>
+    <rect class="nodo amber" x="390" y="8" width="370" height="54" rx="12"/><text class="t1" x="575" y="42" text-anchor="middle">Trazabilidad</text>
+    <rect class="nodo violet" x="770" y="8" width="370" height="54" rx="12"/><text class="t1" x="955" y="42" text-anchor="middle">Rendición de cuentas</text>
+    <g class="fragment">
+      <rect class="nodo gris" x="10" y="80" width="370" height="46" rx="10"/><text class="t2" x="24" y="109">art. 9 · Sistema de gestión de riesgos</text>
+      <rect class="nodo gris" x="10" y="134" width="370" height="46" rx="10"/><text class="t2" x="24" y="163">art. 10 · Datos y gobernanza de datos</text>
+      <rect class="nodo gris" x="10" y="188" width="370" height="46" rx="10"/><text class="t2" x="24" y="217">art. 15 · Precisión, solidez y ciberseguridad</text>
+    </g>
+    <g class="fragment">
+      <rect class="nodo gris" x="390" y="80" width="370" height="46" rx="10"/><text class="t2" x="404" y="109">art. 11 · Documentación técnica</text>
+      <rect class="nodo gris" x="390" y="134" width="370" height="46" rx="10"/><text class="t2" x="404" y="163">art. 12 · Conservación de registros</text>
+    </g>
+    <g class="fragment">
+      <rect class="nodo gris" x="770" y="80" width="370" height="46" rx="10"/><text class="t2" x="784" y="109">art. 13 · Transparencia</text>
+      <rect class="nodo gris" x="770" y="134" width="370" height="46" rx="10"/><text class="t2" x="784" y="163">art. 14 · Supervisión humana</text>
+      <rect class="nodo gris" x="770" y="188" width="370" height="46" rx="10"/><text class="t2" x="784" y="217">art. 26 · Responsable del despliegue</text>
+    </g>
+    <text class="t3" x="575" y="276" text-anchor="middle">el proveedor desarrolla el sistema; el responsable del despliegue lo usa bajo su propia autoridad (art. 3)</text>
+  </svg>
+  <p class="fragment" style="font-size:21px;margin-top:6px"><strong>En MantenIA:</strong> el tutor de la Sesión 7 decide qué técnico queda certificado. El anexo III nombra los sistemas para «evaluar los resultados del aprendizaje» (punto 3, letra b).</p>
+  <p class="credit">Títulos oficiales completos en la vertical. Detalle ↓: artículo por artículo.</p>
+  <aside class="notes">
+    <p>Lo que exige el Reglamento a un sistema de alto riesgo, ordenado por los tres temas de hoy.</p>
+    <p>Verificación: un sistema de gestión de riesgos, datos de calidad, y precisión, solidez y ciberseguridad.</p>
+    <p>Trazabilidad: la documentación técnica y la conservación de registros.</p>
+    <p>Rendición de cuentas: transparencia, supervisión humana y las obligaciones de quien usa el sistema. El Reglamento lo llama responsable del despliegue.</p>
+    <p>Un ejemplo del curso. Si MantenIA usara en Europa el tutor que certifica técnicos, el anexo III lo nombra. Habla de sistemas para evaluar los resultados del aprendizaje. Podría ser de alto riesgo, pero eso lo decide un análisis jurídico.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · el alto riesgo, artículo por artículo</div>
+  <h3>Títulos oficiales y lo que más importa de cada uno</h3>
+  <table class="tbl cons">
+    <tr><th>Artículo</th><th>Título oficial</th><th>Lo que más importa</th></tr>
+    <tr><td>9</td><td>Sistema de gestión de riesgos</td><td>Identificar y reducir los riesgos durante todo el ciclo de vida</td></tr>
+    <tr><td>10</td><td>Datos y gobernanza de datos</td><td>Datos de entrenamiento, validación y prueba de calidad</td></tr>
+    <tr><td>11</td><td>Documentación técnica</td><td>Su contenido está en el anexo IV</td></tr>
+    <tr><td>12</td><td>Conservación de registros</td><td>«registro automático de acontecimientos» durante todo el ciclo de vida</td></tr>
+    <tr><td>13</td><td>Transparencia y comunicación de información a los responsables del despliegue</td><td>Instrucciones de uso claras</td></tr>
+    <tr><td>14</td><td>Supervisión humana</td><td>Entender, no usar, invalidar o detener el sistema; conocer el sesgo de automatización</td></tr>
+    <tr><td>15</td><td>Precisión, solidez y ciberseguridad</td><td>Un nivel adecuado durante todo el ciclo de vida</td></tr>
+    <tr><td>26</td><td>Obligaciones de los responsables del despliegue de sistemas de IA de alto riesgo</td><td>Supervisión con «competencia, formación y autoridad»; guardar los registros al menos seis meses</td></tr>
+  </table>
+  <p class="credit" style="margin-top:10px">También: art. 73, notificación de incidentes graves; art. 86, derecho a explicación de decisiones tomadas individualmente.</p>
+  <aside class="notes"><p>Material de consulta. Los títulos oficiales de la versión en español, y una línea sobre cada artículo.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 14 · CALENDARIO Y ALCANCE ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Marco regulatorio · el calendario y el alcance</div>
+  <h2>¿Desde cuándo, y por qué importa en Colombia?</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 170" role="img" aria-label="Línea de tiempo del Reglamento: entra en vigor el 1 de agosto de 2024; prohibiciones y alfabetización desde el 2 de febrero de 2025; modelos de uso general desde el 2 de agosto de 2025; aplicación general y transparencia desde el 2 de agosto de 2026; nuevas prohibiciones desde el 2 de diciembre de 2026; alto riesgo del anexo III desde el 2 de diciembre de 2027; alto riesgo del anexo I desde el 2 de agosto de 2028. Hoy es noviembre de 2026">
+    <path class="eje" d="M30,62 L1120,62"/>
+    <g><circle class="hito" cx="80" cy="62" r="9"/><text class="t1" x="80" y="36" text-anchor="middle">1 ago 2024</text><text class="t2" x="80" y="96" text-anchor="middle">entra en vigor</text></g>
+    <g class="fragment"><circle class="hito" cx="240" cy="62" r="9"/><text class="t1" x="240" y="36" text-anchor="middle">2 feb 2025</text><text class="t2" x="240" y="96" text-anchor="middle">prohibiciones y</text><text class="t2" x="240" y="116" text-anchor="middle">alfabetización</text></g>
+    <g class="fragment"><circle class="hito" cx="400" cy="62" r="9"/><text class="t1" x="400" y="36" text-anchor="middle">2 ago 2025</text><text class="t2" x="400" y="96" text-anchor="middle">modelos de</text><text class="t2" x="400" y="116" text-anchor="middle">uso general</text></g>
+    <g class="fragment"><circle class="hito" cx="560" cy="62" r="9"/><text class="t1" x="560" y="36" text-anchor="middle">2 ago 2026</text><text class="t2" x="560" y="96" text-anchor="middle">aplicación general</text><text class="t2" x="560" y="116" text-anchor="middle">y transparencia</text></g>
+    <g class="fragment"><path class="hoy" d="M650,14 L650,148"/><text class="t3" x="650" y="164" text-anchor="middle">hoy: noviembre de 2026</text></g>
+    <g class="fragment"><circle class="hito futuro" cx="740" cy="62" r="9"/><text class="t1" x="740" y="36" text-anchor="middle">2 dic 2026</text><text class="t2" x="740" y="96" text-anchor="middle">nuevas</text><text class="t2" x="740" y="116" text-anchor="middle">prohibiciones</text></g>
+    <g class="fragment"><circle class="hito futuro" cx="900" cy="62" r="9"/><text class="t1" x="900" y="36" text-anchor="middle">2 dic 2027</text><text class="t2" x="900" y="96" text-anchor="middle">alto riesgo</text><text class="t2" x="900" y="116" text-anchor="middle">del anexo III</text></g>
+    <g class="fragment"><circle class="hito futuro" cx="1060" cy="62" r="9"/><text class="t1" x="1060" y="36" text-anchor="middle">2 ago 2028</text><text class="t2" x="1060" y="96" text-anchor="middle">alto riesgo</text><text class="t2" x="1060" y="116" text-anchor="middle">del anexo I</text></g>
+  </svg>
+  <ul style="font-size:21px;margin-top:6px">
+    <li class="fragment">El <strong>Ómnibus digital sobre IA</strong>, Reglamento (UE) 2026/1744, aplazó el alto riesgo. Está en vigor desde el 27 de julio de 2026.</li>
+    <li class="fragment"><strong>Alcance (art. 2):</strong> también obliga a empresas de fuera de la Unión, si los resultados se usan allí.</li>
+    <li class="fragment"><strong>Multas (art. 99):</strong> hasta 35 millones de euros o el 7 % de la facturación mundial, por una práctica prohibida.</li>
+    <li class="fragment">Las reglas de la UE tienden a volverse el estándar mundial: el «efecto Bruselas» (Bradford, 2020).</li>
+  </ul>
+  <p class="credit">Verificado el 14 de noviembre de 2026 en el texto consolidado (27.7.2026) y en la página de la Comisión. Detalle ↓: el calendario completo.</p>
+  <aside class="notes">
+    <p>¿Desde cuándo se aplica? Por etapas. Entró en vigor en agosto de 2024. Las prohibiciones y la alfabetización, en febrero de 2025. Los modelos de uso general, en agosto de 2025.</p>
+    <p>En agosto de 2026 llegó la aplicación general, con la transparencia. Hoy estamos aquí.</p>
+    <p>El alto riesgo iba a aplicarse en agosto de 2026. En julio de 2026, el Ómnibus digital lo aplazó. Ahora es diciembre de 2027 para el anexo III, y agosto de 2028 para el anexo I.</p>
+    <p>¿Por qué importa en Colombia? El Reglamento también obliga a empresas de fuera de la Unión, si los resultados de su sistema se usan allí.</p>
+    <p>Las multas llegan a 35 millones de euros o al 7 % de la facturación mundial. Y Anu Bradford lo llama efecto Bruselas: las reglas europeas tienden a volverse el estándar de todos.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · el calendario</div>
+  <h3>El calendario completo, con el Ómnibus de 2026</h3>
+  <div class="cols">
+    <div class="cons">
+      <ul>
+        <li><strong>12.7.2024:</strong> publicación en el Diario Oficial. <strong>1.8.2024:</strong> entrada en vigor.</li>
+        <li><strong>2.2.2025:</strong> capítulos I y II, con las prácticas prohibidas y la alfabetización (art. 4).</li>
+        <li><strong>2.8.2025:</strong> modelos de IA de uso general (cap. V), gobernanza y sanciones.</li>
+        <li><strong>2.8.2026:</strong> aplicación general, con la transparencia (art. 50).</li>
+        <li><strong>2.12.2026:</strong> las dos prohibiciones nuevas del Ómnibus.</li>
+        <li><strong>2.12.2027:</strong> alto riesgo del anexo III. <strong>2.8.2028:</strong> alto riesgo del anexo I.</li>
+        <li><strong>2.8.2030:</strong> plazo para los sistemas de alto riesgo de las autoridades públicas (art. 111).</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <p><strong>El Ómnibus digital sobre IA,</strong> Reglamento (UE) 2026/1744:</p>
+      <ul>
+        <li>19.11.2025: propuesta de la Comisión, COM(2025) 836.</li>
+        <li>7.5.2026: acuerdo político. 8.7.2026: firma. 24.7.2026: publicación.</li>
+        <li>La propuesta ataba el alto riesgo a la existencia de normas técnicas. El texto final fijó fechas.</li>
+        <li>El art. 4 cambió: ahora pide «medidas para apoyar» la alfabetización en materia de IA, sin exigir un nivel específico.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Material de consulta. El calendario completo y los pasos del Ómnibus. Un detalle para el curso: la alfabetización en IA cambió. Ahora es una obligación de apoyar la formación del personal, sin exigir un nivel.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 15 · COLOMBIA ============================ -->
+<section>
+<section data-min="2">
+  <div class="kicker">Marco regulatorio · Colombia</div>
+  <h2>Colombia: una política, no una ley</h2>
+  <div class="cols c46 mid">
+    <figure class="figure"><img src="assets/img/conpes4144_portada.jpg" alt="Portada del Documento CONPES 4144, Política Nacional de Inteligencia Artificial, versión aprobada, Bogotá, 14 de febrero de 2025" width="1275" height="1650" style="max-height:340px"><figcaption class="credit">DNP (2025), Documento CONPES 4144, portada. Cita con fines educativos.</figcaption></figure>
+    <div>
+      <table class="tbl cmp">
+        <tr><th></th><th>Reglamento (UE) 2024/1689</th><th>CONPES 4144</th></tr>
+        <tr><td>Qué es</td><td>Una norma obligatoria</td><td>Un documento de política</td></tr>
+        <tr class="fragment"><td>A quién</td><td>Proveedores y responsables del despliegue</td><td>Entidades del Gobierno, con 106 acciones</td></tr>
+        <tr class="fragment"><td>Enfoque</td><td>Niveles de riesgo</td><td>Seis ejes, de la ética al uso de la IA</td></tr>
+        <tr class="fragment"><td>Sanciones</td><td>Hasta 35 millones de euros o el 7 %</td><td>No tiene</td></tr>
+        <tr class="fragment"><td>Fechas</td><td>2024, por etapas hasta 2028</td><td>14 de febrero de 2025, hasta 2030</td></tr>
+      </table>
+      <p class="fragment" style="font-size:19px;margin-top:10px"><strong>Lo que ya obliga:</strong> la Ley 1581 de 2012, de datos personales. Y la Circular Externa 002 de 2024 de la SIC, sobre IA.</p>
+      <p class="fragment" style="font-size:19px">Colombia no tiene ley de IA. El proyecto del Gobierno de 2025 se archivó. Otro, con riesgos como el europeo, está en trámite.</p>
+    </div>
+  </div>
+  <p class="credit">Estado de los proyectos verificado el 14 de noviembre de 2026 en la Cámara de Representantes. Detalle ↓: el CONPES 4144 en cifras, y otros marcos.</p>
+  <aside class="notes">
+    <p>¿Y en Colombia? El CONPES 4144 es la Política Nacional de Inteligencia Artificial, aprobada en febrero de 2025.</p>
+    <p>La diferencia con Europa es de fondo. El Reglamento es una norma obligatoria, con multas. El CONPES es un documento de política: organiza 106 acciones de entidades del Gobierno hasta 2030.</p>
+    <p>Tiene seis ejes, de la ética y la gobernanza al uso y la adopción de la IA. No impone obligaciones nuevas a las empresas.</p>
+    <p>Lo que ya obliga es la Ley 1581 de 2012, de datos personales. Y la Circular 002 de 2024 de la SIC. Pide, por ejemplo, un estudio de impacto de privacidad antes de diseñar un sistema de IA riesgoso para las personas.</p>
+    <p>Colombia no tiene ley de IA. El proyecto del Gobierno de 2025 se archivó sin primer debate. Otro proyecto, de 2026, sigue en la Comisión Sexta de la Cámara, con niveles de riesgo como los europeos.</p>
+  </aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · Colombia</div>
+  <h3>El CONPES 4144 en cifras</h3>
+  <div class="cols c64">
+    <div>
+      <table class="tbl cons">
+        <tr><th>Eje estratégico</th><th>Millones de pesos</th><th>Parte</th></tr>
+        <tr><td>1. Ética y gobernanza</td><td>634</td><td>0.1 %</td></tr>
+        <tr><td>2. Datos e infraestructura</td><td>284 148</td><td>59.3 %</td></tr>
+        <tr><td>3. Investigación, desarrollo e innovación</td><td>11 160</td><td>2.3 %</td></tr>
+        <tr><td>4. Desarrollo de capacidades y talento digital</td><td>18 522</td><td>3.9 %</td></tr>
+        <tr><td>5. Mitigación de riesgos</td><td>7 759</td><td>1.6 %</td></tr>
+        <tr><td>6. Uso y adopción de la IA</td><td>157 050</td><td>32.8 %</td></tr>
+        <tr class="total"><td>Total, del Presupuesto General de la Nación</td><td>479 273</td><td>100 %</td></tr>
+      </table>
+    </div>
+    <div class="cons">
+      <p><strong>Aprobado:</strong> 14 de febrero de 2025. <strong>Horizonte:</strong> 2025 a 2030, con 106 acciones.</p>
+      <p><strong>Ética:</strong> un modelo de gobernanza, un Consejo Asesor de Expertos y una guía para el sector privado.</p>
+      <p><strong>Antecedentes:</strong> el CONPES 3975 de 2019 y el Marco Ético para la IA de 2021, que no es vinculante.</p>
+    </div>
+  </div>
+  <p class="credit">DNP (2025), CONPES 4144, resumen ejecutivo y tabla 5. Porcentajes calculados con esa tabla.</p>
+  <aside class="notes"><p>Material de consulta. El presupuesto del CONPES 4144 por eje. Casi el 60 % va a datos e infraestructura. La ética y la gobernanza reciben el 0.1 %, y la mitigación de riesgos, el 1.6 %.</p></aside>
+</section>
+<section data-min="0">
+  <div class="kicker">Detalle · otros marcos</div>
+  <h3>Otros marcos de IA responsable, todos voluntarios</h3>
+  <div class="cols cons">
+    <ul>
+      <li><strong>OCDE,</strong> Principios de IA (2019, actualizados en 2024). Su principio de rendición de cuentas pide trazabilidad de los datos, los procesos y las decisiones.</li>
+      <li><strong>UNESCO,</strong> Recomendación sobre la Ética de la IA (noviembre de 2021), para sus 194 Estados miembros.</li>
+    </ul>
+    <ul>
+      <li><strong>NIST,</strong> AI Risk Management Framework 1.0 (enero de 2023), de uso voluntario. Tiene cuatro funciones: gobernar, mapear, medir y gestionar.</li>
+      <li><strong>ISO/IEC 42001:2023,</strong> los requisitos de un sistema de gestión de la IA en una organización.</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Material de consulta. Otros marcos que una organización puede adoptar de forma voluntaria. A diferencia del Reglamento europeo, ninguno tiene multas.</p></aside>
+</section>
+</section>
+
+<!-- ============================ 16 · LAS PREGUNTAS DE RESPONSABILIDAD ============================ -->
+<section data-min="1.5">
+  <div class="kicker">Para tu sustentación</div>
+  <h2>Las preguntas de responsabilidad</h2>
+  <div class="pregs">
+    <div class="card violet"><span class="tema">Autonomía</span><p>¿Qué decide solo el sistema, y qué aprueba una persona?</p></div>
+    <div class="card accent fragment"><span class="tema">Verificación</span><p>¿Cómo se verifica lo que propone el LLM?</p></div>
+    <div class="card amber fragment"><span class="tema">Trazabilidad</span><p>¿Qué queda registrado, y quién lo puede revisar?</p></div>
+    <div class="card violet fragment"><span class="tema">Rendición de cuentas</span><p>¿Quién responde si el sistema se equivoca?</p></div>
+    <div class="card fragment"><span class="tema">Regulación</span><p>¿Qué nivel de riesgo tendría en el Reglamento europeo?</p></div>
+    <div class="card fragment"><span class="tema">Datos</span><p>¿Usa datos personales? (Ley 1581 de 2012)</p></div>
+  </div>
+  <p class="fragment" style="font-size:21px;margin-top:14px">No necesitas ser abogado. Necesitas conocer tu sistema y decir con honestidad lo que no resuelve.</p>
+  <aside class="notes">
+    <p>Esta diapositiva resume la charla en seis preguntas. Son las que les puedo hacer en la sustentación. También están en la guía.</p>
+    <p>Qué decide solo el sistema y qué aprueba una persona. Cómo se verifica lo que propone el LLM. Qué queda registrado. Quién responde si se equivoca. Qué nivel de riesgo tendría en Europa. Y si usa datos personales.</p>
+    <p>No necesitan ser abogados. Necesitan conocer su sistema y decir con honestidad lo que no resuelve.</p>
+  </aside>
+</section>
+
+<!-- ============================ 17 · EL MAPA DEL CURSO ============================ -->
+<section data-min="1">
+  <div class="kicker">Cierre del curso</div>
+  <h2>El mapa del curso</h2>
+  <svg class="diagram dg" viewBox="0 0 1150 330" role="img" aria-label="Las ocho unidades del curso, de los sistemas expertos a la IA responsable, unidas por un hilo: en cada unidad, una técnica clásica, un LLM como contrapunto y una forma de verificar">
+    <defs><marker id="pm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="punta" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="nodo" x="8" y="10" width="132" height="118" rx="12"/><text class="t1" x="74" y="40" text-anchor="middle">U1</text><text class="t2" x="74" y="66" text-anchor="middle">Sistemas</text><text class="t2" x="74" y="86" text-anchor="middle">expertos</text><text class="t2" x="74" y="106" text-anchor="middle">y agentes</text>
+    <rect class="nodo" x="150" y="10" width="132" height="118" rx="12"/><text class="t1" x="216" y="40" text-anchor="middle">U2</text><text class="t2" x="216" y="66" text-anchor="middle">Planificación</text><text class="t2" x="216" y="86" text-anchor="middle">y plan.md</text>
+    <rect class="nodo" x="292" y="10" width="132" height="118" rx="12"/><text class="t1" x="358" y="40" text-anchor="middle">U3</text><text class="t2" x="358" y="66" text-anchor="middle">Solvers y</text><text class="t2" x="358" y="86" text-anchor="middle">verificación</text>
+    <rect class="nodo" x="434" y="10" width="132" height="118" rx="12"/><text class="t1" x="500" y="40" text-anchor="middle">U4</text><text class="t2" x="500" y="66" text-anchor="middle">Visión por</text><text class="t2" x="500" y="86" text-anchor="middle">computador</text>
+    <rect class="nodo" x="576" y="10" width="132" height="118" rx="12"/><text class="t1" x="642" y="40" text-anchor="middle">U5</text><text class="t2" x="642" y="66" text-anchor="middle">Redes</text><text class="t2" x="642" y="86" text-anchor="middle">neuronales y</text><text class="t2" x="642" y="106" text-anchor="middle">transformers</text>
+    <rect class="nodo" x="718" y="10" width="132" height="118" rx="12"/><text class="t1" x="784" y="40" text-anchor="middle">U6</text><text class="t2" x="784" y="66" text-anchor="middle">Aprendizaje</text><text class="t2" x="784" y="86" text-anchor="middle">de máquina</text><text class="t2" x="784" y="106" text-anchor="middle">y refuerzo</text>
+    <rect class="nodo" x="860" y="10" width="132" height="118" rx="12"/><text class="t1" x="926" y="40" text-anchor="middle">U7</text><text class="t2" x="926" y="66" text-anchor="middle">Incertidumbre</text><text class="t2" x="926" y="86" text-anchor="middle">y decisiones</text>
+    <rect class="nodo violet" x="1002" y="10" width="140" height="118" rx="12"/><text class="t1" x="1072" y="40" text-anchor="middle">U8</text><text class="t2" x="1072" y="66" text-anchor="middle">IA responsable</text><text class="t2" x="1072" y="86" text-anchor="middle">y proyecto</text>
+    <path class="arista" d="M74,130 L74,178 M216,130 L216,178 M358,130 L358,178 M500,130 L500,178 M642,130 L642,178 M784,130 L784,178 M926,130 L926,178 M1072,130 L1072,178"/>
+    <g class="fragment"><rect class="nodo amber" x="8" y="182" width="1134" height="66" rx="14"/><text class="t1" x="575" y="212" text-anchor="middle">En cada unidad: una técnica clásica, un LLM como contrapunto y una forma de verificar</text><text class="t2" x="575" y="236" text-anchor="middle">el hilo del curso: sistemas híbridos, donde un componente propone y otro verifica</text></g>
+    <g class="fragment"><path class="arista" d="M575,250 L575,282" marker-end="url(#pm)"/><text class="t1" x="575" y="310" text-anchor="middle">y una persona que responde por el sistema</text></g>
+  </svg>
+  <aside class="notes">
+    <p>El mapa del curso. Ocho unidades, de los sistemas expertos a la IA responsable.</p>
+    <p>El hilo fue siempre el mismo. Una técnica clásica, un LLM como contrapunto y una forma de verificar. Eso es un sistema híbrido: un componente propone y otro verifica.</p>
+    <p>Hoy agregamos la última pieza: una persona que responde por el sistema.</p>
+  </aside>
+</section>
+
+<!-- ============================ 18 · LO QUE SIGUE ============================ -->
+<section data-min="1">
+  <div class="kicker">Cierre del curso</div>
+  <h2>Lo que sigue</h2>
+  <div class="cols">
+    <div class="card amber"><h4>Ahora: las sustentaciones</h4><p style="font-size:22px">20 minutos por equipo: 12 para presentar y demostrar, y 8 para preguntas. El orden se sortea.</p><p style="font-size:20px"><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-8/sustentacion_proyecto.md">Guía de la sustentación</a></p></div>
+    <div class="card fragment"><h4>En la fase de cierre</h4><p style="font-size:22px">Los laboratorios 7A y 7B y los trabajos independientes de la Sesión 7.</p><p style="font-size:20px">La fecha exacta se anuncia en clase.</p></div>
+  </div>
+  <p class="fragment" style="font-size:24px;margin-top:22px"><strong>Gracias por el curso.</strong> Ahora, cada equipo muestra su sistema y responde por él.</p>
+  <aside class="notes">
+    <p>Lo que sigue. Ahora vienen las sustentaciones: 20 minutos por equipo, 12 para presentar y 8 para preguntas. Sorteamos el orden.</p>
+    <p>En la fase de cierre quedan los laboratorios 7A y 7B y los trabajos de la Sesión 7. La fecha la anuncio en clase.</p>
+    <p>Gracias por el curso. Ahora, cada equipo muestra su sistema y responde por él.</p>
+  </aside>
+</section>
+
+<!-- ============================ 19 · REFERENCIAS: NORMAS Y CASOS ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias · normas y casos</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs">
+    <li>Reglamento (UE) 2024/1689 (Reglamento de Inteligencia Artificial). <em>Diario Oficial de la UE</em>, L, 12.7.2024. <a href="https://www.boe.es/doue/2024/1689/L00001-00144.pdf">PDF oficial (copia del BOE)</a> · <a href="https://web.archive.org/web/20260104220312/https://eur-lex.europa.eu/legal-content/ES/TXT/HTML/?uri=OJ%3AL_202401689">EUR-Lex (Wayback)</a></li>
+    <li>Reglamento (UE) 2026/1744 (Ómnibus digital sobre IA). <em>Diario Oficial de la UE</em>, L, 24.7.2026. <a href="http://publications.europa.eu/resource/cellar/b459c07f-86fb-11f1-bf5e-01aa75ed71a1.0023.03/DOC_1">Texto oficial</a> · Comisión Europea, <a href="https://digital-strategy.ec.europa.eu/es/policies/regulatory-framework-ai">«Ley de IA»</a></li>
+    <li>Departamento Nacional de Planeación (2025). <em>Documento CONPES 4144: Política Nacional de Inteligencia Artificial</em>. <a href="https://colaboracion.dnp.gov.co/CDT/Conpes/Econ%C3%B3micos/4144.pdf">PDF</a></li>
+    <li>Ley Estatutaria 1581 de 2012. <a href="http://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html">Secretaría del Senado</a> · SIC (2024). Circular Externa 002 de 2024. <a href="https://sedeelectronica.sic.gov.co/sites/default/files/normativa/Circular%20Externa%20No.%20002%20del%2021%20de%20agosto%20de%202024.pdf">PDF</a></li>
+    <li>Corte Constitucional (2024). Sentencia T-323 de 2024. <a href="https://www.corteconstitucional.gov.co/relatoria/2024/T-323-24.htm">Relatoría</a> · Cámara de Representantes, <a href="https://www.camara.gov.co/inteligencia-artificial-2/">PL 025 de 2026</a></li>
+    <li>NTSB (2019). <em>Collision Between Vehicle Controlled by Developmental Automated Driving System and Pedestrian</em>, HAR-19/03. <a href="https://www.ntsb.gov/investigations/AccidentReports/Reports/HAR1903.pdf">PDF</a></li>
+    <li>Moffatt v. Air Canada, 2024 BCCRT 149. <a href="https://web.archive.org/web/20241013203644/https://decisions.civilresolutionbc.ca/crt/crtd/en/525448/1/document.do">Decisión (Wayback)</a></li>
+    <li>OCDE (2019, 2024). <a href="https://oecd.ai/en/ai-principles">Principios de IA</a> · UNESCO (2021). <a href="https://www.unesco.org/es/artificial-intelligence/recommendation-ethics">Recomendación sobre la Ética de la IA</a> · NIST (2023). <a href="https://doi.org/10.6028/NIST.AI.100-1">AI RMF 1.0</a> · ISO/IEC 42001:2023. <a href="https://web.archive.org/web/20250116191217/https://www.iso.org/standard/81230.html">ISO (Wayback)</a></li>
+  </ol></div>
+  <aside class="notes"><p>Referencias de las normas y los casos, con enlaces.</p></aside>
+</section>
+
+<!-- ============================ 20 · REFERENCIAS: CONCEPTOS Y LECTURA ============================ -->
+<section data-min="0">
+  <div class="kicker">Referencias · conceptos y lectura</div>
+  <h2>Para profundizar</h2>
+  <div class="refs-tight"><ol class="refs" start="9">
+    <li>Shojaee, P. et al. (2025). The illusion of thinking. <em>NeurIPS 2025</em>. <a href="https://arxiv.org/abs/2506.06941">arXiv</a> · Lawsen, A. (2025). Comment on The Illusion of Thinking. <a href="https://arxiv.org/abs/2506.09250">arXiv</a> · <a href="https://lawsen.substack.com/p/when-your-joke-paper-goes-viral">When your joke paper goes viral</a></li>
+    <li>Kambhampati, S. et al. (2026). Position: stop anthropomorphizing intermediate tokens as reasoning/thinking traces! <em>ICML 2026</em>. <a href="https://arxiv.org/abs/2504.09762">arXiv</a></li>
+    <li>Boehm, B. W. (1984). Verifying and validating software requirements and design specifications. <em>IEEE Software</em> 1(1). <a href="https://web.archive.org/web/20140211073728/http://csse.usc.edu:80/csse/TECHRPTS/1979/usccse79-501/usccse79-501.pdf">Versión de 1979</a> · Dijkstra, E. W. (1970). <a href="https://www.cs.utexas.edu/~EWD/ewd02xx/EWD249.PDF">EWD249</a></li>
+    <li>Sheridan, T. B. y Verplank, W. L. (1978). <em>Human and Computer Control of Undersea Teleoperators</em>. MIT. <a href="https://web.archive.org/web/20250208022956/https://apps.dtic.mil/sti/pdfs/ADA057655.pdf">PDF (Wayback)</a> · Parasuraman, R. y Manzey, D. H. (2010). <em>Human Factors</em> 52(3). <a href="https://pubmed.ncbi.nlm.nih.gov/21077562/">PubMed</a></li>
+    <li>Mitchell, M. et al. (2019). Model cards for model reporting. <a href="https://arxiv.org/abs/1810.03993">arXiv</a> · Gebru, T. et al. (2021). Datasheets for datasets. <em>CACM</em> 64(12). <a href="https://arxiv.org/abs/1803.09010">arXiv</a> · Raji, I. D. et al. (2020). Closing the AI accountability gap. <a href="https://arxiv.org/abs/2001.00973">arXiv</a></li>
+    <li>Turpin, M. et al. (2023). Language models don't always say what they think. <em>NeurIPS 2023</em>. <a href="https://arxiv.org/abs/2305.04388">arXiv</a> · Bradford, A. (2020). <em>The Brussels Effect</em>. Oxford University Press. <a href="https://web.archive.org/web/20211025154953/https://global.oup.com/academic/product/the-brussels-effect-9780190088583?cc=be&amp;lang=en&amp;">OUP (Wayback)</a></li>
+    <li>Dignum, V. (2019). <em>Responsible Artificial Intelligence</em>. Springer. <a href="https://doi.org/10.1007/978-3-030-30371-6">DOI</a> · Aler Tubella, A., Dignum, V. et al. (2026). <em>Trustworthy AI: Ethical Frameworks for Responsible Innovation</em>. Cambridge University Press. <a href="https://doi.org/10.1017/9781009492843">DOI</a></li>
+    <li>Russell, S. y Norvig, P. (2021). <em>AIMA</em>, 4.ª ed., cap. 27, «Philosophy, Ethics, and Safety of AI». <a href="https://aima.cs.berkeley.edu/contents.html">Contenido</a> · Poole, D. L. y Mackworth, A. K. (2023), cap. 18, «The Social Impact of Artificial Intelligence». <a href="https://artint.info/3e/html/ArtInt3e.Ch18.html">artint.info</a></li>
+  </ol></div>
+  <p class="navlinks"><a href="index.html">Volver a la agenda</a><a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-8/sustentacion_proyecto.md">Guía de la sustentación →</a></p>
+  <aside class="notes"><p>Referencias de los conceptos y de la lectura, con enlaces.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="deck-footer">Sistemas Inteligentes · Sesión 8 · Charla · ¿Quién responde por el sistema?</div>
+<script src="assets/vendor/reveal/reveal.js"></script>
+<script src="assets/vendor/reveal/plugin/notes.js"></script>
+<script src="assets/vendor/reveal/plugin/zoom.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>

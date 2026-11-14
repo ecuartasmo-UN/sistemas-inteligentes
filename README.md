@@ -15,6 +15,7 @@ Las diapositivas se abren en el navegador desde **https://ecuartasmo-un.github.i
 - [Sesión 5](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-5/): redes neuronales y aprendizaje profundo: de la neurona a la red profunda, la arquitectura transformer y los LLMs
 - [Sesión 6](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-6/): aprendizaje de máquina: árboles de decisión, ensambles, el costo del error y aprendizaje por refuerzo
 - [Sesión 7](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-7/): razonamiento bajo incertidumbre y toma de decisiones: redes bayesianas, valor de la información y sistemas tutoriales inteligentes
+- [Sesión 8](https://ecuartasmo-un.github.io/sistemas-inteligentes/sesion-8/): proyecto integrador: IA responsable en sistemas autónomos, marco regulatorio y sustentación de los proyectos
 
 También funcionan sin internet: descargue el repositorio y abra `sesion-N/index.html` con doble clic. Use las flechas del teclado para avanzar.
 
@@ -44,6 +45,7 @@ También funcionan sin internet: descargue el repositorio y abra `sesion-N/index
 | [`sesion-7/`](sesion-7/) | Diapositivas de la sesión 7 (con el club de lectura), trabajo independiente y los scripts que producen las gráficas con datos reales |
 | [`sesion-7/labs/lab_7A_red_bayesiana_y_valor_de_la_informacion/`](sesion-7/labs/lab_7A_red_bayesiana_y_valor_de_la_informacion/) | Laboratorio 7A · Red bayesiana y decisión con valor de la información: la red de la alarma y el problema del petrolero, con pyAgrum. No usa LLM. **Antes de la clase** conviene ejecutar en casa su primera celda, que instala `pyagrum` (unos 35 MB, o unos 5 MB si ya se hizo el 6A) |
 | [`sesion-7/labs/lab_7B_tutor_y_modelo_del_estudiante/`](sesion-7/labs/lab_7B_tutor_y_modelo_del_estudiante/) | Laboratorio 7B · Sistema tutorial inteligente: el modelo del estudiante con *Bayesian Knowledge Tracing*, la regla para elegir el siguiente ejercicio y un LLM que estima el dominio |
+| [`sesion-8/`](sesion-8/) | La charla de la sesión 8, «¿Quién responde por el sistema?»: verificación, trazabilidad, rendición de cuentas, el Reglamento europeo de IA y el CONPES 4144. También la [guía de la entrega y la sustentación del proyecto](sesion-8/sustentacion_proyecto.md). La sesión no tiene laboratorios |
 
 Cada laboratorio es un notebook de Jupyter autocontenido: toda la explicación está dentro del notebook. Se trabajan en parejas, en VS Code, en su propio computador. Cada uno tiene su propio `README.md` con el tiempo, el modo de trabajo y lo que se entrega. La excepción es el 3A: un solo archivo Markdown con el problema y el prompt, que se usa con su asistente de IA (Claude o Gemini), en VS Code o en el navegador.
 

@@ -124,7 +124,7 @@ Unidad 7: Razonamiento bajo Incertidumbre y Toma de Decisiones
 
 1. Identifica **dónde aparece la incertidumbre** en tu proyecto. Puede venir de datos incompletos, de respuestas de un LLM o de resultados imprevisibles. Agrega al plan.md un paso que diga cómo la manejan o cómo se la comunican al usuario.
 2. Define **el componente híbrido**: qué propone el LLM y qué técnica clásica, prueba o persona lo verifica. Agrega un paso al plan.md con su resultado y su verificación.
-3. Planea **la demostración** de la sesión 8, de 3 minutos. Define qué caso vas a mostrar, qué debe pasar y qué haces si algo falla.
+3. Planea **la sustentación** de la sesión 8, con la [guía de la sustentación](https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-8/sustentacion_proyecto.md). Define qué caso vas a mostrar, qué debe pasar y qué haces si algo falla.
 4. Si tu sistema decide o recomienda, agrega un paso que diga con qué criterio lo hace. ¿Usa una probabilidad, una utilidad o una regla?
 5. Cada paso nuevo lleva su resultado y su verificación, como pide la plantilla. Revisa el plan.md completo con la lista de chequeo (J.6). Está al final de `plantilla_plan.md`, en la carpeta de la sesión 2.
 
@@ -136,7 +136,7 @@ Unidad 7: Razonamiento bajo Incertidumbre y Toma de Decisiones
 |---|---|
 | La incertidumbre del proyecto bien identificada, con una forma de manejarla | 30 % |
 | Un componente híbrido con su verificación | 35 % |
-| Una demostración planeada; plan.md que cumple la lista de chequeo | 35 % |
+| Una sustentación planeada; plan.md que cumple la lista de chequeo | 35 % |
 
 ---
 

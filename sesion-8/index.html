@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sesión 8 · Sistemas Inteligentes · Agenda</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/tema-si.css">
+<style>
+  body { margin: 0; font-family: var(--font); color: var(--text); background: radial-gradient(1200px 700px at 85% -10%, #12203a 0%, var(--bg) 55%) fixed, var(--bg); }
+  main { max-width: 1080px; margin: 0 auto; padding: 56px 28px 64px; }
+  .kicker { font-size: 15px; }
+  h1 { font-size: 46px; line-height: 1.1; margin: 8px 0 10px; font-weight: 800; letter-spacing: -0.02em; }
+  .sub { font-size: 21px; color: var(--muted); margin: 0 0 34px; }
+  h2 { font-size: 24px; margin: 38px 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 18px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--accent); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; border-bottom: 2px solid var(--accent); }
+  td.t { font-family: var(--mono); color: var(--accent-2); white-space: nowrap; }
+  td.k { font-size: 15px; white-space: nowrap; }
+  tr.ext td { color: var(--muted); }
+  .tag { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .tag.exp { color: var(--accent); border-color: rgba(56,189,248,.45); }
+  .tag.sus { color: var(--accent-2); border-color: rgba(245,185,66,.45); }
+  .tag.dis { color: var(--violet); border-color: rgba(167,139,250,.45); }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(56,189,248,.45); }
+  a:hover { color: #7dd3fc; }
+  .decks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .deck { display: block; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: linear-gradient(180deg, var(--bg-3), var(--bg-2)); border-bottom: 1px solid var(--line); }
+  .deck:hover { border-color: var(--accent); }
+  .deck .n { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .deck .tt { display: block; font-size: 18px; font-weight: 700; color: var(--text); margin: 6px 0; line-height: 1.25; }
+  .deck .m { font-size: 14px; color: var(--accent-2); }
+  .balance { display: flex; height: 14px; border-radius: 8px; overflow: hidden; margin: 10px 0 6px; border: 1px solid var(--line); }
+  .balance .e { background: rgba(56,189,248,.55); width: 13.3%; }
+  .balance .s { background: rgba(245,185,66,.55); width: 80%; }
+  .balance .c { background: rgba(167,139,250,.55); width: 6.7%; }
+  .bl { font-size: 15px; color: var(--muted); }
+  ul.tips { font-size: 17px; line-height: 1.6; color: var(--muted); padding-left: 20px; }
+  ul.tips b { color: var(--text); }
+  kbd { font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; color: var(--text); background: var(--bg-3); }
+  footer { margin-top: 44px; font-size: 14px; color: #8790a6; }
+  @media (max-width: 900px) { .decks { grid-template-columns: 1fr; } h1 { font-size: 34px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Sistemas Inteligentes · Especialización en Inteligencia Artificial · UNAL Manizales</div>
+  <h1>Sesión 8 · Unidad 8</h1>
+  <p class="sub">Proyecto integrador · IA responsable y sustentación de los proyectos · 4 horas</p>
+
+  <h2>Materiales de la sesión</h2>
+  <div class="decks">
+    <a class="deck" href="charla_quien_responde_por_el_sistema.html"><span class="n">Charla · abre la sesión</span><span class="tt">¿Quién responde por el sistema? Verificación, trazabilidad, rendición de cuentas y regulación</span><span class="m">30 min · con detalle de consulta ↓</span></a>
+    <a class="deck" href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-8/sustentacion_proyecto.md"><span class="n">Guía para los equipos</span><span class="tt">Entrega y sustentación del proyecto</span><span class="m">20 min por equipo</span></a>
+  </div>
+
+  <h2>Agenda de la sesión</h2>
+  <table>
+    <tr><th>Inicio</th><th>Actividad</th><th>Tipo</th><th>Duración</th></tr>
+    <tr><td class="t">0:00</td><td><a href="charla_quien_responde_por_el_sistema.html">Charla · IA responsable en sistemas autónomos: verificación, trazabilidad y rendición de cuentas; marco regulatorio</a>, y cierre del curso</td><td class="k"><span class="tag exp">Exposición</span></td><td>30 min</td></tr>
+    <tr><td class="t">0:30</td><td>Entrega y sustentación de los proyectos, primera parte (<a href="https://github.com/ecuartasmo-UN/sistemas-inteligentes/blob/main/sesion-8/sustentacion_proyecto.md">guía</a>)</td><td class="k"><span class="tag sus">Sustentación</span></td><td>90 min</td></tr>
+    <tr class="ext"><td class="t">2:00</td><td>Pausa</td><td class="k">No aplica</td><td>15 min</td></tr>
+    <tr><td class="t">2:15</td><td>Sustentación de los proyectos, segunda parte</td><td class="k"><span class="tag sus">Sustentación</span></td><td>90 min</td></tr>
+    <tr><td class="t">3:45</td><td>Cierre: comentarios del docente sobre los proyectos</td><td class="k"><span class="tag dis">Discusión</span></td><td>15 min</td></tr>
+  </table>
+  <div class="balance" aria-hidden="true"><div class="e"></div><div class="s"></div><div class="c"></div></div>
+  <p class="bl">30 min de exposición y 180 min de sustentaciones. Cada equipo tiene 20 minutos: 12 para presentar y demostrar, y 8 para preguntas. El orden se sortea en clase. Si hay más de 8 equipos, cada uno tiene 15 minutos. La sesión no tiene laboratorios.</p>
+
+  <h2>Lectura de la sesión</h2>
+  <ul class="tips">
+    <li>Shojaee, P. et al. (2025). <a href="https://arxiv.org/abs/2506.06941"><em>The Illusion of Thinking</em></a>, leída en par con la réplica de Lawsen, A. (2025), <a href="https://arxiv.org/abs/2506.09250"><em>Comment on The Illusion of Thinking</em></a>. La charla la retoma como ejemplo de verificación.</li>
+  </ul>
+
+  <h2>Cómo presentar</h2>
+  <ul class="tips">
+    <li><b>Avanzar:</b> <kbd>→</kbd> o <kbd>Espacio</kbd> (muestra paso a paso las tablas y los diagramas) · <b>Retroceder:</b> <kbd>←</kbd></li>
+    <li><b>Detalle de consulta:</b> donde aparece «↓ Detalle», <kbd>↓</kbd> baja a los artículos, las fechas y las fuentes; <kbd>→</kbd> vuelve al recorrido. Esas diapositivas no consumen tiempo de clase.</li>
+    <li><b>Vista del orador:</b> <kbd>S</kbd> abre una ventana con las notas, el minuto previsto de cada diapositiva y la siguiente. Las diapositivas que se pueden saltar dicen «Opcional» en las notas.</li>
+    <li><b>Vista general:</b> <kbd>Esc</kbd> · <b>Pantalla completa:</b> <kbd>F</kbd> · <b>Ampliar una zona:</b> <kbd>Alt</kbd> + clic · <b>Tema claro u oscuro:</b> <kbd>T</kbd></li>
+    <li>Funciona sin conexión a internet: reveal.js, fuentes e imágenes están en la carpeta <code>assets/</code>.</li>
+  </ul>
+  <footer>Elaboró: Ernesto Cuartas Morales · Sesión 8 de 8 · Créditos de imágenes en cada diapositiva y en README.md</footer>
+</main>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>
